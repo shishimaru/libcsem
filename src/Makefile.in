@@ -1,0 +1,16 @@
+# $Id$
+
+TARGET = ../libcsem.a
+OBJS = csem_builder.o csem_list.o csem_micro_stream.o csem_micro_tree.o\
+       csem_rdfa_lite.o csem_stream.o csem_tree.o csem_utils.o
+DEFS = @DEFS@
+CPPFLAGS += -I/usr/include/libxml2 -I../
+
+$(TARGET): $(OBJS)
+	$(AR) r $@ $(OBJS)
+
+.c.o:
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEFS)  -c $<
+
+clean:
+	rm -f $(TARGET) $(OBJS)

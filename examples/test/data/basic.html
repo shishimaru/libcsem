@@ -1,0 +1,25 @@
+<body>
+  <div itemscope=""
+       itemtype="http://sample.org/Person http://sample2.org/Person"
+       itemref="address phone"
+       itemid="urn:sample:0001">
+    <p>My name is <span itemprop="name">Neil</span>.</p>
+    <p>My name is <span itemprop="name">Nail</span>.</p>
+    <p>My band is called
+      <span itemscope="" itemprop="band" itemref="address">
+	<span itemprop="band-name">Four Parts Water</span>.
+      </span>
+    </p>
+    <p>I am <span itemprop="nationality home-country">British</span>.</p>
+  </div>
+  <div id="address">
+    <div itemprop="city">Boston</div>
+    <div itemprop="state">MA</div>
+  </div>
+  <div id="phone">
+    <div itemprop="num">+1.617.981.xxxx</div>
+    <div itemprop="name">Android</div>
+    <div itemprop="dev">VoIP</div>
+  </div>
+</body>
+

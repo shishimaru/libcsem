@@ -1,0 +1,43 @@
+# $Id$
+
+TARGET = libcsem.a
+SUBDIRS = src 
+CC = @CC@
+AR = @AR@
+RANLIB = @RANLIB@
+prefix = @prefix@
+INSTALL = @INSTALL@
+CFLAGS = @CFLAGS@
+CPPFLAGS = @CPPFLAGS@
+DEFS = @DEFS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+RM_MKFILES = @MAKEFILES@
+RM_CONFIG = config.status config.log autom4te.cache src/config.h
+RM_OTHERS = ./src/*.o doc/html doc/man
+
+export CC DEFS CFLAGS CPPFLAGS LDFLAGS RANLIB AR LIBS INSTALL
+
+all: $(TARGET)
+
+$(TARGET): $(SUBDIRS)
+	$(RANLIB) $@
+
+$(SUBDIRS)::
+	make -C $@
+
+install:
+	$(INSTALL) -d $(prefix)/include/csem
+	$(INSTALL) -m 644 csem/*.h $(prefix)/include/csem/
+	$(INSTALL) -d $(prefix)/lib
+	$(INSTALL) -m 644 $(TARGET) $(prefix)/lib/
+
+uninstall:
+	rm -rf $(prefix)/include/csem
+	rm -f $(prefix)/lib/$(TARGET)
+
+clean:
+	rm -f $(TARGET) ./src/*.o
+
+distclean:
+	rm -rf $(TARGET) $(RM_MKFILES) $(RM_CONFIG) $(RM_OTHERS)
