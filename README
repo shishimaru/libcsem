@@ -1,10 +1,14 @@
 HTML5 microdata library
-
+* Feature
+  - Fast and light weight streaming parser for HTML5 microdata
+  - microdata tree builder
+  - microdata API
 * How to build
+  - Make sure libxml is installed
   - Execute ./configure
   - Execute 'make' command
 * Sample programs
   - Several samples can be found in $ROOT/examples/microdata
 * API specification
   - Execute 'doxygen' command under $ROOT/csem
-  - API documentation is serialized in $ROOT/doc as both html and man.
+  - API documentation is serialized in $ROOT/doc as both html and man
