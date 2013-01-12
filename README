@@ -1,0 +1,10 @@
+HTML5 microdata library
+
+* How to build
+  - Execute ./configure
+  - Execute 'make' command
+* Sample programs
+  - Several samples can be found in $ROOT/examples/microdata
+* API specification
+  - Execute 'doxygen' command under $ROOT/csem
+  - API documentation is serialized in $ROOT/doc as both html and man.
