@@ -1,4 +1,8 @@
-/* $Id$ */
+/*
+ * $Id$
+ * See Copyright for the status of this software.
+ * uchida@w3.org
+ */
 #include <string.h>
 #include "csem_micro_stream_internal.h"
 #include "csem_utils.h"

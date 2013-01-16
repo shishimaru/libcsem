@@ -1,4 +1,8 @@
-/* $Id$ */
+/*
+ * $Id$
+ * See Copyright for the status of this software.
+ * uchida@w3.org
+ */
 #include <string.h>
 #include <unistd.h>
 

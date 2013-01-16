@@ -1,4 +1,8 @@
-/* $Id$ */
+/*
+ * $Id$
+ * See Copyright for the status of this software.
+ * uchida@w3.org
+ */
 #ifndef CSEM_LIST_H
 #define CSEM_LIST_H
 

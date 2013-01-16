@@ -23,5 +23,8 @@ HTML5 microdata parser
   - Execute 'doxygen' command under $ROOT/csem
   - API documentation is serialized in $ROOT/doc as both html and man
 
+* License
+  - W3C Software Notice and License
+
 * Author
   - Hitoshi Uchida <uchida@w3.org>

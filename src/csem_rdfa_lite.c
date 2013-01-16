@@ -1,4 +1,8 @@
-/* $Id$ */
+/*
+ * $Id$
+ * See Copyright for the status of this software.
+ * uchida@w3.org
+ */
 #include "csem/csem_rdfa_lite.h"
 #include "csem_utils.h"
 #include "csem_types.h"
