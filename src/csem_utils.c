@@ -5,9 +5,6 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-#include <openssl/sha.h>
-#include <openssl/md5.h>
-
 #include "csem_utils.h"
 
 char *CSEM_Utils_Strcpy(const char *src) {
@@ -127,58 +124,7 @@ CSEM_Error CSEM_Utils_ToString(unsigned char *bin, size_t binLen, char **string)
     (*string)[binLen * 2] = '\0';
     return CSEM_ERROR_NONE;
 }
-static void csem_utils_convertEndian(size_t size, void *in, void *out) {
-    int i = 0;
-    for(i = 0; i < size; i++) {
-        ((char *)out)[i] = ((char *)in)[size-1-i];
-    }
-}
-CSEM_UINT64_T CSEM_Utils_ConvertEndianUINT64(CSEM_UINT64_T in) {
-    CSEM_UINT64_T out = 0;
-    csem_utils_convertEndian(sizeof(CSEM_UINT64_T), &in, &out);
-    return out;
-}
-CSEM_UINT32_T CSEM_Utils_ConvertEndianUINT32(CSEM_UINT32_T in) {
-    CSEM_UINT32_T out = 0;
-    csem_utils_convertEndian(sizeof(CSEM_UINT32_T), &in, &out);
-    return out;
-}
-CSEM_UINT16_T CSEM_Utils_ConvertEndianUINT16(CSEM_UINT16_T in) {
-    CSEM_UINT16_T out = 0;
-    csem_utils_convertEndian(sizeof(CSEM_UINT16_T), &in, &out);
-    return out;
-}
 CSEM_Bool CSEM_Utils_IsLittleEndian() {
     int i = 1;
     return (*(char *)&i);
-}
-CSEM_UINT16_T CSEM_Utils_htobe16(CSEM_UINT16_T input) {
-    return CSEM_Utils_IsLittleEndian() ?
-            CSEM_Utils_ConvertEndianUINT16(input) :
-            input;
-}
-CSEM_UINT32_T CSEM_Utils_htobe32(CSEM_UINT32_T input) {
-    return CSEM_Utils_IsLittleEndian() ?
-            CSEM_Utils_ConvertEndianUINT32(input) :
-            input;
-}
-CSEM_UINT64_T CSEM_Utils_htobe64(CSEM_UINT64_T input) {
-    return CSEM_Utils_IsLittleEndian() ?
-            CSEM_Utils_ConvertEndianUINT64(input) :
-            input;
-}
-CSEM_UINT16_T CSEM_Utils_be16toh(CSEM_UINT16_T input) {
-    return CSEM_Utils_IsLittleEndian() ?
-            CSEM_Utils_ConvertEndianUINT16(input) :
-            input;
-}
-CSEM_UINT32_T CSEM_Utils_be32toh(CSEM_UINT32_T input) {
-    return CSEM_Utils_IsLittleEndian() ?
-            CSEM_Utils_ConvertEndianUINT32(input) :
-            input;
-}
-CSEM_UINT64_T CSEM_Utils_be64toh(CSEM_UINT64_T input) {
-    return CSEM_Utils_IsLittleEndian() ?
-            CSEM_Utils_ConvertEndianUINT64(input) :
-            input;
 }

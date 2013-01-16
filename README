@@ -1,14 +1,27 @@
 HTML5 microdata library
-* Feature
-  - Fast and light weight streaming parser for HTML5 microdata
-  - microdata tree builder
-  - microdata API
+
+* Funtion
+
+HTML5 microdata parser
+ - Light weight streaming parser
+   - Parse chunk html little by little, and when microdata is detected, the corresponding events are passed via registered callback handlers
+   - Because currently the parser works on SAX parser and don't create huge DOM tree internally, applications can reduce the memory foot print
+ - Data model builder
+   - Create a data model for microdata based on the parsed result of underlying streaming parser
+   - All microdata can be accessed via API
+ - microdata API
+
 * How to build
   - Make sure libxml is installed
   - Execute ./configure
   - Execute 'make' command
+
 * Sample programs
   - Several samples can be found in $ROOT/examples/microdata
+
 * API specification
   - Execute 'doxygen' command under $ROOT/csem
   - API documentation is serialized in $ROOT/doc as both html and man
+
+* Author
+  - Hitoshi Uchida <uchida@w3.org>

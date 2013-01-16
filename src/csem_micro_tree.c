@@ -1,9 +1,9 @@
 /* $Id$ */
 #include <string.h>
 
+#include "csem/csem_micro_tree.h"
 #include "csem_utils.h"
 #include "csem_types.h"
-#include "csem/csem_micro_tree.h"
 
 CSEM_Error CSEM_Micro_Item_Create(CSEM_Item **item) {
     CSEM_Error error = CSEM_ERROR_NONE;
@@ -14,10 +14,6 @@ CSEM_Error CSEM_Micro_Item_Create(CSEM_Item **item) {
         goto ERROR;
     }
     if((error = CSEM_Node_Create(&(result -> node), CSEM_NODE_TYPE_MICRO_ITEM, result, NULL))) {
-        goto ERROR;
-    }
-    if(!(result -> props = CSEM_List_Create(8))) {
-        error = CSEM_ERROR_MEMORY;
         goto ERROR;
     }
 
@@ -39,15 +35,9 @@ CSEM_Error CSEM_Micro_Id_Create(CSEM_Id **id, const char *value) {
             CSEM_NODE_TYPE_MICRO_ID, result, NULL))) {
         goto ERROR;
     }
-    if(!(result -> id = CSEM_Utils_Strcpy(value))) {
-        error = CSEM_ERROR_MEMORY;
-        goto ERROR;
-    }
-    if(!(result -> props = CSEM_List_Create(8))) {
-        error = CSEM_ERROR_MEMORY;
-        goto ERROR;
-    }
+    result -> id = (char *)value;
 
+    /* result */
     *id = result;
     return error;
 ERROR:
@@ -168,6 +158,12 @@ CSEM_Error CSEM_Micro_Item_AddProperty(CSEM_Item *item, CSEM_Property *property,
         error = CSEM_ERROR_PARAMETER;
         goto FINISH;
     }
+    if(!item -> props) {
+        if(!(item -> props = CSEM_List_Create(8))) {
+            error = CSEM_ERROR_MEMORY;
+            goto FINISH;
+        }
+    }
     if((error = CSEM_List_Add(item -> props, property))) {
         error = CSEM_ERROR_MEMORY;
         goto FINISH;
@@ -186,6 +182,12 @@ CSEM_Error CSEM_Micro_Id_AddProperty(CSEM_Id *id, CSEM_Property *property) {
     if(!property) {
         error = CSEM_ERROR_PARAMETER;
         goto FINISH;
+    }
+    if(!id -> props) {
+        if(!(id -> props = CSEM_List_Create(8))) {
+            error = CSEM_ERROR_MEMORY;
+            goto FINISH;
+        }
     }
     if((error = CSEM_List_Add(id -> props, property))) {
         error = CSEM_ERROR_MEMORY;
@@ -379,7 +381,7 @@ void CSEM_Micro_Item_Dispose(CSEM_Item *item) {
     if(item) {
         {/* dispose properties */
             int i = 0;
-            int size = CSEM_List_Size(item -> props);
+            int size = item -> props ? CSEM_List_Size(item -> props) : 0;
             for(i = 0; i < size; i++) {
                 CSEM_Property *property = CSEM_List_Get(item -> props, i);
                 if(CSEM_Node_GetType(property -> node -> parent) != CSEM_NODE_TYPE_MICRO_ID) {
@@ -399,7 +401,7 @@ void CSEM_Micro_Id_Dispose(CSEM_Id *id) {
     if(id) {
         {/* dispose properties */
             int i = 0;
-            int size = CSEM_List_Size(id -> props);
+            int size = id -> props ? CSEM_List_Size(id -> props) : 0;
             for(i = 0; i < size; i++) {
                 CSEM_Micro_Property_Dispose(CSEM_List_Get(id -> props, i));
             }

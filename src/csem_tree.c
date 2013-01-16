@@ -2,9 +2,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "csem/csem_tree.h"
 #include "csem_utils.h"
 #include "csem_types.h"
-#include "csem/csem_tree.h"
 
 CSEM_Error CSEM_Node_Create(CSEM_Node **node, CSEM_NODE_TYPE type,
         void *obj, CSEM_Node *parent) {

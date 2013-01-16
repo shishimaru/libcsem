@@ -6,9 +6,9 @@
 #include "csem_utils.h"
 #include "test_micro_stream.h"
 
-const int TYPE_STR = 0;
-const int TYPE_URL = 1;
-const int TYPE_ITEM = 2;
+int TYPE_STR = 0;
+int TYPE_URL = 1;
+int TYPE_ITEM = 2;
 
 const int EVENT_START_SCOPE = 10;
 const int EVENT_END_SCOPE = 11;

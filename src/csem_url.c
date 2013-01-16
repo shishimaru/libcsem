@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "csem_utils.h"
 #include "csem/csem_url.h"
+#include "csem_utils.h"
 
 #define MAXLEN_SCHEME   16
 #define MAXLEN_HOST     1024

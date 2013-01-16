@@ -90,17 +90,17 @@ void *CSEM_List_Replace(CSEM_List *list, int index, const void *data);
 
 /**
  * Clear all elements of the list.
- * @param list     [in]list instance
- * @param freeData [in]a flag to free the elements or not
+ * @param list [in]list instance
+ * @param free [in]a flag to free the elements or not
  */
-void CSEM_List_Clear(CSEM_List *list, CSEM_Bool freeData);
+void CSEM_List_Clear(CSEM_List *list, CSEM_Bool free);
 
 /**
  * Dispose the list instance.
- * @param list     [in]list instance to be freed
- * @param freeData [in]a flag to free the elements or not
+ * @param list [in]list instance to be freed
+ * @param free [in]a flag to free the elements or not
  */
-void CSEM_List_Dispose(CSEM_List *list, CSEM_Bool freeData);
+void CSEM_List_Dispose(CSEM_List *list, CSEM_Bool free);
 
 CSEM_NS_C_END
 

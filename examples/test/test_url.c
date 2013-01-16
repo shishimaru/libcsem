@@ -4,6 +4,7 @@
 #include <CUnit/CUnit.h>
 
 #include "csem/csem_url.h"
+#include "csem_utils.h"
 
 void test_url_scheme() {
     CSEM_Url *url;

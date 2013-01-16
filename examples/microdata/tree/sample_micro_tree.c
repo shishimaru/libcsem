@@ -1,4 +1,4 @@
-/*$id$*/
+/* $Id$ */
 #include <stdio.h>
 #include <fcntl.h>
 #include "csem/csem_builder.h"
@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "failed to open %s\n", filename);
         goto FINISH;
     }
-    if((error = CSEM_Builder_Parse(builder, fd, &doc, CSEM_TRUE))) {
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
         fprintf(stderr, "failed parsing %s\n", filename);
         goto FINISH;
     }

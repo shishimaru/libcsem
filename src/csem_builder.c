@@ -195,7 +195,7 @@ static CSEM_Bool microdata_startId(const void *userdata,
     /* update state */
     builder -> activeNode = id -> node;
 
-    return CSEM_TRUE;
+    return CSEM_FALSE;
 ERROR:
     CSEM_Micro_Id_Dispose(id);
     microdata_error(userdata, error);
@@ -313,7 +313,7 @@ FINISH:
     return error;
 }
 CSEM_Error CSEM_Builder_Parse(CSEM_Builder *builder,
-        int fd, CSEM_Document **doc, CSEM_Bool resolve) {
+        int fd, CSEM_Bool resolve, CSEM_Document **doc) {
     CSEM_Error error = CSEM_ERROR_NONE;
 
     /* init */

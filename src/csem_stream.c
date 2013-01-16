@@ -367,7 +367,7 @@ void CSEM_Parser_SetUserdata(CSEM_Parser *parser, void *userdata) {
 void CSEM_Parser_SetHandler(CSEM_Parser *parser, CSEM_Handler *handler) {
     parser -> handler = handler;
 }
-CSEM_Error CSEM_Handler_Create(CSEM_Handler **hanlder) {
+CSEM_Error CSEM_Handler_Create(CSEM_Handler **handler) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Handler *result = NULL;
 
@@ -376,7 +376,7 @@ CSEM_Error CSEM_Handler_Create(CSEM_Handler **hanlder) {
         goto FINISH;
     }
     /* result */
-    *hanlder = result;
+    *handler = result;
 FINISH:
     return error;
 }

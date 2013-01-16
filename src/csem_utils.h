@@ -32,17 +32,8 @@ CSEM_Error CSEM_Utils_Strntoks(char *src, size_t srcLen, const char *delim, CSEM
 void       CSEM_Utils_Unquote(char *in, size_t inLen, char **out);
 void       CSEM_Utils_ToLower(char *in);
 CSEM_Error CSEM_Utils_ToString(unsigned char *bin, size_t binLen, char **string);
+CSEM_Bool  CSEM_Utils_IsLittleEndian();
 
-CSEM_Bool     CSEM_Utils_IsLittleEndian();
-CSEM_UINT16_T CSEM_Utils_ConvertEndianUINT16(CSEM_UINT16_T input);
-CSEM_UINT32_T CSEM_Utils_ConvertEndianUINT32(CSEM_UINT32_T input);
-CSEM_UINT64_T CSEM_Utils_ConvertEndianUINT64(CSEM_UINT64_T input);
-CSEM_UINT16_T CSEM_Utils_htobe16(CSEM_UINT16_T input);
-CSEM_UINT32_T CSEM_Utils_htobe32(CSEM_UINT32_T input);
-CSEM_UINT64_T CSEM_Utils_htobe64(CSEM_UINT64_T input);
-CSEM_UINT16_T CSEM_Utils_be16toh(CSEM_UINT16_T input);
-CSEM_UINT32_T CSEM_Utils_be32toh(CSEM_UINT32_T input);
-CSEM_UINT64_T CSEM_Utils_be64toh(CSEM_UINT64_T input);
 
 CSEM_NS_C_END
 

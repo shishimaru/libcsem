@@ -1,4 +1,4 @@
-/*$id$*/
+/* $Id$ */
 #include <stdio.h>
 #include <fcntl.h>
 #include "csem/csem_stream.h"

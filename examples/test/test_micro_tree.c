@@ -21,7 +21,7 @@ void test_microdata_tree_basic_no_resolve() {
         goto FINISH;
     }
     CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, &doc, CSEM_FALSE))) {
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_FALSE, &doc))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
@@ -235,7 +235,7 @@ void test_microdata_tree_values() {
         goto FINISH;
     }
     CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, &doc, CSEM_FALSE))) {
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_FALSE, &doc))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
@@ -650,7 +650,7 @@ void test_microdata_tree_no_microdata() {
         goto FINISH;
     }
     CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, &doc, CSEM_TRUE))) {
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
@@ -677,7 +677,7 @@ void test_microdata_tree_recursive_itemprop() {
         goto FINISH;
     }
     CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, &doc, CSEM_FALSE))) {
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_FALSE, &doc))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
@@ -831,7 +831,7 @@ void test_microdata_tree_basic_resolve() {
         goto FINISH;
     }
     CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, &doc, CSEM_TRUE))) {
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
@@ -1050,7 +1050,7 @@ void test_microdata_tree_resolve_recursive_items() {
         goto FINISH;
     }
     CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, &doc, CSEM_TRUE))) {
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
@@ -1187,7 +1187,7 @@ void test_microdata_tree_resolve_recursive_items() {
                                                             }
                                                             {/* properties */
                                                                 CSEM_List *properties_e = CSEM_Micro_Item_GetProperties(item_e);
-                                                                CU_ASSERT_EQUAL(CSEM_List_Size(properties_e), 0);
+                                                                CU_ASSERT_EQUAL(properties_e, NULL);
                                                             }
                                                         }
                                                     }
@@ -1222,7 +1222,7 @@ void test_microdata_tree_getItems_no_types() {
         goto FINISH;
     }
     CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, &doc, CSEM_TRUE))) {
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
@@ -1396,7 +1396,7 @@ void test_microdata_tree_getItems_with_types() {
         goto FINISH;
     }
     CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, &doc, CSEM_TRUE))) {
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
@@ -1471,7 +1471,7 @@ void test_microdata_tree_getNamedProperties() {
         goto FINISH;
     }
     CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, &doc, CSEM_TRUE))) {
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
@@ -1589,7 +1589,7 @@ void test_microdata_tree_getNamedProperties_no_name() {
         goto FINISH;
     }
     CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, &doc, CSEM_TRUE))) {
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
@@ -1642,7 +1642,7 @@ void test_microdata_tree_properties_getValues() {
         goto FINISH;
     }
     CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, &doc, CSEM_TRUE))) {
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }

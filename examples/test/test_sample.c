@@ -18,7 +18,7 @@ void main_small_test_tree() {
         goto FINISH;
     }
     CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, &doc, CSEM_FALSE))) {
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_FALSE, &doc))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }

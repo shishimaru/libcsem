@@ -1,3 +1,4 @@
+/*$Id$*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -78,12 +79,6 @@ static CU_TestInfo testinfo_utils[] = {
         { "test utils : unquote", test_utils_unquote},
         { "test utils : tolower", test_utils_tolower},
         { "test utils : tostring", test_utils_tostring},
-//        { "test utils : sha1", test_utils_sha1},
-//        { "test utils : md5", test_utils_md5},
-//        { "test utils : md5sring", test_utils_md5string},
-        { "test utils : endian 64bit", test_utils_convertUINT64},
-        { "test utils : endian 32bit", test_utils_convertUINT32},
-        { "test utils : endian 16bit", test_utils_convertUINT16},
 
         CU_TEST_INFO_NULL,
 };
@@ -91,16 +86,9 @@ static CU_TestInfo testinfo_list[] = {
         { "test list : basic feature", test_list},
         { "test list : clear feature", test_list_clear},
         { "test list : dispose", test_list_dispose},
+
         CU_TEST_INFO_NULL,
 };
-/*static CU_TestInfo testinfo_base64[] = {
-        { "test base64 encode block", testinfo_base64_encode_block},
-        { "test base64 encode string", testinfo_base64_encode_string},
-        { "test base64 decode block", testinfo_base64_decode_block},
-        { "test base64 decode string", testinfo_base64_decode_string},
-        //{ "test base64 codec for image", testinfo_base64_imagefile},
-        CU_TEST_INFO_NULL,
-};//*/
 static CU_TestInfo testinfo_microdata[] = {
         { "test stream parser : basic", test_microdata_stream_basic},
         { "test stream parser : Section5.4 values", test_microdata_stream_values},
@@ -121,9 +109,7 @@ static CU_TestInfo testinfo_microdata[] = {
 static CU_SuiteInfo suites[] = {
         { "utils",  NULL, NULL, testinfo_utils},
         { "list", NULL, NULL, testinfo_list},
-        { "url",  NULL, NULL, testinfo_url},//*/
-        /*{ "datetime", NULL, NULL, testinfo_datetime},
-        { "base64", NULL, NULL, testinfo_base64},//*/
+        { "url",  NULL, NULL, testinfo_url},
         { "microdata", NULL, NULL, testinfo_microdata},
 
         CU_SUITE_INFO_NULL,
