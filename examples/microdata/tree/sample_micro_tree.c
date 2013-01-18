@@ -4,11 +4,12 @@
 #include "csem/csem_builder.h"
 #include "csem/csem_micro_tree.h"
 
+#define INDENT(n) {int i=0;for(i=0;i<n;i++){printf("  ");}}
 /**
  * Sample of microdata tree builder.
  */
-void showProperties(CSEM_List *properties);
-void showItem(CSEM_Item *item) {
+void showProperties(CSEM_List *properties, int depth);
+void showItem(CSEM_Item *item, int depth) {
     if(item) {
         char *itemid = CSEM_Micro_Item_GetId(item);
         int j = 0;
@@ -16,32 +17,34 @@ void showItem(CSEM_Item *item) {
         CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
         CSEM_List *properties = CSEM_Micro_Item_GetProperties(item);
 
-        puts("ITEM");
+        INDENT(depth);puts("ITEM {");
         if(itemid) {
-            printf("\t@itemid=%s\n", itemid);
+            INDENT(depth);printf("@itemid=%s\n", itemid);
         }
         for(j = 0; types && j < CSEM_List_Size(types); j++) {
-            printf("\t@itemtype=%s\n", (char *)CSEM_List_Get(types, j));
+            INDENT(depth);printf("@itemtype=%s\n", (char *)CSEM_List_Get(types, j));
         }
         for(j = 0; refs && j < CSEM_List_Size(refs); j++) {
-            printf("\t@itemref=%s\n", (char *)CSEM_List_Get(refs, j));
+            INDENT(depth);printf("@itemref=%s\n", (char *)CSEM_List_Get(refs, j));
         }
-        showProperties(properties);
+        showProperties(properties, depth);
+        INDENT(depth);puts("}");
     }
 }
-void showId(CSEM_Id *id) {
+void showId(CSEM_Id *id, int depth) {
     if(id) {
         char *id_value = CSEM_Micro_Id_GetId(id);
         CSEM_List *properties = CSEM_Micro_Id_GetProperties(id);
 
-        puts("ID");
+        INDENT(depth);puts("ID {");
         if(id_value) {
-            printf("\t@id=%s\n", id_value);
+            INDENT(depth);printf("@id=%s\n", id_value);
         }
-        showProperties(properties);
+        showProperties(properties, depth);
+        INDENT(depth);puts("}");
     }
 }
-CSEM_Error showProperty(CSEM_Property *property) {
+CSEM_Error showProperty(CSEM_Property *property, int depth) {
     CSEM_Error error = CSEM_ERROR_NONE;
     if(property) {
         int i = 0;
@@ -51,30 +54,30 @@ CSEM_Error showProperty(CSEM_Property *property) {
             goto FINISH;
         }
         for(i = 0; names && i < CSEM_List_Size(names); i++) {
-            printf("\t@itempropr=%s\n", (char *)CSEM_List_Get(names, i));
+            INDENT(depth);printf("@itemprop=%s\n", (char *)CSEM_List_Get(names, i));
         }
         for(i = 0; values && i < CSEM_List_Size(values); i++) {
             int *type = CSEM_List_Get(types, i);
 
             if(*type == CSEM_MICRO_VALUE_TYPE_STR || *type == CSEM_MICRO_VALUE_TYPE_URL) {
-                printf("\t\"%s\"\n", (char *)CSEM_List_Get(values, i));
+                INDENT(depth);printf("\"%s\"\n", (char *)CSEM_List_Get(values, i));
             } else if(*type == CSEM_MICRO_VALUE_TYPE_ITEM) {
                 CSEM_Item *item = CSEM_List_Get(values, i);
-                showItem(item);
+                showItem(item, depth + 1);
             } else if(*type == CSEM_MICRO_VALUE_TYPE_PROPERTY) {
                 CSEM_Property *property = CSEM_List_Get(values, i);
-                showProperty(property);
+                showProperty(property, depth + 1);
             }
         }
     }
 FINISH:
     return error;
 }
-void showProperties(CSEM_List *properties) {
+void showProperties(CSEM_List *properties, int depth) {
     int i = 0;
     for(i = 0; properties && i < CSEM_List_Size(properties); i++) {
         CSEM_Property *property = CSEM_List_Get(properties, i);
-        showProperty(property);
+        showProperty(property, depth);
     }
 }
 int main(int argc, char *argv[]) {
@@ -112,13 +115,13 @@ int main(int argc, char *argv[]) {
             CSEM_Node *node = CSEM_List_Get(nodes, i);
             if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_MICRO_ITEM) {
                 CSEM_Item *item = CSEM_Node_GetObject(node);
-                showItem(item);
+                showItem(item, 0);
             } else if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_MICRO_ID) {
                 CSEM_Id *id = CSEM_Node_GetObject(node);
-                showId(id);
+                showId(id, 0);
             } else if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_MICRO_PROPERTY) {
                 CSEM_Property *property = CSEM_Node_GetObject(node);
-                showProperty(property);
+                showProperty(property, 0);
             }
         }
     }

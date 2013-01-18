@@ -63,12 +63,15 @@ int main(int argc, char *argv[]) {
 
     /* init */
     if((error = CSEM_Parser_Create(&stream))) {
+        fprintf(stderr, "failed to create parser\n");
         goto FINISH;
     }
     if((error = CSEM_Handler_Create(&handler))) {
+        fprintf(stderr, "failed to create handler\n");
         goto FINISH;
     }
     if((error = CSEM_Micro_CreateHandler(&microHandler))) {
+        fprintf(stderr, "failed to create micro handler\n");
         goto FINISH;
     }
     /* register callback handlers to stream parser */

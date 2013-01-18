@@ -100,8 +100,10 @@ static CSEM_Bool microdata_startProp(const void *userdata,
         }
     } else if(activeType == CSEM_NODE_TYPE_MICRO_PROPERTY) {/* TODO */
         CSEM_Property *tmpProperty = activeNode -> obj.property;
-        if((error = CSEM_Micro_Property_AddValues(tmpProperty, builder -> buf, CSEM_MICRO_VALUE_TYPE_STR))) {
-            goto ERROR;
+        if(builder -> buf) {
+            if((error = CSEM_Micro_Property_AddValues(tmpProperty, builder -> buf, CSEM_MICRO_VALUE_TYPE_STR))) {
+                goto ERROR;
+            }
         }
         if((error = CSEM_Micro_Property_AddValues(tmpProperty, property, CSEM_MICRO_VALUE_TYPE_PROPERTY))) {
             goto ERROR;
@@ -120,7 +122,6 @@ static CSEM_Bool microdata_startProp(const void *userdata,
     builder -> propValueType = hasUrlValue ?
             CSEM_MICRO_VALUE_TYPE_URL : CSEM_MICRO_VALUE_TYPE_STR;
     builder -> activeNode = property -> node;
-
 
     return CSEM_TRUE;
 ERROR:

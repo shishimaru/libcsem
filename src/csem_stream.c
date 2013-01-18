@@ -9,13 +9,11 @@
 #include "csem_utils.h"
 #include "csem_types.h"
 #include "csem_micro_stream_internal.h"
+#include "libxml2/libxml/HTMLparser.h"
 
 const char *HTML5_SPACES = "\x20\x09\x0a\x0c\x0d";
 
-static void sax_startElementNs(void *ctx,
-        const xmlChar *localname, const xmlChar *prefix, const xmlChar *URI,
-        int nb_namespaces, const xmlChar **namespaces,
-        int nb_attributes, int nb_defaulted, const xmlChar **attributes) {
+static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **atts) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Parser *parser = ctx;
     int i = 0;
@@ -26,7 +24,6 @@ static void sax_startElementNs(void *ctx,
     char *propName = NULL;
     char *propAttName = NULL;
     char *propValue = NULL;
-    size_t propValueLen = 0;
     char *itemid = NULL;
     char *id = NULL;
     CSEM_Bool freeScope = CSEM_TRUE;
@@ -39,92 +36,78 @@ static void sax_startElementNs(void *ctx,
     if(microHandler) {
         (microHandler -> currentDepth)++;
         microHandler -> startPropValue = CSEM_FALSE;
-        propAttName = CSEM_Micro_GetAttNameWithPropValue((const char *)localname, (const char *)URI);
+        propAttName = CSEM_Micro_GetAttNameWithPropValue((const char *)name, NULL);
     }
 
 #ifdef CSEM_DEBUG_PARSER
-    printf("<%s>%d\n", localname, microHandler -> currentDepth);
+    printf("<%s>%d\n", name, microHandler -> currentDepth);
 #endif
 
-    for(i = 0; i < nb_attributes; i++) {
-        const char *name = (const char *)attributes[i * 5];
-        const char *ns = (const char *)attributes[i * 5 + 2];
-        char *valueStart = (char *)attributes[i * 5 + 3];
-        char *valueEnd = (char *)attributes[i * 5 + 4];
-        const int valueLen = valueEnd - valueStart;
+    i =0;
+    while(atts && atts[i]) {
+        char *name = (char *)atts[i++];
+        char *value = (char *)atts[i++];
+#ifdef CSEM_DEBUG_PARSER
+        printf("\t%s=%s\n", name, value);
+#endif
 
-        if(!ns && !strncmp(name, "item", 4)) {
-            name += 4;
-            /* check @itemscope */
-            if(!strcmp(name, "scope")) {
-                isStartScope = CSEM_TRUE;
+        /* check @itemscope */
+        if(!strcmp(name, "itemscope")) {
+            isStartScope = CSEM_TRUE;
+        }
+        /* check @itemtype */
+        else if(!strcmp(name, "itemtype")) {
+            if((error = CSEM_Utils_Strtoks(value, HTML5_SPACES, &itemtypes))) {
+                goto ERROR;
             }
-            /* check @itemtype */
-            else if(!strcmp(name, "type")) {
-                if((error = CSEM_Utils_Strntoks(valueStart, valueLen, HTML5_SPACES, &itemtypes))) {
-                    goto ERROR;
-                }
+        }
+        /* check @itemref */
+        else if(!strcmp(name, "itemref")) {
+            if((error = CSEM_Utils_Strtoks(value, HTML5_SPACES, &itemrefs))) {
+                goto ERROR;
             }
-            /* check @itemref */
-            else if(!strcmp(name, "ref")) {
-                if((error = CSEM_Utils_Strntoks(valueStart, valueLen, HTML5_SPACES, &itemrefs))) {
-                    goto ERROR;
-                }
+        }
+        /* check @itemid */
+        else if(!strcmp(name, "itemid")) {
+            if(!(itemid = CSEM_Utils_Strcpy(value))) {
+                error = CSEM_ERROR_MEMORY;
+                goto ERROR;
             }
-            /* check @itemid */
-            else if(!strcmp(name, "id")) {
-                if(!(itemid = CSEM_Utils_Strncpy(valueStart, valueLen))) {
+        }
+        /* check @itemprop */
+        else if(!strcmp(name, "itemprop")) {
+            if(microHandler) {
+                microHandler -> startPropValue = CSEM_TRUE;
+
+                if(!(propName = CSEM_Utils_Strcpy(value))) {
                     error = CSEM_ERROR_MEMORY;
                     goto ERROR;
                 }
             }
-            /* check @itemprop */
-            else if(!strcmp(name, "prop")) {
-                if(microHandler) {
-                    microHandler -> startPropValue = CSEM_TRUE;
-
-                    /* buffering the @itemprop value */
-                    if(valueLen > CSEM_ALLOWED_MAX_ATTR_VALUE_SIZE) {
-                        error = CSEM_ERROR_TOO_LARGE_FIELD;
-                        goto ERROR;
-                    }
-                    if(!(propName = CSEM_Utils_Strncpy(valueStart, valueLen))) {
-                        error = CSEM_ERROR_MEMORY;
-                        goto ERROR;
-                    }
-                }
-            }
         } else if(!strcmp(name, "id")) {
             isStartId = CSEM_TRUE;
-            if(!(id = CSEM_Utils_Strncpy(valueStart, valueLen))) {
+            if(!(id = CSEM_Utils_Strcpy(value))) {
                 error = CSEM_ERROR_MEMORY;
                 goto ERROR;
             }
         } else if(propAttName && !strcmp(name, propAttName)) {
-            /* buffering the meta[@content] */
-            if(valueLen > CSEM_ALLOWED_MAX_ATTR_VALUE_SIZE) {
-                error = CSEM_ERROR_TOO_LARGE_FIELD;
-                goto ERROR;
-            }
-            propValueLen = valueLen;
-            if(!(propValue = CSEM_Utils_Strncpy(valueStart, valueLen))) {
+            if(!(propValue = CSEM_Utils_Strcpy(value))) {
                 error = CSEM_ERROR_MEMORY;
                 goto ERROR;
             }
         }
     }
-
     if(microHandler) {
         /* fire microdata handler */
         if(microHandler -> startPropValue) {/* @itemprop */
             if(microHandler -> startProp) {
-                CSEM_Bool isUrlPropElement = CSEM_Micro_IsUrlPropElement((const char *)localname, (const char *)URI);
+                CSEM_Bool isUrlPropElement = CSEM_Micro_IsUrlPropElement((const char *)name, NULL);
                 freeProp = microHandler -> startProp(parser -> userdata, propName, isUrlPropElement);
             }
             if(propAttName) {
                 if(microHandler -> itemProp) {
                     if(propValue) {
-                        microHandler -> itemProp(parser -> userdata, propValue, propValueLen);
+                        microHandler -> itemProp(parser -> userdata, propValue, strlen(propValue));
                     } else {
                         microHandler -> itemProp(parser -> userdata, "", 0);
                     }
@@ -143,18 +126,6 @@ static void sax_startElementNs(void *ctx,
             }
         }
         /* update state of microdata */
-        if(isStartScope) {
-            {/* push current depth to scopeDepth */
-                int *bufDepth = NULL;
-                if(!(bufDepth = CSEM_Malloc(sizeof(int)))) {
-                    error = CSEM_ERROR_MEMORY;
-                    goto ERROR;
-                }
-                memcpy(bufDepth, &(microHandler -> currentDepth), sizeof(int));
-                CSEM_List_Add(microHandler -> scopeDepth, bufDepth);
-            }
-            microHandler -> startPropValue = CSEM_FALSE;/* for @itmescope && @itemprop */
-        }
         if(microHandler -> startPropValue) {
             {/* push current depth to propDepth */
                 int *bufDepth = NULL;
@@ -168,6 +139,18 @@ static void sax_startElementNs(void *ctx,
             if(propAttName) {
                 microHandler -> startPropValue = CSEM_FALSE;
             }
+        }
+        if(isStartScope) {
+            {/* push current depth to scopeDepth */
+                int *bufDepth = NULL;
+                if(!(bufDepth = CSEM_Malloc(sizeof(int)))) {
+                    error = CSEM_ERROR_MEMORY;
+                    goto ERROR;
+                }
+                memcpy(bufDepth, &(microHandler -> currentDepth), sizeof(int));
+                CSEM_List_Add(microHandler -> scopeDepth, bufDepth);
+            }
+            microHandler -> startPropValue = CSEM_FALSE;/* for @itmescope && @itemprop */
         }
         if(isStartId) {
             microHandler -> idDepth = microHandler -> currentDepth;
@@ -195,8 +178,9 @@ ERROR:
         CSEM_Free(propName);
     }
 }
-static void show_list_int(CSEM_List *list) {
 #ifdef CSEM_DEBUG_PARSER
+static void show_list_int(CSEM_List *list) {
+
     size_t size = CSEM_List_Size(list);
     int i = 0;
     int *pt = NULL;
@@ -205,8 +189,8 @@ static void show_list_int(CSEM_List *list) {
         printf("[%d]%d,", i, *pt);
     }
     printf("\n");
-#endif
 }
+#endif
 static void sax_characters(void *ctx, const xmlChar *ch, int len) {
     CSEM_Parser *parser = ctx;
     CSEM_Handler *handler = parser -> handler;
@@ -226,8 +210,7 @@ static void sax_characters(void *ctx, const xmlChar *ch, int len) {
         }
     }
 }
-static void sax_endElementNs(void *ctx, const xmlChar *localname,
-        const xmlChar *prefix, const xmlChar *URI) {
+static void sax_endElement(void *ctx, const xmlChar *name) {
     CSEM_Parser *parser = ctx;
     CSEM_Handler *handler = parser -> handler;
     CSEM_Micro_Handlers *microHandler = handler ? handler -> microdata : NULL;
@@ -240,8 +223,9 @@ static void sax_endElementNs(void *ctx, const xmlChar *localname,
         int propDepthSize = CSEM_List_Size(microHandler -> propDepth);
         int propDepthIndex = propDepthSize - 1;
         int *tmpPropDepth = CSEM_List_Get(microHandler -> propDepth, propDepthIndex);
-
+#ifdef CSEM_DEBUG_PARSER
         show_list_int(microHandler -> scopeDepth);
+#endif
 
         if(*tmpScopeDepth == microHandler -> currentDepth) {
             if(microHandler -> endScope) {
@@ -272,7 +256,7 @@ static void sax_endElementNs(void *ctx, const xmlChar *localname,
 
         {/* update state */
 #ifdef CSEM_DEBUG_PARSER
-            printf("</%s>%d\n", localname, microHandler -> currentDepth);
+            printf("</%s>%d\n", name, microHandler -> currentDepth);
 #endif
             microHandler -> currentDepth--;
         }
@@ -285,18 +269,20 @@ static CSEM_Error csem_sax_init(CSEM_Parser *parser) {
     CSEM_Error error = CSEM_ERROR_NONE;
 
     /* init SAX2 */
-    memset(&(parser -> sax), 0, sizeof(xmlSAXHandler));
-    parser -> sax.initialized = XML_SAX2_MAGIC;
-    parser -> sax.startElementNs = sax_startElementNs;
-    parser -> sax.endElementNs = sax_endElementNs;
+    memset(&(parser -> sax), 0, sizeof(htmlSAXHandler));
+    parser -> sax.startElement = sax_startElement;
     parser -> sax.characters = sax_characters;
+    parser -> sax.endElement = sax_endElement;
     parser -> sax.fatalError = sax_fatalError;
 
-    if(!(parser -> ctxt = xmlCreatePushParserCtxt(&(parser -> sax), parser, NULL, 0, NULL))) {
+    if(!(parser -> ctxt = htmlCreatePushParserCtxt(&(parser -> sax), parser, NULL, 0, NULL, 0))) {
         error = CSEM_ERROR_MEMORY;
         goto ERROR;
     }
-    parser -> ctxt -> recovery = 1;
+    htmlCtxtUseOptions(parser -> ctxt,
+            HTML_PARSE_RECOVER  |
+            HTML_PARSE_NOBLANKS | HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING);
+
     return error;
 ERROR:
     xmlFreeParserCtxt(parser -> ctxt);
@@ -333,8 +319,12 @@ ERROR:
 }
 CSEM_Error CSEM_Parser_ParseChunk(CSEM_Parser *parser, const char *chunk, int size, int terminate) {
     CSEM_Error error = CSEM_ERROR_NONE;
-    if(xmlParseChunk(parser -> ctxt, chunk, size, terminate)) {
-        error = CSEM_ERROR_Parse;
+    int libxmlError = 0;
+    if((libxmlError = htmlParseChunk(parser -> ctxt, chunk, size, terminate))){
+        if(libxmlError == XML_ERR_INTERNAL_ERROR
+                || libxmlError == XML_ERR_NO_MEMORY) {
+            error = CSEM_ERROR_PARSE;
+        }
     }
     return error;
 }

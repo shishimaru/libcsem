@@ -16,7 +16,7 @@
 
 CSEM_NS_C_BEGIN
 
-#include <libxml/SAX2.h>
+#include <libxml/HTMLparser.h>
 
 #include "csem/csem_stream.h"
 #include "csem/csem_micro_stream.h"
@@ -61,8 +61,8 @@ struct CSEM_Parser {
     CSEM_Handler *handler;
 
     /* underlying SAX parser */
-    xmlSAXHandler sax;
-    xmlParserCtxt *ctxt;
+    htmlSAXHandler sax;
+    htmlParserCtxt *ctxt;
 };
 
 struct CSEM_Node {

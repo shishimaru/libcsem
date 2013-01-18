@@ -69,7 +69,7 @@ typedef enum CSEM_Error {
     /** Error of memory allocation */
     CSEM_ERROR_MEMORY,
     /** Error of parsing */
-    CSEM_ERROR_Parse,
+    CSEM_ERROR_PARSE,
     /** Error of url parsing */
     CSEM_ERROR_URL,
     /** Error of too large field */
