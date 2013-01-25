@@ -98,13 +98,14 @@ static CU_TestInfo testinfo_microdata[] = {
         { "test tree parser   : no microdata", test_microdata_tree_no_microdata},
         { "test tree parser   : simplify", test_microdata_tree_basic_resolve},
         { "test tree parser   : simplify recursive items", test_microdata_tree_resolve_recursive_items},
-        { "test microdata API : document.getItems(NULL)", test_microdata_tree_getItems_no_types},
+        { "test tree parser   : schema.org/event/ex1", test_microdata_tree_schema_org_event_ex1},
+        { "test tree parser   : schema.org/event/ex2", test_microdata_tree_schema_org_event_ex2},//*/
+        { "test tree parser   : schema.org/person", test_microdata_tree_schema_org_person},
+        /*{ "test microdata API : document.getItems(NULL)", test_microdata_tree_getItems_no_types},
         { "test microdata API : document.getItems([types])", test_microdata_tree_getItems_with_types},
         { "test microdata API : item.getNamedPropertries(name)", test_microdata_tree_getNamedProperties},
         { "test microdata API : item.getNamedPropertries(NULL)", test_microdata_tree_getNamedProperties_no_name},
-        { "test microdata API : properties.getValues()", test_microdata_tree_properties_getValues},
-        { "test microdata API : schema.org/event/ex1", test_microdata_tree_schema_org_event_ex1},//*/
-        { "test microdata API : schema.org/event/ex2", test_microdata_tree_schema_org_event_ex2},
+        { "test microdata API : properties.getValues()", test_microdata_tree_properties_getValues},//*/
 
         CU_TEST_INFO_NULL,
 };

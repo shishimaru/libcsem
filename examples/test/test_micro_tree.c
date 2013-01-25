@@ -2233,4 +2233,249 @@ FINISH:
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
 }
+void test_microdata_tree_schema_org_person() {
+    CSEM_Error error = CSEM_ERROR_NONE;
 
+    int fd = -1;
+    if(!(fd = open("./data/schema-org-person.html", O_RDONLY))) {
+        CU_FAIL_FATAL("failed fopen");
+        goto FINISH;
+    }
+    CSEM_Builder *builder = NULL;
+    if((error = CSEM_Builder_Create(&builder))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    {/* check results */
+        CSEM_List *children = CSEM_Document_GetChildren(doc);
+
+        CU_ASSERT_EQUAL(CSEM_List_Size(children), 1);
+        {/* 1st item */
+            CSEM_Node *node = CSEM_List_Get(children, 0);
+            CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_MICRO_ITEM);
+            CSEM_Item *item = CSEM_Node_GetObject(node);
+            CU_ASSERT_EQUAL(CSEM_Micro_Item_GetId(item), NULL);
+            {/* types */
+                CSEM_List *types = CSEM_Micro_Item_GetTypes(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/Person");
+            }
+            {/* refs */
+                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CU_ASSERT_EQUAL(refs, NULL);
+            }
+            {/* properties */
+                CSEM_List *properties = CSEM_Micro_Item_GetProperties(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(properties), 9);
+
+                {/* name : Jane Doe */
+                    CSEM_Property *property = CSEM_List_Get(properties, 0);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Jane Doe");
+                }
+                {/* image : janedoe.jpg */
+                    CSEM_Property *property = CSEM_List_Get(properties, 1);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "image");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_URL);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "janedoe.jpg");
+                }
+                {/* jobTitle : Professor */
+                    CSEM_Property *property = CSEM_List_Get(properties, 2);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "jobTitle");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Professor");
+                }
+                {/* address : ITEM */
+                    CSEM_Property *property = CSEM_List_Get(properties, 3);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "address");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_ITEM);
+                        /* ITEM */
+                        CSEM_Item *tmpItem = CSEM_List_Get(values, 0);
+                        CU_ASSERT_EQUAL(CSEM_Micro_Item_GetId(tmpItem), NULL);
+                        {/* types */
+                            CSEM_List *types = CSEM_Micro_Item_GetTypes(tmpItem);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/PostalAddress");
+                        }
+                        {/* refs */
+                            CSEM_List *refs = CSEM_Micro_Item_GetRefs(tmpItem);
+                            CU_ASSERT_EQUAL(refs, NULL);
+                        }
+                        {/* properties */
+                            CSEM_List *tmpProperties = CSEM_Micro_Item_GetProperties(tmpItem);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(tmpProperties), 4);
+
+                            {/* streetAddress : ... */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 0);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "streetAddress");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                            }
+                            {/* addressLocality : Seattle */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 1);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "addressLocality");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Seattle");
+                            }
+                            {/* addressRegion : WA */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 2);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "addressRegion");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "WA");
+                            }
+                            {/* postalCode : 98052 */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 3);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "postalCode");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "98052");
+                            }
+                        }
+                    }
+                }
+                {/* telephone : (425) 123-4567 */
+                    CSEM_Property *property = CSEM_List_Get(properties, 4);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "telephone");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "(425) 123-4567");
+                }
+                {/* email : mailto:jane-doe@xyz.edu */
+                    CSEM_Property *property = CSEM_List_Get(properties, 5);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "email");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_URL);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "mailto:jane-doe@xyz.edu");
+                }
+                {/* url : http://www.janedoe.com */
+                    CSEM_Property *property = CSEM_List_Get(properties, 6);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "url");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_URL);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "http://www.janedoe.com");
+                }
+                {/* colleague : http://www.xyz.edu/students/alicejones.html */
+                    CSEM_Property *property = CSEM_List_Get(properties, 7);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "colleague");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_URL);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "http://www.xyz.edu/students/alicejones.html");
+                }
+                {/* colleague : http://www.xyz.edu/students/bobsmith.html */
+                    CSEM_Property *property = CSEM_List_Get(properties, 8);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "colleague");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_URL);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "http://www.xyz.edu/students/bobsmith.html");
+                }
+            }
+        }
+    }
+
+FINISH:
+    CSEM_Builder_Dispose(builder);
+    CSEM_Document_Dispose(doc);
+}
