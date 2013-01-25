@@ -99,8 +99,11 @@ static CU_TestInfo testinfo_microdata[] = {
         { "test tree parser   : simplify", test_microdata_tree_basic_resolve},
         { "test tree parser   : simplify recursive items", test_microdata_tree_resolve_recursive_items},
         { "test tree parser   : schema.org/event/ex1", test_microdata_tree_schema_org_event_ex1},
-        { "test tree parser   : schema.org/event/ex2", test_microdata_tree_schema_org_event_ex2},//*/
-        { "test tree parser   : schema.org/person", test_microdata_tree_schema_org_person},
+        { "test tree parser   : schema.org/event/ex2", test_microdata_tree_schema_org_event_ex2},
+        { "test tree parser   : schema.org/person", test_microdata_tree_schema_org_person},//*/
+        { "test tree parser   : schema.org/place/ex1", test_microdata_tree_schema_org_place_ex1},
+        { "test tree parser   : schema.org/place/ex2", test_microdata_tree_schema_org_place_ex2},
+        { "test tree parser   : schema.org/place/ex4", test_microdata_tree_schema_org_place_ex4},
         /*{ "test microdata API : document.getItems(NULL)", test_microdata_tree_getItems_no_types},
         { "test microdata API : document.getItems([types])", test_microdata_tree_getItems_with_types},
         { "test microdata API : item.getNamedPropertries(name)", test_microdata_tree_getNamedProperties},

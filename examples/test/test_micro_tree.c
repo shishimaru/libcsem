@@ -2479,3 +2479,377 @@ FINISH:
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
 }
+void test_microdata_tree_schema_org_place_ex1() {
+    CSEM_Error error = CSEM_ERROR_NONE;
+
+    int fd = -1;
+    if(!(fd = open("./data/schema-org-place-ex1.html", O_RDONLY))) {
+        CU_FAIL_FATAL("failed fopen");
+        goto FINISH;
+    }
+    CSEM_Builder *builder = NULL;
+    if((error = CSEM_Builder_Create(&builder))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    {/* check results */
+        CSEM_List *children = CSEM_Document_GetChildren(doc);
+
+        CU_ASSERT_EQUAL(CSEM_List_Size(children), 1);
+        {/* 1st item */
+            CSEM_Node *node = CSEM_List_Get(children, 0);
+            CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_MICRO_ITEM);
+            CSEM_Item *item = CSEM_Node_GetObject(node);
+            CU_ASSERT_EQUAL(CSEM_Micro_Item_GetId(item), NULL);
+            {/* types */
+                CSEM_List *types = CSEM_Micro_Item_GetTypes(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/LocalBusiness");
+            }
+            {/* refs */
+                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CU_ASSERT_EQUAL(refs, NULL);
+            }
+            {/* properties */
+                CSEM_List *properties = CSEM_Micro_Item_GetProperties(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(properties), 4);
+
+                {/* name */
+                    CSEM_Property *property = CSEM_List_Get(properties, 0);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Beachwalk Beachwear & Giftware");
+                }
+                {/* description */
+                    CSEM_Property *property = CSEM_List_Get(properties, 1);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "description");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                }
+                {/* address : ITEM */
+                    CSEM_Property *property = CSEM_List_Get(properties, 2);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "address");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_ITEM);
+                        /* ITEM */
+                        CSEM_Item *tmpItem = CSEM_List_Get(values, 0);
+                        CU_ASSERT_EQUAL(CSEM_Micro_Item_GetId(tmpItem), NULL);
+                        {/* types */
+                            CSEM_List *types = CSEM_Micro_Item_GetTypes(tmpItem);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/PostalAddress");
+                        }
+                        {/* refs */
+                            CSEM_List *refs = CSEM_Micro_Item_GetRefs(tmpItem);
+                            CU_ASSERT_EQUAL(refs, NULL);
+                        }
+                        {/* properties */
+                            CSEM_List *tmpProperties = CSEM_Micro_Item_GetProperties(tmpItem);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(tmpProperties), 3);
+
+                            {/* streetAddress : 3102 Highway 98 */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 0);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "streetAddress");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "3102 Highway 98");
+                            }
+                            {/* addressLocality : Mexico Beach */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 1);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "addressLocality");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Mexico Beach");
+                            }
+                            {/* addressRegion : FL */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 2);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "addressRegion");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "FL");
+                            }
+                        }
+                    }
+                }
+                {/* telephone : 850-648-4200 */
+                    CSEM_Property *property = CSEM_List_Get(properties, 3);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "telephone");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "850-648-4200");
+                }
+            }
+        }
+    }
+
+FINISH:
+    CSEM_Builder_Dispose(builder);
+    CSEM_Document_Dispose(doc);
+
+}
+void test_microdata_tree_schema_org_place_ex2() {
+    CSEM_Error error = CSEM_ERROR_NONE;
+
+    int fd = -1;
+    if(!(fd = open("./data/schema-org-place-ex2.html", O_RDONLY))) {
+        CU_FAIL_FATAL("failed fopen");
+        goto FINISH;
+    }
+    CSEM_Builder *builder = NULL;
+    if((error = CSEM_Builder_Create(&builder))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    {/* check results */
+        CSEM_List *children = CSEM_Document_GetChildren(doc);
+
+        CU_ASSERT_EQUAL(CSEM_List_Size(children), 1);
+        {/* 1st item */
+            CSEM_Node *node = CSEM_List_Get(children, 0);
+            CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_MICRO_ITEM);
+            CSEM_Item *item = CSEM_Node_GetObject(node);
+            CU_ASSERT_EQUAL(CSEM_Micro_Item_GetId(item), NULL);
+            {/* types */
+                CSEM_List *types = CSEM_Micro_Item_GetTypes(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/Place");
+            }
+            {/* refs */
+                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CU_ASSERT_EQUAL(refs, NULL);
+            }
+            {/* properties */
+                CSEM_List *properties = CSEM_Micro_Item_GetProperties(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(properties), 2);
+
+                {/* name : Empire State Building */
+                    CSEM_Property *property = CSEM_List_Get(properties, 0);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Empire State Building");
+                }
+                {/* geo : ITEM */
+                    CSEM_Property *property = CSEM_List_Get(properties, 1);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "geo");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_ITEM);
+                        /* ITEM */
+                        CSEM_Item *tmpItem = CSEM_List_Get(values, 0);
+                        CU_ASSERT_EQUAL(CSEM_Micro_Item_GetId(tmpItem), NULL);
+                        {/* types */
+                            CSEM_List *types = CSEM_Micro_Item_GetTypes(tmpItem);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/GeoCoordinates");
+                        }
+                        {/* refs */
+                            CSEM_List *refs = CSEM_Micro_Item_GetRefs(tmpItem);
+                            CU_ASSERT_EQUAL(refs, NULL);
+                        }
+                        {/* properties */
+                            CSEM_List *tmpProperties = CSEM_Micro_Item_GetProperties(tmpItem);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(tmpProperties), 2);
+
+                            {/* latitude : 40.75 */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 0);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "latitude");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "40.75");
+                            }
+                            {/* longitude : 73.98 */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 1);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "longitude");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "73.98");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+FINISH:
+    CSEM_Builder_Dispose(builder);
+    CSEM_Document_Dispose(doc);
+}
+void test_microdata_tree_schema_org_place_ex4() {
+    CSEM_Error error = CSEM_ERROR_NONE;
+
+    int fd = -1;
+    if(!(fd = open("./data/schema-org-place-ex4.html", O_RDONLY))) {
+        CU_FAIL_FATAL("failed fopen");
+        goto FINISH;
+    }
+    CSEM_Builder *builder = NULL;
+    if((error = CSEM_Builder_Create(&builder))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    {/* check results */
+        CSEM_List *children = CSEM_Document_GetChildren(doc);
+
+        CU_ASSERT_EQUAL(CSEM_List_Size(children), 1);
+        {/* 1st item */
+            CSEM_Node *node = CSEM_List_Get(children, 0);
+            CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_MICRO_ITEM);
+            CSEM_Item *item = CSEM_Node_GetObject(node);
+            CU_ASSERT_EQUAL(CSEM_Micro_Item_GetId(item), NULL);
+            {/* types */
+                CSEM_List *types = CSEM_Micro_Item_GetTypes(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/CivicStructure");
+            }
+            {/* refs */
+                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CU_ASSERT_EQUAL(refs, NULL);
+            }
+            {/* properties */
+                CSEM_List *properties = CSEM_Micro_Item_GetProperties(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(properties), 3);
+
+                {/* name : Springfield Town Hall */
+                    CSEM_Property *property = CSEM_List_Get(properties, 0);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Springfield Town Hall");
+                }
+                {/* openingHours : Mo-Fr 09:00-17:30 */
+                    CSEM_Property *property = CSEM_List_Get(properties, 1);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "openingHours");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Mo-Fr 09:00-17:30");
+                }
+                {/* openingHours : Sa 09:00-12:00 */
+                    CSEM_Property *property = CSEM_List_Get(properties, 2);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "openingHours");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Sa 09:00-12:00");
+                }
+            }
+        }
+    }
+
+FINISH:
+    CSEM_Builder_Dispose(builder);
+    CSEM_Document_Dispose(doc);
+}
