@@ -90,7 +90,7 @@ static CU_TestInfo testinfo_list[] = {
         CU_TEST_INFO_NULL,
 };
 static CU_TestInfo testinfo_microdata[] = {
-        { "test stream parser : basic", test_microdata_stream_basic},
+        /*{ "test stream parser : basic", test_microdata_stream_basic},
         { "test stream parser : Section5.4 values", test_microdata_stream_values},
         { "test tree parser   : recursive itemprop", test_microdata_tree_recursive_itemprop},
         { "test tree parser   : basic", test_microdata_tree_basic_no_resolve},
@@ -102,14 +102,16 @@ static CU_TestInfo testinfo_microdata[] = {
         { "test microdata API : document.getItems([types])", test_microdata_tree_getItems_with_types},
         { "test microdata API : item.getNamedPropertries(name)", test_microdata_tree_getNamedProperties},
         { "test microdata API : item.getNamedPropertries(NULL)", test_microdata_tree_getNamedProperties_no_name},
-        { "test microdata API : properties.getValues()", test_microdata_tree_properties_getValues},//*/
+        { "test microdata API : properties.getValues()", test_microdata_tree_properties_getValues},
+        { "test microdata API : schema.org/event/ex1", test_microdata_tree_schema_org_event_ex1},//*/
+        { "test microdata API : schema.org/event/ex2", test_microdata_tree_schema_org_event_ex2},
 
         CU_TEST_INFO_NULL,
 };
 static CU_SuiteInfo suites[] = {
-        { "utils",  NULL, NULL, testinfo_utils},
+        /*{ "utils",  NULL, NULL, testinfo_utils},
         { "list", NULL, NULL, testinfo_list},
-        { "url",  NULL, NULL, testinfo_url},
+        { "url",  NULL, NULL, testinfo_url},*/
         { "microdata", NULL, NULL, testinfo_microdata},
 
         CU_SUITE_INFO_NULL,

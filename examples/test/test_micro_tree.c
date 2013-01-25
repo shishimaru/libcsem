@@ -1727,3 +1727,510 @@ FINISH:
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
 }
+void test_microdata_tree_schema_org_event_ex1() {
+    CSEM_Error error = CSEM_ERROR_NONE;
+
+    int fd = -1;
+    if(!(fd = open("./data/schema-org-event-ex1.html", O_RDONLY))) {
+        CU_FAIL_FATAL("failed fopen");
+        goto FINISH;
+    }
+    CSEM_Builder *builder = NULL;
+    if((error = CSEM_Builder_Create(&builder))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    {/* check results */
+        CSEM_List *children = CSEM_Document_GetChildren(doc);
+        CU_ASSERT_EQUAL(CSEM_List_Size(children), 1);
+        {/* 1st item */
+            CSEM_Node *node = CSEM_List_Get(children, 0);
+            CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_MICRO_ITEM);
+            CSEM_Item *item = CSEM_Node_GetObject(node);
+            CU_ASSERT_EQUAL(CSEM_Micro_Item_GetId(item), NULL);
+            {/* types */
+                CSEM_List *types = CSEM_Micro_Item_GetTypes(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/Event");
+            }
+            {/* refs */
+                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CU_ASSERT_EQUAL(refs, NULL);
+            }
+            {/* properties */
+                CSEM_List *properties = CSEM_Micro_Item_GetProperties(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(properties), 4);
+
+                {/* url : */
+                    CSEM_Property *property = CSEM_List_Get(properties, 0);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "url");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 2);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 2);
+
+                    {/* url : nba-miami-philidelphia-game3.html */
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                        CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "nba-miami-philidelphia-game3.html");
+                    }
+                    {/* name : Miami ... */
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 1)), CSEM_MICRO_VALUE_TYPE_PROPERTY);
+                        CSEM_Property *tmpProperty = CSEM_List_Get(values, 1);
+
+                        CSEM_List *tmpNames = CSEM_Micro_Property_GetNames(tmpProperty);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(tmpNames), 1);
+                        CU_ASSERT_STRING_EQUAL(CSEM_List_Get(tmpNames, 0), "name");
+
+                        CSEM_List *tmpValues = NULL, *tmpValueTypes = NULL; {
+                            CSEM_Micro_Property_GetValues(tmpProperty, &tmpValues, &tmpValueTypes);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(tmpValues), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(tmpValues, 0), " Miami Heat at Philadelphia 76ers - Game 3 (Home Game 1) ");
+                        }
+                    }
+                }
+                {/* startDate : 2016-04-21T20:00 */
+                    CSEM_Property *property = CSEM_List_Get(properties, 1);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "startDate");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                        CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "2016-04-21T20:00");
+                    }
+                }
+                {/* location : */
+                    CSEM_Property *property = CSEM_List_Get(properties, 2);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "location");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_ITEM);
+                    }
+                }
+                {/* offers : */
+                    CSEM_Property *property = CSEM_List_Get(properties, 3);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "offers");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_ITEM);
+                    }
+                }
+            }
+        }
+    }
+
+FINISH:
+    CSEM_Builder_Dispose(builder);
+    CSEM_Document_Dispose(doc);
+}
+void test_microdata_tree_schema_org_event_ex2() {
+    CSEM_Error error = CSEM_ERROR_NONE;
+
+    int fd = -1;
+    if(!(fd = open("./data/schema-org-event-ex2.html", O_RDONLY))) {
+        CU_FAIL_FATAL("failed fopen");
+        goto FINISH;
+    }
+    CSEM_Builder *builder = NULL;
+    if((error = CSEM_Builder_Create(&builder))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    {/* check results */
+        CSEM_List *children = CSEM_Document_GetChildren(doc);
+
+        CU_ASSERT_EQUAL(CSEM_List_Size(children), 1);
+        {/* 1st item */
+            CSEM_Node *node = CSEM_List_Get(children, 0);
+            CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_MICRO_ITEM);
+            CSEM_Item *item = CSEM_Node_GetObject(node);
+            CU_ASSERT_EQUAL(CSEM_Micro_Item_GetId(item), NULL);
+            {/* types */
+                CSEM_List *types = CSEM_Micro_Item_GetTypes(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/MusicGroup");
+            }
+            {/* refs */
+                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CU_ASSERT_EQUAL(refs, NULL);
+            }
+            {/* properties */
+                CSEM_List *properties = CSEM_Micro_Item_GetProperties(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(properties), 10);
+
+                {/* name : */
+                    CSEM_Property *property = CSEM_List_Get(properties, 0);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Foo Fighters");
+                }
+                {/* video : ITEM */
+                    CSEM_Property *property = CSEM_List_Get(properties, 1);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "video");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_ITEM);
+                        /* ITEM */
+                        CSEM_Item *tmpItem = CSEM_List_Get(values, 0);
+                        CU_ASSERT_EQUAL(CSEM_Micro_Item_GetId(tmpItem), NULL);
+                        {/* types */
+                            CSEM_List *types = CSEM_Micro_Item_GetTypes(tmpItem);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/VideoObject");
+                        }
+                        {/* refs */
+                            CSEM_List *refs = CSEM_Micro_Item_GetRefs(tmpItem);
+                            CU_ASSERT_EQUAL(refs, NULL);
+                        }
+                        {/* properties */
+                            CSEM_List *tmpProperties = CSEM_Micro_Item_GetProperties(tmpItem);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(tmpProperties), 4);
+
+                            {/* name : Interview with the Foo Fighters */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 0);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Interview with the Foo Fighters");
+                            }
+                            {/* duration : T1M33S */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 1);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "duration");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "T1M33S");
+                            }
+                            {/* thumbnail : foo-fighters-interview-thumb.jpg */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 2);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "thumbnail");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "foo-fighters-interview-thumb.jpg");
+                            }
+                            {/* description : ... */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 3);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "description");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                            }
+                        }
+                    }
+                }
+                {/* track : ITEM */
+                    CSEM_Property *property = CSEM_List_Get(properties, 2);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "track");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_ITEM);
+                        /* ITEM */
+                        CSEM_Item *tmpItem = CSEM_List_Get(values, 0);
+                        CU_ASSERT_EQUAL(CSEM_Micro_Item_GetId(tmpItem), NULL);
+                        {/* types */
+                            CSEM_List *types = CSEM_Micro_Item_GetTypes(tmpItem);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/MusicRecording");
+                        }
+                        {/* refs */
+                            CSEM_List *refs = CSEM_Micro_Item_GetRefs(tmpItem);
+                            CU_ASSERT_EQUAL(refs, NULL);
+                        }
+                        {/* properties */
+                            CSEM_List *tmpProperties = CSEM_Micro_Item_GetProperties(tmpItem);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(tmpProperties), 7);
+
+                            {/* name : Rope */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 0);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Rope");
+                            }
+                            {/* url : foo-fighters-rope.html */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 1);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "url");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "foo-fighters-rope.html");
+                            }
+                            {/* duration : PT4M5S */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 2);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "duration");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "PT4M5S");
+                            }
+                            {/* interactionCount : UserPlays:14300 */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 3);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "interactionCount");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "UserPlays:14300");
+                            }
+                            {/* audio : foo-fighters-rope-play.html */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 4);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "audio");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_URL);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "foo-fighters-rope-play.html");
+                            }
+                            {/* offers : foo-fighters-rope-buy.html */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 5);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "offers");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_URL);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "foo-fighters-rope-buy.html");
+                            }
+                            {/* inAlbum : foo-fighters-wasting-light.html */
+                                CSEM_Property *property = CSEM_List_Get(tmpProperties, 6);
+                                CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "inAlbum");
+
+                                CSEM_List *values = NULL, *types = NULL;
+                                CSEM_Micro_Property_GetValues(property, &values, &types);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_URL);
+                                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "foo-fighters-wasting-light.html");
+                            }
+                        }
+                    }
+                }
+                {/* track : ITEM */
+                    CSEM_Property *property = CSEM_List_Get(properties, 3);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "track");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_ITEM);
+
+                        //TODO
+                    }
+                }
+                {/* event : ITEM */
+                    CSEM_Property *property = CSEM_List_Get(properties, 4);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "event");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_ITEM);
+
+                        //TODO
+                    }
+                }
+                {/* event : ITEM */
+                    CSEM_Property *property = CSEM_List_Get(properties, 5);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "event");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_ITEM);
+
+                        //TODO
+                    }
+                }
+                {/* image : foofighters-1.jpg */
+                    CSEM_Property *property = CSEM_List_Get(properties, 6);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "image");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_URL);
+                        CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "foofighters-1.jpg");
+                    }
+                }
+                {/* image : foofighters-2.jpg */
+                    CSEM_Property *property = CSEM_List_Get(properties, 7);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "image");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_URL);
+                        CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "foofighters-2.jpg");
+                    }
+                }
+                {/* image : foofighters-3.jpg */
+                    CSEM_Property *property = CSEM_List_Get(properties, 8);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "image");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_URL);
+                        CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "foofighters-3.jpg");
+                    }
+                }
+                {/* interactionCount : UserComments:18 */
+                    CSEM_Property *property = CSEM_List_Get(properties, 9);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "interactionCount");
+
+                    CSEM_List *values = NULL, *types = NULL; {
+                        CSEM_Micro_Property_GetValues(property, &values, &types);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                        CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "UserComments:18");
+                    }
+                }
+            }
+        }
+    }
+
+FINISH:
+    CSEM_Builder_Dispose(builder);
+    CSEM_Document_Dispose(doc);
+}
+

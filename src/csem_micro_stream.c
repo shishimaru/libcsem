@@ -28,14 +28,14 @@ CSEM_Error CSEM_Micro_CreateHandler(CSEM_Micro_Handlers **handler) {
         memcpy(initScopeDepth, &value, sizeof(int));
         CSEM_List_Add(result -> scopeDepth, initScopeDepth);
     }
-    {/* add -1 to scopeDepth */
+    {/* add -1 to propDepth */
         int value = -1;
         result -> propDepth = CSEM_List_Create(8);
         if(!(initPropDepth = CSEM_Malloc(sizeof(int)))) {
             goto ERROR;
         }
         memcpy(initPropDepth, &value, sizeof(int));
-        CSEM_List_Add(result -> scopeDepth, initPropDepth);
+        CSEM_List_Add(result -> propDepth, initPropDepth);
     }
     result -> idDepth = -1;
 

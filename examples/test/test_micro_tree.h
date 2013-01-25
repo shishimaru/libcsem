@@ -9,3 +9,6 @@ void test_microdata_tree_getItems_with_types();
 void test_microdata_tree_getNamedProperties();
 void test_microdata_tree_getNamedProperties_no_name();
 void test_microdata_tree_properties_getValues();
+void test_microdata_tree_schema_org_event_ex1();
+void test_microdata_tree_schema_org_event_ex2();
+

@@ -13,6 +13,8 @@
 
 const char *HTML5_SPACES = "\x20\x09\x0a\x0c\x0d";
 
+/*#define CSEM_DEBUG_PARSER*/
+
 static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **atts) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Parser *parser = ctx;

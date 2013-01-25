@@ -13,6 +13,8 @@
 #include "csem_types.h"
 #include "csem_micro_stream_internal.h"
 
+/*#define CSEM_DEBUG_BUILDER*/
+
 static void microdata_error(const void *userdata, CSEM_Error error) {
     CSEM_Builder *builder = (void *)userdata;
 #ifdef CSEM_DEBUG_BUILDER
@@ -264,7 +266,8 @@ CSEM_Error csem_builder_resolveItem(CSEM_Item *item, CSEM_List *ids) {
                 int propSize = CSEM_List_Size(props);
 
                 for(k = 0; k < propSize; k++) {
-                    if((error = CSEM_Micro_Item_AddProperty(item, CSEM_List_Get(props, k), CSEM_FALSE))) {
+                    if((error = CSEM_Micro_Item_AddProperty(item,
+                            CSEM_List_Get(props, k), CSEM_FALSE))) {
                         goto FINISH;
                     }
                 }
@@ -293,7 +296,7 @@ FINISH:
 }
 CSEM_Error csem_builder_resolveDocument(CSEM_Document *doc) {
     CSEM_Error error = CSEM_ERROR_NONE;
-    int i = 0, size = 0;
+    int i = 0;
     CSEM_List *nodeList = NULL;
     CSEM_List *ids = NULL;
 
@@ -302,9 +305,8 @@ CSEM_Error csem_builder_resolveDocument(CSEM_Document *doc) {
         if((error = csem_builder_getTopNodes(doc, CSEM_NODE_TYPE_MICRO_ID, &ids))) {
             goto FINISH;
         }
-        size = CSEM_List_Size(nodeList);
     }
-    for(i = 0; i < size; i++) {
+    for(i = 0; nodeList && i < CSEM_List_Size(nodeList); i++) {
         CSEM_Node *node = CSEM_List_Get(nodeList, i);
         if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_MICRO_ITEM) {
             CSEM_Item *item = CSEM_Node_GetObject(node);
