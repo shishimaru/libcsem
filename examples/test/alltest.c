@@ -90,7 +90,7 @@ static CU_TestInfo testinfo_list[] = {
         CU_TEST_INFO_NULL,
 };
 static CU_TestInfo testinfo_microdata[] = {
-        /*{ "test stream parser : basic", test_microdata_stream_basic},
+        { "test stream parser : basic", test_microdata_stream_basic},
         { "test stream parser : Section5.4 values", test_microdata_stream_values},
         { "test tree parser   : recursive itemprop", test_microdata_tree_recursive_itemprop},
         { "test tree parser   : basic", test_microdata_tree_basic_no_resolve},
@@ -104,7 +104,7 @@ static CU_TestInfo testinfo_microdata[] = {
         { "test tree parser   : schema.org/place/ex1", test_microdata_tree_schema_org_place_ex1},
         { "test tree parser   : schema.org/place/ex2", test_microdata_tree_schema_org_place_ex2},
         { "test tree parser   : schema.org/place/ex4", test_microdata_tree_schema_org_place_ex4},
-        /*{ "test microdata API : document.getItems(NULL)", test_microdata_tree_getItems_no_types},
+        { "test microdata API : document.getItems(NULL)", test_microdata_tree_getItems_no_types},
         { "test microdata API : document.getItems([types])", test_microdata_tree_getItems_with_types},
         { "test microdata API : item.getNamedPropertries(name)", test_microdata_tree_getNamedProperties},
         { "test microdata API : item.getNamedPropertries(NULL)", test_microdata_tree_getNamedProperties_no_name},
