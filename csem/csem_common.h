@@ -28,12 +28,12 @@ CSEM_NS_C_BEGIN
  *       <li>Parse chunk html little by little, and when microdata is detected,
  *       the corresponding events are passed via registered callback handlers</li>
  *       <li>Because currently the parser works on SAX parser and don't create
- *       huge DOM tree internally, applications can reduce the memory foot print
+ *       large DOM tree internally, applications can reduce the memory foot print
  *     </ul>
  *     <li>Data model builder</li>
  *     <ul>
  *       <li>Create a data model for microdata based on the parsed result of underlying streaming parser</li>
- *       <li>All microdata can be accessed via API</li>
+ *       <li>All microdata can be accessed via HTML5 microdata API</li>
  *     </ul>
  *     <li><a href="http://www.w3.org/html/wg/drafts/microdata/master/#microdata-dom-api">microdata API</a></li>
  *   </ul>
@@ -52,15 +52,15 @@ CSEM_NS_C_BEGIN
 #include <stdint.h>
 /** Default size of internal buffer. */
 #define CSEM_DEFAULT_BUF_SIZE 1024
-/** Default allowed max size of attribute value */
+/** Default allowed max size of attribute value. */
 #define CSEM_ALLOWED_MAX_ATTR_VALUE_SIZE 1024
-/** CSEM boolean type */
+/** CSEM boolean type. */
 typedef enum CSEM_Bool {
     CSEM_FALSE = 0,
     CSEM_TRUE = 1
 } CSEM_Bool;
 
-/** Error Codes */
+/** Error Codes. */
 typedef enum CSEM_Error {
     /** No Error **/
     CSEM_ERROR_NONE = 0,

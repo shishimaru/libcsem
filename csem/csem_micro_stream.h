@@ -53,7 +53,7 @@ typedef CSEM_Bool (*CSEM_Micro_StartProp)(const void *userdata, const char *prop
  * the values are divided and this handler is called back more than once.
  * @param userdata [out]user data
  * @param value    [out]the value
- * @param len      [out]the lenght of the value
+ * @param len      [out]the length of the value
  */
 typedef void (*CSEM_Micro_ItemProp)(const void *userdata, const char *value, int len);
 /**

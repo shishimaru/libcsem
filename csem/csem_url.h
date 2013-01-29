@@ -18,7 +18,7 @@ CSEM_NS_C_BEGIN
 
 #include "csem_common.h"
 
-/** URL data model */
+/** URL data model. */
 typedef struct CSEM_Url {
     char *scheme;
     char *hostname;

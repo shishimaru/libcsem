@@ -34,7 +34,7 @@ typedef struct CSEM_Property CSEM_Property;
  * Types of property value.
  */
 typedef enum {
-    /** string */
+    /** String */
     CSEM_MICRO_VALUE_TYPE_STR = 0,
     /** URL */
     CSEM_MICRO_VALUE_TYPE_URL = 1,
@@ -100,7 +100,7 @@ CSEM_List *CSEM_Micro_Item_GetProperties(const CSEM_Item *item);
  * Get properties whose name is equal to the specified name.
  * @param item       [in]item
  * @param name       [in]name to be tested
- * @param properties [out]matched properties (applications need to free)
+ * @param properties [out]matched properties (applications need to free with CSEM_List_Dispose(properties, CSEM_FALSE))
  * @return error code
  */
 CSEM_Error CSEM_Micro_Item_GetNamedPropertes(const CSEM_Item *item, const char *name, CSEM_List **properties);
@@ -123,7 +123,7 @@ CSEM_Error CSEM_Micro_Id_Create(CSEM_Id **id, const char *value);
  * Dispose id object.
  * @param id [in]id object to be freed
  */
-void       CSEM_Micro_Id_Dispose(CSEM_Id *id);
+void CSEM_Micro_Id_Dispose(CSEM_Id *id);
 /**
  * Get properties of the id object.
  * @param id [in]id object
@@ -144,7 +144,7 @@ char *CSEM_Micro_Id_GetId(CSEM_Id *id);
 /**
  * Create a property object which has the specified property names.
  * @param property [out]property object to be created
- * @param names    [in]\@itemprop value
+ * @param names    [in]\@itemprop value (not copied internally)
  * @return error code
  */
 CSEM_Error CSEM_Micro_Property_Create(CSEM_Property **property, CSEM_List *names);
@@ -161,8 +161,8 @@ CSEM_List *CSEM_Micro_Property_GetNames(CSEM_Property *property);
 /**
  * Get values and the types of the values of the specified property. The type of values[n] is valueTypes[n].
  * @param property   [in]property
- * @param values     [out]values (applications need to free)
- * @param valueTypes [out]types of the values (applications need to free)
+ * @param values     [out]values
+ * @param valueTypes [out]types of the values
  * @return error code
  */
 CSEM_Error CSEM_Micro_Property_GetValues(CSEM_Property *property, CSEM_List **values, CSEM_List **valueTypes);
@@ -177,8 +177,8 @@ CSEM_Error CSEM_Micro_Property_AddValues(CSEM_Property *property, void *value, C
 /**
  * Get values and the types of the values of the specified properties. The type of values[n] is valueTypes[n].
  * @param properties [in]properties
- * @param values     [out]values (applications need to free)
- * @param valueTypes [out]types of the values (applications need to free)
+ * @param values     [out]values (applications need to free with CSEM_List_Dispose(values, CSEM_FALSE))
+ * @param valueTypes [out]types of the values (applications need to free with CSEM_List_Dispose(valueTypes, CSEM_FALSE))
  * @return error code
  */
 CSEM_Error CSEM_Micro_Properties_GetValues(CSEM_List *properties, CSEM_List **values, CSEM_List **valueTypes);
@@ -186,7 +186,7 @@ CSEM_Error CSEM_Micro_Properties_GetValues(CSEM_List *properties, CSEM_List **va
  * Get items which have the specified \@itemtype.
  * @param doc   [in]document object
  * @param types [in]\@itemtype value
- * @param items [out]matched items
+ * @param items [out]matched items (application need to free with CSEM_List_Dispose(items, CSEM_FALSE))
  * @return error code
  */
 CSEM_Error CSEM_Micro_Document_GetItems(CSEM_Document *doc, CSEM_List *types, CSEM_List **items);

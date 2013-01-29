@@ -19,7 +19,7 @@ CSEM_NS_C_BEGIN
 #include "csem_list.h"
 
 /**
- * @todo
+ * @todo : not implemented
  */
 typedef struct CSEM_RDFaLite_Handlers CSEM_RDFaLite_Handlers;
 typedef void (*CSEM_RDFaLite_Handler_StartScope)(const void *userdata, const CSEM_List *types, const CSEM_List *itemRefs);

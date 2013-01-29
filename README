@@ -1,30 +1,49 @@
-HTML5 microdata library
+* HTML5 microdata library:
 
-* Funtion
-
-HTML5 microdata parser
  - Light weight streaming parser
-   - Parse chunk html little by little, and when microdata is detected, the corresponding events are passed via registered callback handlers
-   - Because currently the parser works on SAX parser and don't create huge DOM tree internally, applications can reduce the memory foot print
+   - Parse chunked html and microdata events are passed via callback handlers
+   - Applications can reduce the memory foot print because it don't create
+     huge HTML tree internally
+
  - Data model builder
-   - Create a data model for microdata based on the parsed result of underlying streaming parser
+   - Create a microdata model based on the underlying streaming parser result
    - All microdata can be accessed via API
- - microdata API
 
-* How to build
-  - Make sure libxml is installed
-  - Execute ./configure
-  - Execute 'make' command
+ - HTML5 microdata API
 
+* How to build binary:
+
+ 1. Install libxml because the streaming parser works on libxml HTMLparser
+
+ 2. Execute configure script
+    $ ./configure
+
+ 3. Build library
+    $ make
+    
+* How to serialize API specification:
+
+ 1. Install doxygen
+
+ 2. Execute doxygen command under $LIBRARY_ROOT/csem
+    $ doxygen
+    
+ 3. API specification is serialized under $LIBRARY_ROOT/doc as both html and man
+ 
 * Sample programs
-  - Several samples can be found in $ROOT/examples/microdata
 
-* API specification
-  - Execute 'doxygen' command under $ROOT/csem
-  - API documentation is serialized in $ROOT/doc as both html and man
+ - Examples for each module can be found in $LIBRARY_ROOT/examples/microdata
+
+* Code quality
+
+ - Tested with microdata examples of scheme.org and W3C spec
+ - No memory leak with valgrind
+ - Nice code coverage
 
 * License
-  - W3C Software Notice and License
+
+ - W3C Software Notice and License
 
 * Author
-  - Hitoshi Uchida <uchida@w3.org>
+
+ - Hitoshi Uchida <uchida@w3.org>
