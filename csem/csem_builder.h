@@ -32,15 +32,24 @@ CSEM_Error CSEM_Builder_Create(CSEM_Builder **builder);
  * Parse the specified input stream and build a data model.
  * @param builder [in]builder
  * @param fd      [in]input stream
- * @param resolve [in]indicate whether items references like \@itemid are resolved
- * @param doc     [out]built data model
  * @return error code
  */
 CSEM_Error CSEM_Builder_Parse(CSEM_Builder *builder, int fd);
-
-CSEM_Error CSEM_Builder_ParseChunk(CSEM_Builder *builder, const char *chunk,
-        int size, int terminate);
-
+/**
+ * Parse the specified chunk data and build a part of the data model.
+ * @param builder   [in]builder
+ * @param chunk     [in]chunk data
+ * @param size      [in]size of the chunk
+ * @param terminate [in]set 1 if the chunk is final data to be parsed. Otherwise, set 0.
+ * @return error code
+ */
+CSEM_Error CSEM_Builder_ParseChunk(CSEM_Builder *builder,
+        const char *chunk, int size, int terminate);
+/**
+ * Get the parsed result document.
+ * @param builder [in]builder
+ * @param doc     [out]parsed result document
+ */
 CSEM_Error CSEM_Builder_GetDocument(CSEM_Builder *builder, CSEM_Document **doc);
 /**
  * Dispose the builder.
