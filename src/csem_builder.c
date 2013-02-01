@@ -69,7 +69,9 @@ static void microdata_endScope(const void *userdata) {
     puts("@END_SCOPE");
 #endif
     /* update state */
-    builder -> activeNode = builder -> activeNode -> parent;
+    if(builder -> activeNode -> parent) {
+        builder -> activeNode = builder -> activeNode -> parent;
+    }
 }
 static CSEM_Bool microdata_startProp(const void *userdata,
         const char *propName, CSEM_Bool hasUrlValue) {
@@ -140,6 +142,7 @@ static void microdata_itemProp(const void *userdata,
 
 #ifdef CSEM_DEBUG_BUILDER
     puts("@PROP_VALUE");
+    fwrite(value, 1, len, stdout);
 #endif
 
     if(!builder -> buf) {
@@ -151,15 +154,15 @@ static void microdata_itemProp(const void *userdata,
         builder -> bufReadLen = 0;
     } else {
         if(builder -> bufReadLen + len > builder -> bufLen - 1) {
-            if(!(tmpBuf = CSEM_Realloc(builder -> buf, builder -> bufLen + len))) {
+            if(!(tmpBuf = CSEM_Realloc(builder -> buf, builder -> bufLen + len + 1))) {
                 error = CSEM_ERROR_MEMORY;
                 goto ERROR;
             }
             builder -> buf = tmpBuf;
-            builder -> bufLen += len;
+            builder -> bufLen += len + 1;
         }
     }
-    strncat(builder -> buf, value, len);
+    strncat(builder -> buf + builder -> bufReadLen, value, len);
     builder -> bufReadLen += len;
     return;
 ERROR:
@@ -174,12 +177,18 @@ static void microdata_endProp(const void *userdata) {
 #endif
     /* store the concatenated property value */
     if(builder -> buf) {
-        CSEM_Micro_Property_AddValues(activeNode -> obj.property,
-                builder -> buf, builder -> propValueType);
+        if(activeNode -> type == CSEM_NODE_TYPE_MICRO_PROPERTY) {
+            CSEM_Micro_Property_AddValues(activeNode -> obj.property,
+                    builder -> buf, builder -> propValueType);
+        } else {
+            CSEM_Free(builder -> buf);
+        }
     }
     /* update state */
     builder -> buf = NULL;
-    builder -> activeNode = builder -> activeNode -> parent;
+    if(builder -> activeNode -> parent) {
+        builder -> activeNode = builder -> activeNode -> parent;
+    }
 }
 static CSEM_Bool microdata_startId(const void *userdata,
         const char *idValue) {
@@ -215,7 +224,9 @@ static void microdata_endId(const void *userdata) {
 #endif
 
     /* update state */
-    builder -> activeNode = builder -> activeNode -> parent;
+    if(builder -> activeNode -> parent) {
+        builder -> activeNode = builder -> activeNode -> parent;
+    }
 }
 CSEM_Error csem_builder_getTopNodes(CSEM_Document *doc, CSEM_NODE_TYPE type, CSEM_List **nodes) {
     CSEM_Error error = CSEM_ERROR_NONE;
@@ -294,7 +305,7 @@ CSEM_Error csem_builder_resolveItem(CSEM_Item *item, CSEM_List *ids) {
 FINISH:
     return error;
 }
-CSEM_Error csem_builder_resolveDocument(CSEM_Document *doc) {
+static CSEM_Error csem_builder_resolveDocument(CSEM_Document *doc) {
     CSEM_Error error = CSEM_ERROR_NONE;
     int i = 0;
     CSEM_List *nodeList = NULL;
@@ -319,8 +330,7 @@ FINISH:
     CSEM_List_Dispose(ids, CSEM_FALSE);
     return error;
 }
-CSEM_Error CSEM_Builder_Parse(CSEM_Builder *builder,
-        int fd, CSEM_Bool resolve, CSEM_Document **doc) {
+CSEM_Error CSEM_Builder_Parse(CSEM_Builder *builder, int fd) {
     CSEM_Error error = CSEM_ERROR_NONE;
 
     /* init */
@@ -336,17 +346,46 @@ CSEM_Error CSEM_Builder_Parse(CSEM_Builder *builder,
     if((error = builder -> error)) {
         goto ERROR;
     }
-    /* simplify the tree */
-    if(resolve) {
-        if((error = csem_builder_resolveDocument(builder -> document))) {
-            goto ERROR;
-        }
-    }
-    /* result */
-    *doc = builder -> document;
     return error;
 ERROR:
     CSEM_Document_Dispose(builder -> document);
+    return error;
+}
+CSEM_Error CSEM_Builder_ParseChunk(CSEM_Builder *builder,
+        const char *chunk, int size, int terminate) {
+    CSEM_Error error = CSEM_ERROR_NONE;
+
+    /* init */
+    if(!builder -> document) {
+        if((error = CSEM_Document_Create(&(builder -> document)))) {
+            goto ERROR;
+        }
+        builder -> activeNode = builder -> document -> node;
+    }
+
+    /* building */
+    if((error = CSEM_Parser_ParseChunk(builder -> parser, chunk, size, terminate))) {
+        goto ERROR;
+    }
+    if((error = builder -> error)) {
+        goto ERROR;
+    }
+
+    return error;
+ERROR:
+    CSEM_Document_Dispose(builder -> document);
+    return error;
+}
+CSEM_Error CSEM_Builder_GetDocument(CSEM_Builder *builder, CSEM_Document **doc) {
+    CSEM_Error error = CSEM_ERROR_NONE;
+
+    /* simplify the tree */
+    if((error = csem_builder_resolveDocument(builder -> document))) {
+        goto FINISH;
+    }
+    /* result */
+    *doc = builder -> document;
+FINISH:
     return error;
 }
 CSEM_Error CSEM_Builder_Create(CSEM_Builder **builder) {

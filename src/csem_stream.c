@@ -155,7 +155,16 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
             microHandler -> startPropValue = CSEM_FALSE;/* for @itmescope && @itemprop */
         }
         if(isStartId) {
-            microHandler -> idDepth = microHandler -> currentDepth;
+            /*microHandler -> idDepth = microHandler -> currentDepth;*/
+            {/* push current depth to idDepth */
+                int *bufDepth = NULL;
+                if(!(bufDepth = CSEM_Malloc(sizeof(int)))) {
+                    error = CSEM_ERROR_MEMORY;
+                    goto ERROR;
+                }
+                memcpy(bufDepth, &(microHandler -> currentDepth), sizeof(int));
+                CSEM_List_Add(microHandler -> idDepth, bufDepth);
+            }
         }
     }
 
@@ -222,6 +231,10 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
         int scopeDepthIndex = scopeDepthSize - 1;
         int *tmpScopeDepth = CSEM_List_Get(microHandler -> scopeDepth, scopeDepthIndex);
 
+        int idDepthSize = CSEM_List_Size(microHandler -> idDepth);
+        int idDepthIndex = idDepthSize - 1;
+        int *tmpIdDepth = CSEM_List_Get(microHandler -> idDepth, idDepthIndex);
+
         int propDepthSize = CSEM_List_Size(microHandler -> propDepth);
         int propDepthIndex = propDepthSize - 1;
         int *tmpPropDepth = CSEM_List_Get(microHandler -> propDepth, propDepthIndex);
@@ -238,6 +251,15 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
                 CSEM_List_Remove(microHandler -> scopeDepth, scopeDepthIndex);
             }
         }
+        if(*tmpIdDepth == microHandler -> currentDepth) {
+            if(microHandler -> endId) {
+                microHandler -> endId(parser -> userdata);
+            }
+            if(idDepthIndex) {
+                CSEM_Free(CSEM_List_Get(microHandler -> idDepth, idDepthIndex));
+                CSEM_List_Remove(microHandler -> idDepth, idDepthIndex);
+            }
+        }
         if(tmpPropDepth && *tmpPropDepth == microHandler -> currentDepth) {
             if(microHandler -> endProp) {
                 microHandler -> endProp(parser -> userdata);
@@ -249,12 +271,12 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
                 CSEM_List_Remove(microHandler -> propDepth, propDepthIndex);
             }
         }
-        if(microHandler -> idDepth == microHandler -> currentDepth) {
+        /* TODO if(microHandler -> idDepth == microHandler -> currentDepth) {
             if(microHandler && microHandler -> endId) {
                 microHandler -> endId(parser -> userdata);
             }
             microHandler -> idDepth = -1;
-        }
+        }*/
 
         {/* update state */
 #ifdef CSEM_DEBUG_PARSER

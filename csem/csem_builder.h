@@ -36,12 +36,17 @@ CSEM_Error CSEM_Builder_Create(CSEM_Builder **builder);
  * @param doc     [out]built data model
  * @return error code
  */
-CSEM_Error CSEM_Builder_Parse(CSEM_Builder *builder, int fd, CSEM_Bool resolve, CSEM_Document **doc);
+CSEM_Error CSEM_Builder_Parse(CSEM_Builder *builder, int fd);
+
+CSEM_Error CSEM_Builder_ParseChunk(CSEM_Builder *builder, const char *chunk,
+        int size, int terminate);
+
+CSEM_Error CSEM_Builder_GetDocument(CSEM_Builder *builder, CSEM_Document **doc);
 /**
  * Dispose the builder.
  * @param builder [in]builder to be freed
  */
-void       CSEM_Builder_Dispose(CSEM_Builder *builder);
+void CSEM_Builder_Dispose(CSEM_Builder *builder);
 
 CSEM_NS_C_END
 

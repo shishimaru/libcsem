@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <CUnit/CUnit.h>
 #include "csem/csem_builder.h"
 #include "csem/csem_micro_tree.h"
@@ -7,220 +8,6 @@
 #include "csem_utils.h"
 #include "test_micro_tree.h"
 
-void test_microdata_tree_basic_no_resolve() {
-    CSEM_Error error = CSEM_ERROR_NONE;
-
-    int fd = -1;
-    if(!(fd = open("./data/basic.html", O_RDONLY))) {
-        CU_FAIL_FATAL("failed fopen");
-        goto FINISH;
-    }
-    CSEM_Builder *builder = NULL;
-    if((error = CSEM_Builder_Create(&builder))) {
-        CU_FAIL_FATAL("failed parse");
-        goto FINISH;
-    }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_FALSE, &doc))) {
-        CU_FAIL_FATAL("failed parse");
-        goto FINISH;
-    }
-    {/* check results */
-        CSEM_List *children = CSEM_Document_GetChildren(doc);
-        CU_ASSERT_EQUAL(CSEM_List_Size(children), 3);
-        {/* 1st item */
-            CSEM_Node *node = CSEM_List_Get(children, 0);
-            CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_MICRO_ITEM);
-            CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
-
-            CSEM_Item *item = CSEM_Node_GetObject(node);
-            CU_ASSERT_STRING_EQUAL(CSEM_Micro_Item_GetId(item), "urn:sample:0001");
-            {/* types */
-                CSEM_List *types = CSEM_Micro_Item_GetTypes(item);
-                CU_ASSERT_EQUAL(CSEM_List_Size(types), 2);
-                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://sample.org/Person");
-                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 1), "http://sample2.org/Person");
-            }
-            {/* refs */
-                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
-                CU_ASSERT_EQUAL(CSEM_List_Size(refs), 2);
-                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 0), "address");
-                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 1), "phone");
-            }
-            {/* properties */
-                CSEM_List *properties = CSEM_Micro_Item_GetProperties(item);
-                CU_ASSERT_EQUAL(CSEM_List_Size(properties), 4);
-                {/* name : Neil */
-                    CSEM_Property *property = CSEM_List_Get(properties, 0);
-                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
-
-                    CSEM_List *values = NULL, *types = NULL;
-                    CSEM_Micro_Property_GetValues(property, &values, &types);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Neil");
-                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
-                }
-                {/* name : Nail */
-                    CSEM_Property *property = CSEM_List_Get(properties, 1);
-                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
-
-                    CSEM_List *values = NULL, *types = NULL;
-                    CSEM_Micro_Property_GetValues(property, &values, &types);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Nail");
-                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
-                }
-                {/* band : item */
-                    CSEM_Property *property = CSEM_List_Get(properties, 2);
-                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "band");
-
-                    CSEM_List *values = NULL, *types = NULL;
-                    CSEM_Micro_Property_GetValues(property, &values, &types);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
-                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_ITEM);
-                    CSEM_Item *item = CSEM_List_Get(values, 0); {
-                        CU_ASSERT_EQUAL(CSEM_Micro_Item_GetId(item), NULL);
-                        CU_ASSERT_EQUAL(CSEM_Micro_Item_GetTypes(item), NULL);
-                        CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
-                        CU_ASSERT_EQUAL(CSEM_List_Size(refs), 1);
-                        CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 0), "address");
-
-                        CSEM_List *properties_band = CSEM_Micro_Item_GetProperties(item);
-                        CU_ASSERT_EQUAL(CSEM_List_Size(properties_band), 1);
-
-                        {/* band-name : Four Parts Water */
-                            CSEM_Property *property = CSEM_List_Get(properties_band, 0);
-                            names = CSEM_Micro_Property_GetNames(property);
-                            CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
-                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "band-name");
-
-                            CSEM_List *band_values = NULL, *band_types = NULL;
-                            CSEM_Micro_Property_GetValues(property, &band_values, &band_types);
-                            CU_ASSERT_EQUAL(CSEM_List_Size(band_values), 1);
-                            CU_ASSERT_EQUAL(CSEM_List_Size(band_types), 1);
-                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(band_values, 0), "Four Parts Water");
-                            CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(band_types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
-                        }
-                    }
-                }
-                {/* nationality : British */
-                    CSEM_Property *property = CSEM_List_Get(properties, 3);
-                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 2);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "nationality");
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 1), "home-country");
-
-                    CSEM_List *values = NULL, *types = NULL;
-                    CSEM_Micro_Property_GetValues(property, &values, &types);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "British");
-                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
-                }
-            }
-        }{/* 1st id */
-            CSEM_Node *node = CSEM_List_Get(children, 1);
-            CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_MICRO_ID);
-            CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
-
-            CSEM_Id *id = CSEM_Node_GetObject(node);
-            CU_ASSERT_STRING_EQUAL(CSEM_Micro_Id_GetId(id), "address");
-            {/* properties */
-                CSEM_List *properties = CSEM_Micro_Id_GetProperties(id);
-                CU_ASSERT_EQUAL(CSEM_List_Size(properties), 2);
-                {/* city : Boston */
-                    CSEM_Property *property = CSEM_List_Get(properties, 0);
-                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "city");
-
-                    CSEM_List *values = NULL, *types = NULL;
-                    CSEM_Micro_Property_GetValues(property, &values, &types);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Boston");
-                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
-                }
-                {/* state : MA */
-                    CSEM_Property *property = CSEM_List_Get(properties, 1);
-                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "state");
-
-                    CSEM_List *values = NULL, *types = NULL;
-                    CSEM_Micro_Property_GetValues(property, &values, &types);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "MA");
-                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
-                }
-            }
-        }{/* 2nd id */
-            CSEM_Node *node = CSEM_List_Get(children, 2);
-            CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_MICRO_ID);
-            CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
-
-            CSEM_Id *id = CSEM_Node_GetObject(node);
-            CU_ASSERT_STRING_EQUAL(CSEM_Micro_Id_GetId(id), "phone");
-            {/* properties */
-                CSEM_List *properties = CSEM_Micro_Id_GetProperties(id);
-                CU_ASSERT_EQUAL(CSEM_List_Size(properties), 3);
-                {/* num : +1.617.981.xxxx */
-                    CSEM_Property *property = CSEM_List_Get(properties, 0);
-                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "num");
-
-                    CSEM_List *values = NULL, *types = NULL;
-                    CSEM_Micro_Property_GetValues(property, &values, &types);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "+1.617.981.xxxx");
-                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
-                }
-                {/* name : Android */
-                    CSEM_Property *property = CSEM_List_Get(properties, 1);
-                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
-
-                    CSEM_List *values = NULL, *types = NULL;
-                    CSEM_Micro_Property_GetValues(property, &values, &types);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Android");
-                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
-                }
-                {/* dev : VoIP */
-                    CSEM_Property *property = CSEM_List_Get(properties, 2);
-                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "dev");
-
-                    CSEM_List *values = NULL, *types = NULL;
-                    CSEM_Micro_Property_GetValues(property, &values, &types);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
-                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
-                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "VoIP");
-                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
-                }
-            }
-        }
-    }
-
-FINISH:
-    CSEM_Builder_Dispose(builder);
-    CSEM_Document_Dispose(doc);
-}
 void test_microdata_tree_values() {
     CSEM_Error error = CSEM_ERROR_NONE;
 
@@ -234,9 +21,12 @@ void test_microdata_tree_values() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_FALSE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* check results */
@@ -649,9 +439,12 @@ void test_microdata_tree_no_microdata() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* check results */
@@ -676,9 +469,12 @@ void test_microdata_tree_recursive_itemprop() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_FALSE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* check results */
@@ -830,9 +626,12 @@ void test_microdata_tree_basic_resolve() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* check results */
@@ -918,7 +717,7 @@ void test_microdata_tree_basic_resolve() {
                             CSEM_Micro_Property_GetValues(property, &band_values, &band_types);
                             CU_ASSERT_EQUAL(CSEM_List_Size(band_values), 1);
                             CU_ASSERT_EQUAL(CSEM_List_Size(band_types), 1);
-                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(band_values, 0), "Four Parts Water");
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(band_values, 0), "Four \"Parts\" Water");
                             CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(band_types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
                         }
                         {/* city : Boston */
@@ -1049,9 +848,12 @@ void test_microdata_tree_resolve_recursive_items() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* check results */
@@ -1208,6 +1010,236 @@ FINISH:
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
 }
+void test_microdata_tree_chunked() {
+    CSEM_Error error = CSEM_ERROR_NONE;
+
+    int fd = -1;
+    if(!(fd = open("./data/basic.html", O_RDONLY))) {
+        CU_FAIL_FATAL("failed fopen");
+        goto FINISH;
+    }
+    CSEM_Builder *builder = NULL;
+    if((error = CSEM_Builder_Create(&builder))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    char buf[8];
+    size_t readLen = 0;
+    while((readLen = read(fd, buf, sizeof(buf)))) {
+        if((error = CSEM_Builder_ParseChunk(builder, buf, readLen, 0))) {
+            CU_FAIL_FATAL("failed parse");
+            goto FINISH;
+        }
+    }
+    if((error = CSEM_Builder_ParseChunk(builder, NULL, 0, 1))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
+        goto FINISH;
+    }
+    {/* check results */
+        CSEM_List *children = CSEM_Document_GetChildren(doc);
+        CU_ASSERT_EQUAL(CSEM_List_Size(children), 3);
+        {/* 1st item */
+            CSEM_Node *node = CSEM_List_Get(children, 0);
+            CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_MICRO_ITEM);
+            CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
+
+            CSEM_Item *item = CSEM_Node_GetObject(node);
+            CU_ASSERT_STRING_EQUAL(CSEM_Micro_Item_GetId(item), "urn:sample:0001");
+            {/* types */
+                CSEM_List *types = CSEM_Micro_Item_GetTypes(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(types), 2);
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://sample.org/Person");
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 1), "http://sample2.org/Person");
+            }
+            {/* refs */
+                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(refs), 2);
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 0), "address");
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 1), "phone");
+            }
+            {/* properties */
+                CSEM_List *properties = CSEM_Micro_Item_GetProperties(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(properties), 9);
+                {/* name : Neil */
+                    CSEM_Property *property = CSEM_List_Get(properties, 0);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Neil");
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                }
+                {/* name : Nail */
+                    CSEM_Property *property = CSEM_List_Get(properties, 1);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Nail");
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                }
+                {/* band : item */
+                    CSEM_Property *property = CSEM_List_Get(properties, 2);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "band");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_ITEM);
+                    CSEM_Item *item = CSEM_List_Get(values, 0); {
+                        CU_ASSERT_EQUAL(CSEM_Micro_Item_GetId(item), NULL);
+                        CU_ASSERT_EQUAL(CSEM_Micro_Item_GetTypes(item), NULL);
+
+                        CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(refs), 1);
+                        CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 0), "address");
+
+                        CSEM_List *properties_band = CSEM_Micro_Item_GetProperties(item);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(properties_band), 3);
+
+                        {/* band-name : Four Parts Water */
+                            CSEM_Property *property = CSEM_List_Get(properties_band, 0);
+                            names = CSEM_Micro_Property_GetNames(property);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "band-name");
+
+                            CSEM_List *band_values = NULL, *band_types = NULL;
+                            CSEM_Micro_Property_GetValues(property, &band_values, &band_types);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(band_values), 1);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(band_types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(band_values, 0), "Four \"Parts\" Water");
+                            CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(band_types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                        }
+                        {/* city : Boston */
+                            CSEM_Property *property = CSEM_List_Get(properties_band, 1);
+                            CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "city");
+
+                            CSEM_List *values = NULL, *types = NULL;
+                            CSEM_Micro_Property_GetValues(property, &values, &types);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Boston");
+                            CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                        }
+                        {/* state : MA */
+                            CSEM_Property *property = CSEM_List_Get(properties_band, 2);
+                            CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "state");
+
+                            CSEM_List *values = NULL, *types = NULL;
+                            CSEM_Micro_Property_GetValues(property, &values, &types);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "MA");
+                            CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                        }
+                    }
+                }
+                {/* nationality : British */
+                    CSEM_Property *property = CSEM_List_Get(properties, 3);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 2);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "nationality");
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 1), "home-country");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "British");
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                }
+                {/* city : Boston */
+                    CSEM_Property *property = CSEM_List_Get(properties, 4);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "city");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Boston");
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                }
+                {/* state : MA */
+                    CSEM_Property *property = CSEM_List_Get(properties, 5);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "state");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "MA");
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                }
+                {/* num : +1.617.981.xxxx */
+                    CSEM_Property *property = CSEM_List_Get(properties, 6);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "num");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "+1.617.981.xxxx");
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                }
+                {/* name : Android */
+                    CSEM_Property *property = CSEM_List_Get(properties, 7);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Android");
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                }
+                {/* dev : VoIP */
+                    CSEM_Property *property = CSEM_List_Get(properties, 8);
+                    CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "dev");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Micro_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "VoIP");
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_MICRO_VALUE_TYPE_STR);
+                }
+            }
+        }
+    }
+
+FINISH:
+    CSEM_Builder_Dispose(builder);
+    CSEM_Document_Dispose(doc);
+}
 void test_microdata_tree_getItems_no_types() {
     CSEM_Error error = CSEM_ERROR_NONE;
 
@@ -1221,9 +1253,12 @@ void test_microdata_tree_getItems_no_types() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* check results */
@@ -1395,12 +1430,14 @@ void test_microdata_tree_getItems_with_types() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
+        goto FINISH;
+    }
     {/* check results */
         CSEM_List *items = NULL;
         CSEM_List *types = CSEM_List_Create(8);
@@ -1470,12 +1507,14 @@ void test_microdata_tree_getNamedProperties() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
+        goto FINISH;
+    }
     {/* search properties whose name is "name" */
         CSEM_Item *item = NULL; {
             CSEM_List *nodes = CSEM_Document_GetChildren(doc);
@@ -1588,9 +1627,12 @@ void test_microdata_tree_getNamedProperties_no_name() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* search properties whose name is NULL */
@@ -1641,9 +1683,12 @@ void test_microdata_tree_properties_getValues() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* search properties whose name is "name" */
@@ -1740,9 +1785,12 @@ void test_microdata_tree_schema_org_event_ex1() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* check results */
@@ -1861,9 +1909,12 @@ void test_microdata_tree_schema_org_event_ex2() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* check results */
@@ -2246,9 +2297,12 @@ void test_microdata_tree_schema_org_person() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* check results */
@@ -2492,9 +2546,12 @@ void test_microdata_tree_schema_org_place_ex1() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* check results */
@@ -2655,9 +2712,12 @@ void test_microdata_tree_schema_org_place_ex2() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* check results */
@@ -2776,9 +2836,12 @@ void test_microdata_tree_schema_org_place_ex4() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* check results */

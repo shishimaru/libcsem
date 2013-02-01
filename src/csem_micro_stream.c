@@ -12,6 +12,7 @@ CSEM_Error CSEM_Micro_CreateHandler(CSEM_Micro_Handlers **handler) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Micro_Handlers *result = NULL;
     int *initScopeDepth = NULL;
+    int *initIdDepth = NULL;
     int *initPropDepth = NULL;
 
     if(!(result = CSEM_Calloc(1, sizeof(CSEM_Micro_Handlers)))) {
@@ -28,6 +29,16 @@ CSEM_Error CSEM_Micro_CreateHandler(CSEM_Micro_Handlers **handler) {
         memcpy(initScopeDepth, &value, sizeof(int));
         CSEM_List_Add(result -> scopeDepth, initScopeDepth);
     }
+    {/* add -1 to idDepth */
+        /*result -> idDepth = -1; TODO */
+        int value = -1;
+        result -> idDepth = CSEM_List_Create(8);
+        if(!(initIdDepth = CSEM_Malloc(sizeof(int)))) {
+            goto ERROR;
+        }
+        memcpy(initIdDepth, &value, sizeof(int));
+        CSEM_List_Add(result -> idDepth, initIdDepth);
+    }
     {/* add -1 to propDepth */
         int value = -1;
         result -> propDepth = CSEM_List_Create(8);
@@ -37,7 +48,6 @@ CSEM_Error CSEM_Micro_CreateHandler(CSEM_Micro_Handlers **handler) {
         memcpy(initPropDepth, &value, sizeof(int));
         CSEM_List_Add(result -> propDepth, initPropDepth);
     }
-    result -> idDepth = -1;
 
     /* result */
     *handler = result;
@@ -71,6 +81,7 @@ void CSEM_Micro_SetEndId(CSEM_Micro_Handlers *handler, CSEM_Micro_EndId endId) {
 }
 void CSEM_Micro_DisposeHandler(CSEM_Micro_Handlers *handler) {
     CSEM_List_Dispose(handler -> scopeDepth, CSEM_TRUE);
+    CSEM_List_Dispose(handler -> idDepth, CSEM_TRUE);
     CSEM_List_Dispose(handler -> propDepth, CSEM_TRUE);
     CSEM_Free(handler);
 }

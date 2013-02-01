@@ -37,7 +37,7 @@ struct CSEM_Micro_Handlers {
     /* scope */
     CSEM_List *scopeDepth;
     /* id */
-    int idDepth;
+    CSEM_List *idDepth;
     /* prop */
     CSEM_Bool startPropValue;
     CSEM_List *propDepth;

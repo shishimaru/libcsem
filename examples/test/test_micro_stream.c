@@ -284,6 +284,8 @@ static void handler_endId(const void *userdata) {
 }
 
 static char *tmpPropValue = NULL;
+static int tmpPropValueReadLen = 0;
+static int tmpPropValueLen = 0;
 static int *tmpValueType = NULL;
 static CSEM_Bool handler_startProp(const void *userdata, const char *prop, CSEM_Bool hasUrlValue) {
     printf("@startProp=\"%s\"\n", prop);
@@ -305,16 +307,32 @@ static CSEM_Bool handler_startProp(const void *userdata, const char *prop, CSEM_
     return CSEM_FALSE;
 }
 static void handler_prop(const void *userdata, const char *value, int len) {
+    printf("@propValue=");
     fwrite(value, 1, len, stdout);
+    printf("\n");
 
     TestResult *actual = (void *)userdata; {
         CSEM_List_Add(actual -> events, &EVENT_PROP_VALUE);
     }
-    tmpPropValue = CSEM_Calloc(1024, sizeof(char));
-    strncat(tmpPropValue, value, len);
+    if(!tmpPropValue) {
+        tmpPropValue = CSEM_Calloc(len + 1, sizeof(char));
+        tmpPropValueReadLen = 0;
+        tmpPropValueLen = len + 1;
+    } else {
+        if(tmpPropValueReadLen + len > tmpPropValueLen - 1) {
+            tmpPropValue = CSEM_Realloc(tmpPropValue, tmpPropValueLen + len + 1);
+            tmpPropValueLen += len + 1;
+        }
+    }
+    strncat(tmpPropValue + tmpPropValueReadLen, value, len);
+    tmpPropValueReadLen += len;
+
+
+
+
 }
 static void handler_endProp(const void *userdata) {
-    printf("@xendProp\n");
+    printf("@endProp\n");
     state_prop_value = CSEM_FALSE;
     TestResult *actual = (void *)userdata; {
         CSEM_List_Add(actual -> events, &EVENT_END_PROP);
@@ -360,7 +378,7 @@ void test_microdata_stream_basic() {
                 Item *item2 = test_microdata_createItem(CSEM_TRUE, CSEM_TRUE); {
                     CSEM_List_Add(item2 -> refs, "address");
                     CSEM_List_Add(item2 -> prop_name, "band-name");
-                    CSEM_List_Add(item2 -> prop_value, "Four Parts Water");
+                    CSEM_List_Add(item2 -> prop_value, "Four \"Parts\" Water");
                     CSEM_List_Add(item2 -> prop_type, &TYPE_STR);
                 }
                 CSEM_List_Add(item1 -> prop_value, item2);
@@ -410,6 +428,10 @@ void test_microdata_stream_basic() {
                 CSEM_List_Add(expected -> events, &EVENT_START_PROP); {
                     CSEM_List_Add(expected -> events, &EVENT_START_SCOPE); {
                         CSEM_List_Add(expected -> events, &EVENT_START_PROP);
+                        CSEM_List_Add(expected -> events, &EVENT_PROP_VALUE);
+                        CSEM_List_Add(expected -> events, &EVENT_PROP_VALUE);
+                        CSEM_List_Add(expected -> events, &EVENT_PROP_VALUE);
+                        CSEM_List_Add(expected -> events, &EVENT_PROP_VALUE);
                         CSEM_List_Add(expected -> events, &EVENT_PROP_VALUE);
                         CSEM_List_Add(expected -> events, &EVENT_END_PROP);
                     }

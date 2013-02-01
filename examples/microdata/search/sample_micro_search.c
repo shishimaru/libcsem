@@ -35,8 +35,11 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "failed to open %s\n", filename);
         goto FINISH;
     }
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_TRUE, &doc))) {
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         fprintf(stderr, "failed parsing %s\n", filename);
+        goto FINISH;
+    }
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
         goto FINISH;
     }
     {/* sample of document.getItems([types]) */
