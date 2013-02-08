@@ -12,7 +12,7 @@ void test_microdata_tree_values() {
     CSEM_Error error = CSEM_ERROR_NONE;
 
     int fd = -1;
-    if(!(fd = open("./data/5-4-Values.html", O_RDONLY))) {
+    if(!(fd = open("./data/micro-5-4-Values.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
     }
@@ -460,7 +460,7 @@ void test_microdata_tree_recursive_itemprop() {
     CSEM_Error error = CSEM_ERROR_NONE;
 
     int fd = -1;
-    if(!(fd = open("./data/recursive-itemprop.html", O_RDONLY))) {
+    if(!(fd = open("./data/micro-recursive-itemprop.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
     }
@@ -617,7 +617,7 @@ void test_microdata_tree_basic_resolve() {
     CSEM_Error error = CSEM_ERROR_NONE;
 
     int fd = -1;
-    if(!(fd = open("./data/basic.html", O_RDONLY))) {
+    if(!(fd = open("./data/micro-basic.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
     }
@@ -839,7 +839,7 @@ void test_microdata_tree_resolve_recursive_items() {
     CSEM_Error error = CSEM_ERROR_NONE;
 
     int fd = -1;
-    if(!(fd = open("./data/recursive-itemscope.html", O_RDONLY))) {
+    if(!(fd = open("./data/micro-recursive-itemscope.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
     }
@@ -1014,7 +1014,7 @@ void test_microdata_tree_chunked() {
     CSEM_Error error = CSEM_ERROR_NONE;
 
     int fd = -1;
-    if(!(fd = open("./data/basic.html", O_RDONLY))) {
+    if(!(fd = open("./data/micro-basic.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
     }
@@ -1244,7 +1244,7 @@ void test_microdata_tree_getItems_no_types() {
     CSEM_Error error = CSEM_ERROR_NONE;
 
     int fd = -1;
-    if(!(fd = open("./data/basic.html", O_RDONLY))) {
+    if(!(fd = open("./data/micro-basic.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
     }
@@ -1421,7 +1421,7 @@ void test_microdata_tree_getItems_with_types() {
     CSEM_Error error = CSEM_ERROR_NONE;
 
     int fd = -1;
-    if(!(fd = open("./data/basic.html", O_RDONLY))) {
+    if(!(fd = open("./data/micro-basic.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
     }
@@ -1498,7 +1498,7 @@ void test_microdata_tree_getNamedProperties() {
     CSEM_Error error = CSEM_ERROR_NONE;
 
     int fd = -1;
-    if(!(fd = open("./data/basic.html", O_RDONLY))) {
+    if(!(fd = open("./data/micro-basic.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
     }
@@ -1618,7 +1618,7 @@ void test_microdata_tree_getNamedProperties_no_name() {
     CSEM_Error error = CSEM_ERROR_NONE;
 
     int fd = -1;
-    if(!(fd = open("./data/basic.html", O_RDONLY))) {
+    if(!(fd = open("./data/micro-basic.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
     }
@@ -1674,7 +1674,7 @@ void test_microdata_tree_properties_getValues() {
     CSEM_Error error = CSEM_ERROR_NONE;
 
     int fd = -1;
-    if(!(fd = open("./data/basic.html", O_RDONLY))) {
+    if(!(fd = open("./data/micro-basic.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
     }

@@ -499,7 +499,7 @@ void test_microdata_stream_basic() {
 
     int fd = -1;
 
-    if(!(fd = open("./data/basic.html", O_RDONLY))) {
+    if(!(fd = open("./data/micro-basic.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
     }
@@ -792,7 +792,7 @@ void test_microdata_stream_values() {
 
     int fd = -1;
 
-    if(!(fd = open("./data/5-4-Values.html", O_RDONLY))) {
+    if(!(fd = open("./data/micro-5-4-Values.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
     }
