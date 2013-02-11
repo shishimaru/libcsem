@@ -20,9 +20,11 @@ CSEM_NS_C_BEGIN
 
 #include "csem/csem_stream.h"
 #include "csem/csem_micro_stream.h"
-#include "csem/csem_rdfa_lite.h"
+#include "csem/csem_rdfa_stream.h"
 #include "csem/csem_builder.h"
 #include "csem/csem_micro_tree.h"
+#include "csem/csem_stack.h"
+#include "csem_ns_manager.h"
 
 struct CSEM_Micro_Handlers {
     CSEM_Micro_StartScope startScope;
@@ -35,23 +37,37 @@ struct CSEM_Micro_Handlers {
 
     int currentDepth;
     /* scope */
-    CSEM_List *scopeDepth;
+    CSEM_Stack *scopeDepth;
     /* id */
-    CSEM_List *idDepth;
+    CSEM_Stack *idDepth;
     /* prop */
     CSEM_Bool startPropValue;
-    CSEM_List *propDepth;
+    CSEM_Stack *propDepth;
 };
 
 struct CSEM_RDFaLite_Handlers {
-    CSEM_RDFaLite_Handler_StartScope startScope;
-    CSEM_RDFaLite_Handler_ItemProp   itemProp;
-    CSEM_RDFaLite_Handler_EndScope   endScope;
+    CSEM_RDFaLite_StartScope startScope;
+    CSEM_RDFaLite_EndScope   endScope;
+    CSEM_RDFaLite_StartProp  startProp;
+    CSEM_RDFaLite_ItemProp   itemProp;
+    CSEM_RDFaLite_EndProp    endProp;
+
+    CSEM_NSManager *nsManager;
+    int currentDepth;
+    /* scope */
+    CSEM_Stack *scopeDepth;
+    /* vocab */
+    CSEM_Stack *vocabDepth;
+    /* prefix */
+    CSEM_Stack *prefixDepth;
+    /* prop */
+    CSEM_Bool startPropValue;
+    CSEM_Stack *propDepth;
 };
 
 struct CSEM_Handler {
     CSEM_Micro_Handlers *microdata;
-    CSEM_RDFaLite_Handlers  *rdfa_lite;
+    CSEM_RDFaLite_Handlers  *rdfa;
     CSEM_Parser_ErrorHandler error;
 };
 

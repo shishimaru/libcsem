@@ -1,0 +1,20 @@
+<body prefix="s: http://schema.org/">
+  <div vocab="http://schema.org/"  resource="main" typeof="Person s:Person">
+    <p>My name is <span property="name">Neil</span>.</p>
+    <p>My name is <span property="name">Nail</span>.</p>
+    <p prefix="s: http://schema2.org/">My band is called
+      <span property="jobTitle" resource="sub1" typeof="MusicRecording s:MusicRecording" vocab="http://schema2.org/">
+	<span property="byArtist">Four &quot;Parts&quot; Water</span>.
+      </span>
+      <span property="jobTitle" resource="sub2" typeof="MusicRecording s:MusicRecording">
+	<span property="byArtist">Four &quot;Parts&quot; Water</span>.
+      </span>
+    </p>
+    <p>I am
+      <span property="address" typeof="Person s:Person">
+	<span property="homeLocation">British</span>
+      </span>.
+    </p>
+  </div>
+</body>
+

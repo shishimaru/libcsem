@@ -19,7 +19,7 @@ CSEM_NS_C_BEGIN
 #include "csem/csem_micro_stream.h"
 
 extern const char *HTML5_SPACES;
-char *CSEM_Micro_GetAttNameWithPropValue(const char *localname, const char *ns);
+char *CSEM_Micro_GetAttNameForPropValue(const char *localname, const char *ns);
 CSEM_Bool CSEM_Micro_IsUrlPropElement(const char *localname, const char *ns);
 
 CSEM_NS_C_END

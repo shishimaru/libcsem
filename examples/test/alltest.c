@@ -10,8 +10,11 @@
 #include "test_utils.h"
 #include "test_url.h"
 #include "test_list.h"
+#include "test_stack.h"
+#include "test_ns_manager.h"
 #include "test_micro_stream.h"
 #include "test_micro_tree.h"
+#include "test_rdfa_stream.h"
 
 static CU_TestInfo testinfo_url[] = {
         //parse absolute url
@@ -89,6 +92,15 @@ static CU_TestInfo testinfo_list[] = {
 
         CU_TEST_INFO_NULL,
 };
+static CU_TestInfo testinfo_stack[] = {
+        { "test stack : basic feature", test_stack},
+        { "test stack : dispose", test_stack_dispose},
+        CU_TEST_INFO_NULL,
+};
+static CU_TestInfo testinfo_ns_manager[] = {
+        { "test ns manager : basic feature", test_ns_manager},
+        CU_TEST_INFO_NULL,
+};
 static CU_TestInfo testinfo_microdata[] = {
         { "test stream parser : basic", test_microdata_stream_basic},
         { "test stream parser : Section5.4 values", test_microdata_stream_values},
@@ -109,14 +121,22 @@ static CU_TestInfo testinfo_microdata[] = {
         { "test microdata API : item.getNamedPropertries(name)", test_microdata_tree_getNamedProperties},
         { "test microdata API : item.getNamedPropertries(NULL)", test_microdata_tree_getNamedProperties_no_name},
         { "test microdata API : properties.getValues()", test_microdata_tree_properties_getValues},//*/
-
+        CU_TEST_INFO_NULL,
+};
+static CU_TestInfo testinfo_RDFaLite[] = {
+        { "test stream parser : basic", test_rdfa_stream_basic},
+        { "test stream parser : vocab", test_rdfa_stream_vocab},
         CU_TEST_INFO_NULL,
 };
 static CU_SuiteInfo suites[] = {
-        /*{ "utils",  NULL, NULL, testinfo_utils},
+        { "utils",  NULL, NULL, testinfo_utils},
         { "list", NULL, NULL, testinfo_list},
-        { "url",  NULL, NULL, testinfo_url},*/
+        { "stack", NULL, NULL, testinfo_stack},
+        { "ns manager", NULL, NULL, testinfo_ns_manager},
+        { "url",  NULL, NULL, testinfo_url},//*/
+
         { "microdata", NULL, NULL, testinfo_microdata},
+        { "RDFa Lite", NULL, NULL, testinfo_RDFaLite},
 
         CU_SUITE_INFO_NULL,
 };

@@ -41,7 +41,7 @@ typedef void (*CSEM_Micro_EndScope)(const void *userdata);
 /**
  * Handler for start property.
  * @param userdata [out]user data
- * @param propName [out]the property name
+ * @param propName [out]the property name TODO : support space separated names
  * @param hasUrlValue [out]#CSEM_TRUE if the value type of the property is URL.
  * @return #CSEM_TRUE if the passed microdata on this event should be
  * freed by library. If applications would like to keep the passed

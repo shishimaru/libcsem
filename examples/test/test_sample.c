@@ -17,11 +17,13 @@ void main_small_test_tree() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
-    CSEM_Document *doc = NULL;
-    if((error = CSEM_Builder_Parse(builder, fd, CSEM_FALSE, &doc))) {
+
+    if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
+    CSEM_Document *doc = NULL;
+    CSEM_Builder_GetDocument(builder, &doc);
 FINISH:
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);

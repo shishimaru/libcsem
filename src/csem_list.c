@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include "csem/csem_list.h"
 #include "csem_utils.h"
 
@@ -19,7 +18,6 @@ struct _CSEM_LIST {
 
 CSEM_List *CSEM_List_Create(size_t initial_size) {
     CSEM_List *list;
-    assert(initial_size > 0);
 
     list = CSEM_Malloc(sizeof(CSEM_List));
     if(!list) {
@@ -38,8 +36,8 @@ CSEM_List *CSEM_List_Create(size_t initial_size) {
 void CSEM_List_Dispose(CSEM_List *list, CSEM_Bool freeData) {
     if(list) {
         CSEM_List_Clear(list, freeData);
-        free(list -> data);
-        free(list);
+        CSEM_Free(list -> data);
+        CSEM_Free(list);
     }
 }
 CSEM_Error CSEM_List_Add(CSEM_List *list, const void *data) {
@@ -78,20 +76,20 @@ CSEM_Bool CSEM_List_IsEmpty(const CSEM_List *list) {
     return list -> used_size == 0;
 }
 void *CSEM_List_Remove(CSEM_List *list, int index) {
-    void *removed_data;
-    assert(index >= 0 && index < CSEM_List_Size(list));
-
-    removed_data = list -> data[index];
-    memmove(list->data + index, list->data + (index+1), sizeof(void *) * (list->used_size - (index+1)));
-    list -> used_size--;
+    void *removed_data = NULL;
+    if(index >= 0 && index < CSEM_List_Size(list)) {
+        removed_data = list -> data[index];
+        memmove(list->data + index, list->data + (index+1), sizeof(void *) * (list->used_size - (index+1)));
+        list -> used_size--;
+    }
     return removed_data;
 }
 void *CSEM_List_Replace(CSEM_List *list, int index, const void *data) {
-    void *old;
-    assert(index >= 0 && index < CSEM_List_Size(list));
-
-    old = list->data[index];
-    list->data[index] = (void *)data;
+    void *old = NULL;
+    if(index >= 0 && index < CSEM_List_Size(list)) {
+        old = list->data[index];
+        list->data[index] = (void *)data;
+    }
     return old;
 }
 void CSEM_List_Clear(CSEM_List *list, CSEM_Bool freeData) {

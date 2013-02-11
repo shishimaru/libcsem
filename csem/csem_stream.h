@@ -17,7 +17,7 @@
 CSEM_NS_C_BEGIN
 
 #include "csem_micro_stream.h"
-#include "csem_rdfa_lite.h"
+#include "csem_rdfa_stream.h"
 
 /**
  * Streaming parser.
