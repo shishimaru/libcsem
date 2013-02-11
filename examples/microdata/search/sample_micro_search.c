@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
         CSEM_List_Add(types, type);
 
         /* get items which has specified itemtype */
-        if((error = CSEM_Micro_Document_GetItems(doc, types, &items))) {
+        if((error = CSEM_Document_GetItems(doc, types, &items))) {
             goto FINISH_GET_ITEMS;
         }
         /* get values which has specified itemprop */
@@ -59,16 +59,16 @@ int main(int argc, char *argv[]) {
             CSEM_List *values = NULL, *valueTypes = NULL;
             CSEM_Item *item = CSEM_List_Get(items, i);
 
-            if((error = CSEM_Micro_Item_GetNamedPropertes(item, itemprop, &properties))) {
+            if((error = CSEM_Item_GetNamedPropertes(item, itemprop, &properties))) {
                 goto FINISH_NAMED_PROPERTIES;
             }
-            if((error = CSEM_Micro_Properties_GetValues(properties, &values, &valueTypes))) {
+            if((error = CSEM_Properties_GetValues(properties, &values, &valueTypes))) {
                 goto FINISH_NAMED_PROPERTIES;
             }
             /* show values */
             for(j = 0; j < CSEM_List_Size(values); j++) {
                 int *valueType = CSEM_List_Get(valueTypes, j);
-                if(*valueType == CSEM_MICRO_VALUE_TYPE_STR || *valueType == CSEM_MICRO_VALUE_TYPE_URL) {
+                if(*valueType == CSEM_VALUE_TYPE_STR || *valueType == CSEM_VALUE_TYPE_URL) {
                     printf("%s\n", (char *)CSEM_List_Get(values, j));
                 }
             }

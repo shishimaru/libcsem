@@ -26,11 +26,11 @@ typedef enum CSEM_NODE_TYPE {
     /** document node */
     CSEM_NODE_TYPE_DOCUMENT,
     /** item node of microdata */
-    CSEM_NODE_TYPE_MICRO_ITEM,
-    /** id node of microdata */
-    CSEM_NODE_TYPE_MICRO_ID,
+    CSEM_NODE_TYPE_ITEM,
     /** property node of microdata */
-    CSEM_NODE_TYPE_MICRO_PROPERTY
+    CSEM_NODE_TYPE_PROPERTY,
+    /** id node of microdata */
+    CSEM_NODE_TYPE_MICRO_ID
 } CSEM_NODE_TYPE;
 /**
  * Root node of the tree.

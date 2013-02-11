@@ -17,7 +17,7 @@ extern const int EVENT_PROP_VALUE;
 static Item *activeItem = NULL;
 static CSEM_Bool state_prop_value = CSEM_FALSE;
 static CSEM_Bool handler_startScope(const void *userdata,
-        const char *resource, const CSEM_List *types){
+        const CSEM_List *types, const char *resource){
     puts("@startScope");
 
     TestResult *actual = (void *)userdata; {

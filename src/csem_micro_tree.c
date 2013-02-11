@@ -9,7 +9,7 @@
 #include "csem_utils.h"
 #include "csem_types.h"
 
-CSEM_Error CSEM_Micro_Item_Create(CSEM_Item **item) {
+CSEM_Error CSEM_Item_Create(CSEM_Item **item) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Item *result = NULL;
 
@@ -17,14 +17,14 @@ CSEM_Error CSEM_Micro_Item_Create(CSEM_Item **item) {
         error = CSEM_ERROR_MEMORY;
         goto ERROR;
     }
-    if((error = CSEM_Node_Create(&(result -> node), CSEM_NODE_TYPE_MICRO_ITEM, result, NULL))) {
+    if((error = CSEM_Node_Create(&(result -> node), CSEM_NODE_TYPE_ITEM, result, NULL))) {
         goto ERROR;
     }
 
     *item = result;
     return error;
 ERROR:
-    CSEM_Micro_Item_Dispose(result);
+    CSEM_Item_Dispose(result);
     return error;
 }
 CSEM_Error CSEM_Micro_Id_Create(CSEM_Id **id, const char *value) {
@@ -48,7 +48,7 @@ ERROR:
     CSEM_Micro_Id_Dispose(result);
     return error;
 }
-CSEM_Error CSEM_Micro_Property_Create(CSEM_Property **property, CSEM_List *names) {
+CSEM_Error CSEM_Property_Create(CSEM_Property **property, CSEM_List *names) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Property *result = NULL;
 
@@ -56,7 +56,7 @@ CSEM_Error CSEM_Micro_Property_Create(CSEM_Property **property, CSEM_List *names
         error = CSEM_ERROR_MEMORY;
         goto ERROR;
     }
-    if((error = CSEM_Node_Create(&(result -> node), CSEM_NODE_TYPE_MICRO_PROPERTY, result, NULL))) {
+    if((error = CSEM_Node_Create(&(result -> node), CSEM_NODE_TYPE_PROPERTY, result, NULL))) {
         goto ERROR;
     }
 
@@ -76,13 +76,13 @@ CSEM_Error CSEM_Micro_Property_Create(CSEM_Property **property, CSEM_List *names
 
     return error;
 ERROR:
-    CSEM_Micro_Property_Dispose(result);
+    CSEM_Property_Dispose(result);
     return error;
 }
-char *CSEM_Micro_Item_GetId(CSEM_Item *item) {
+char *CSEM_Item_GetId(CSEM_Item *item) {
     return item -> id;
 }
-CSEM_Error CSEM_Micro_Item_SetId(CSEM_Item *item, const char *id, CSEM_Bool doFree) {
+CSEM_Error CSEM_Item_SetId(CSEM_Item *item, const char *id, CSEM_Bool doFree) {
     CSEM_Error error = CSEM_ERROR_NONE;
     if(!id) {
         error = CSEM_ERROR_PARAMETER;
@@ -96,10 +96,10 @@ CSEM_Error CSEM_Micro_Item_SetId(CSEM_Item *item, const char *id, CSEM_Bool doFr
 FINISH:
     return error;
 }
-CSEM_List *CSEM_Micro_Item_GetTypes(const CSEM_Item *item) {
+CSEM_List *CSEM_Item_GetTypes(const CSEM_Item *item) {
     return item -> types;
 }
-CSEM_Error CSEM_Micro_Item_SetTypes(CSEM_Item *item, const CSEM_List *types, CSEM_Bool doFree) {
+CSEM_Error CSEM_Item_SetTypes(CSEM_Item *item, const CSEM_List *types, CSEM_Bool doFree) {
     CSEM_Error error = CSEM_ERROR_NONE;
     if(doFree) {
         CSEM_List_Dispose(item -> types, CSEM_TRUE);
@@ -118,10 +118,10 @@ CSEM_Error CSEM_Micro_Item_SetRefs(CSEM_Item *item, const CSEM_List *refs, CSEM_
     item -> refs = (CSEM_List *)refs;
     return error;
 }
-CSEM_List *CSEM_Micro_Item_GetProperties(const CSEM_Item *item) {
+CSEM_List *CSEM_Item_GetProperties(const CSEM_Item *item) {
     return item -> props;
 }
-CSEM_Error CSEM_Micro_Item_GetNamedPropertes(const CSEM_Item *item, const char *name, CSEM_List **properties) {
+CSEM_Error CSEM_Item_GetNamedPropertes(const CSEM_Item *item, const char *name, CSEM_List **properties) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_List *result = NULL;
 
@@ -132,11 +132,11 @@ CSEM_Error CSEM_Micro_Item_GetNamedPropertes(const CSEM_Item *item, const char *
     }
     {/* search */
         int i = 0;
-        CSEM_List *tmpProps = CSEM_Micro_Item_GetProperties(item);
+        CSEM_List *tmpProps = CSEM_Item_GetProperties(item);
         for(i = 0; tmpProps && i < CSEM_List_Size(tmpProps); i++) {
             int j = 0;
             CSEM_Property *property = CSEM_List_Get(tmpProps, i);
-            CSEM_List *tmpNames = CSEM_Micro_Property_GetNames(property);
+            CSEM_List *tmpNames = CSEM_Property_GetNames(property);
             for(j = 0; tmpNames && j < CSEM_List_Size(tmpNames); j++) {
                 char *tmpName = CSEM_List_Get(tmpNames, j);
                 if(name && tmpName && !strcmp(name, tmpName)) {
@@ -156,7 +156,7 @@ ERROR:
     CSEM_List_Dispose(result, CSEM_FALSE);
     return error;
 }
-CSEM_Error CSEM_Micro_Item_AddProperty(CSEM_Item *item, CSEM_Property *property, CSEM_Bool changeParent) {
+CSEM_Error CSEM_Item_AddProperty(CSEM_Item *item, CSEM_Property *property, CSEM_Bool changeParent) {
     CSEM_Error error = CSEM_ERROR_NONE;
     if(!property) {
         error = CSEM_ERROR_PARAMETER;
@@ -204,10 +204,10 @@ FINISH:
 char *CSEM_Micro_Id_GetId(CSEM_Id *id) {
     return id -> id;
 }
-CSEM_List *CSEM_Micro_Property_GetNames(CSEM_Property *property) {
+CSEM_List *CSEM_Property_GetNames(CSEM_Property *property) {
     return property -> names;
 }
-CSEM_Error CSEM_Micro_Property_GetValues(CSEM_Property *property,
+CSEM_Error CSEM_Property_GetValues(CSEM_Property *property,
         CSEM_List **values, CSEM_List **valueTypes) {
     CSEM_Error error = CSEM_ERROR_NONE;
 
@@ -222,7 +222,7 @@ CSEM_Error CSEM_Micro_Property_GetValues(CSEM_Property *property,
 FINISH:
     return error;
 }
-CSEM_Error CSEM_Micro_Property_AddValues(CSEM_Property *property,
+CSEM_Error CSEM_Property_AddValues(CSEM_Property *property,
         void *value, CSEM_MICRO_VALUE_TYPE type) {
     CSEM_Error error = CSEM_ERROR_NONE;
     int *tmpType = NULL;
@@ -230,10 +230,10 @@ CSEM_Error CSEM_Micro_Property_AddValues(CSEM_Property *property,
     if((error = CSEM_List_Add(property -> values, value))) {
         goto FINISH;
     }
-    if(type == CSEM_MICRO_VALUE_TYPE_ITEM) {
+    if(type == CSEM_VALUE_TYPE_ITEM) {
         CSEM_Item *item = value;
         item -> node -> parent = property -> node;
-    } else if(type == CSEM_MICRO_VALUE_TYPE_PROPERTY) {
+    } else if(type == CSEM_VALUE_TYPE_PROPERTY) {
         CSEM_Property *tmpProperty = value;
         tmpProperty -> node -> parent = property -> node;
     }
@@ -250,7 +250,7 @@ CSEM_Error CSEM_Micro_Property_AddValues(CSEM_Property *property,
 FINISH:
     return error;
 }
-static CSEM_Error csem_micro_item_getItems(const CSEM_Item *item, const CSEM_List *types, CSEM_List *items) {
+static CSEM_Error csem_item_getItems(const CSEM_Item *item, const CSEM_List *types, CSEM_List *items) {
     CSEM_Error error = CSEM_ERROR_NONE;
     int i = 0;
 
@@ -264,7 +264,7 @@ static CSEM_Error csem_micro_item_getItems(const CSEM_Item *item, const CSEM_Lis
                 goto FINISH_APPEND;
             } else {
                 int j = 0;
-                CSEM_List *itemTypes = CSEM_Micro_Item_GetTypes(item);
+                CSEM_List *itemTypes = CSEM_Item_GetTypes(item);
                 for(j = 0; itemTypes && j < CSEM_List_Size(itemTypes); j++) {
                     char *itemType = CSEM_List_Get(itemTypes, j);
                     if(!strcmp(type, itemType)) {
@@ -283,18 +283,18 @@ static CSEM_Error csem_micro_item_getItems(const CSEM_Item *item, const CSEM_Lis
     }
 FINISH_APPEND:
     {/* check descendant items */
-        CSEM_List *properties = CSEM_Micro_Item_GetProperties(item);
+        CSEM_List *properties = CSEM_Item_GetProperties(item);
         for(i = 0; properties && i < CSEM_List_Size(properties); i++) {
             CSEM_Property *property = CSEM_List_Get(properties, i);
             CSEM_List *values = NULL, *valueTypes = NULL;
-            CSEM_Micro_Property_GetValues(property, &values, &valueTypes);
+            CSEM_Property_GetValues(property, &values, &valueTypes);
             {/* check item value */
                 int j = 0;
                 int valueSize = CSEM_List_Size(values);
                 for(j = 0; j < valueSize; j++) {
-                    if(*((int *)CSEM_List_Get(valueTypes, j)) == CSEM_MICRO_VALUE_TYPE_ITEM) {
+                    if(*((int *)CSEM_List_Get(valueTypes, j)) == CSEM_VALUE_TYPE_ITEM) {
                         CSEM_Item *childItem = CSEM_List_Get(values, j);
-                        if((error = csem_micro_item_getItems(childItem, types, items))) {
+                        if((error = csem_item_getItems(childItem, types, items))) {
                             goto FINISH;
                         }
                     }
@@ -305,7 +305,7 @@ FINISH_APPEND:
 FINISH:
     return error;
 }
-CSEM_Error CSEM_Micro_Document_GetItems(CSEM_Document *doc, CSEM_List *types, CSEM_List **items) {
+CSEM_Error CSEM_Document_GetItems(CSEM_Document *doc, CSEM_List *types, CSEM_List **items) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_List *result = NULL;
     CSEM_List *nodeList = NULL;
@@ -325,9 +325,9 @@ CSEM_Error CSEM_Micro_Document_GetItems(CSEM_Document *doc, CSEM_List *types, CS
 
     for(i = 0; i < CSEM_List_Size(nodeList); i++) {
         CSEM_Node *node = CSEM_List_Get(nodeList, i);
-        if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_MICRO_ITEM) {
+        if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_ITEM) {
             CSEM_Item *item = CSEM_Node_GetObject(node);
-            if((error = csem_micro_item_getItems(item, types, result))) {
+            if((error = csem_item_getItems(item, types, result))) {
                 goto ERROR;
             }
         }
@@ -340,7 +340,7 @@ ERROR:
     CSEM_List_Dispose(result, CSEM_FALSE);
     return error;
 }
-CSEM_Error CSEM_Micro_Properties_GetValues(CSEM_List *properties, CSEM_List **values, CSEM_List **valueTypes) {
+CSEM_Error CSEM_Properties_GetValues(CSEM_List *properties, CSEM_List **values, CSEM_List **valueTypes) {
     CSEM_Error error = CSEM_ERROR_NONE;
     int i = 0;
     CSEM_List *res_values = NULL, *res_valueTypes = NULL;
@@ -363,7 +363,7 @@ CSEM_Error CSEM_Micro_Properties_GetValues(CSEM_List *properties, CSEM_List **va
         int j = 0;
         CSEM_List *tmpValues = NULL, *tmpValueTypes = NULL;
         CSEM_Property *property = CSEM_List_Get(properties, i);
-        if((error = CSEM_Micro_Property_GetValues(property, &tmpValues, &tmpValueTypes))) {
+        if((error = CSEM_Property_GetValues(property, &tmpValues, &tmpValueTypes))) {
             goto ERROR;
         }
         for(j = 0; tmpValues && j < CSEM_List_Size(tmpValues); j++) {
@@ -381,7 +381,7 @@ ERROR:
     CSEM_List_Dispose(res_valueTypes, CSEM_FALSE);
     return error;
 }
-void CSEM_Micro_Item_Dispose(CSEM_Item *item) {
+void CSEM_Item_Dispose(CSEM_Item *item) {
     if(item) {
         {/* dispose properties */
             int i = 0;
@@ -389,7 +389,7 @@ void CSEM_Micro_Item_Dispose(CSEM_Item *item) {
             for(i = 0; i < size; i++) {
                 CSEM_Property *property = CSEM_List_Get(item -> props, i);
                 if(CSEM_Node_GetType(property -> node -> parent) != CSEM_NODE_TYPE_MICRO_ID) {
-                    CSEM_Micro_Property_Dispose(property);
+                    CSEM_Property_Dispose(property);
                 }
             }
             CSEM_List_Dispose(item -> props, CSEM_FALSE);
@@ -407,7 +407,7 @@ void CSEM_Micro_Id_Dispose(CSEM_Id *id) {
             int i = 0;
             int size = id -> props ? CSEM_List_Size(id -> props) : 0;
             for(i = 0; i < size; i++) {
-                CSEM_Micro_Property_Dispose(CSEM_List_Get(id -> props, i));
+                CSEM_Property_Dispose(CSEM_List_Get(id -> props, i));
             }
             CSEM_List_Dispose(id -> props, CSEM_FALSE);
         }
@@ -416,21 +416,21 @@ void CSEM_Micro_Id_Dispose(CSEM_Id *id) {
         CSEM_Free(id);
     }
 }
-static void csem_microdata_property_disposeValues(CSEM_Property *property) {
+static void csem_property_disposeValues(CSEM_Property *property) {
     if(property && property -> values) {
         int i = 0;
         int size = CSEM_List_Size(property -> values);
         for(i = 0; i < size; i++) {
             CSEM_MICRO_VALUE_TYPE *type = CSEM_List_Get(property -> valueTypes, i);
             void *value = CSEM_List_Get(property -> values, i);
-            if(*type == CSEM_MICRO_VALUE_TYPE_STR) {
+            if(*type == CSEM_VALUE_TYPE_STR) {
                 CSEM_Free(value);
-            } else if(*type == CSEM_MICRO_VALUE_TYPE_URL) {
+            } else if(*type == CSEM_VALUE_TYPE_URL) {
                 CSEM_Free(value);
-            } else if(*type == CSEM_MICRO_VALUE_TYPE_ITEM) {
-                CSEM_Micro_Item_Dispose(value);
-            } else if(*type == CSEM_MICRO_VALUE_TYPE_PROPERTY) {
-                CSEM_Micro_Property_Dispose(value);
+            } else if(*type == CSEM_VALUE_TYPE_ITEM) {
+                CSEM_Item_Dispose(value);
+            } else if(*type == CSEM_VALUE_TYPE_PROPERTY) {
+                CSEM_Property_Dispose(value);
             } else {
                 fprintf(stderr, "not implemented node type [%d]\n", *type);
             }
@@ -439,11 +439,11 @@ static void csem_microdata_property_disposeValues(CSEM_Property *property) {
         CSEM_List_Dispose(property -> valueTypes, CSEM_TRUE);
     }
 }
-void CSEM_Micro_Property_Dispose(CSEM_Property *property) {
+void CSEM_Property_Dispose(CSEM_Property *property) {
     if(property) {
         CSEM_Node_Dispose(property -> node);
         CSEM_List_Dispose(property -> names, CSEM_TRUE);
-        csem_microdata_property_disposeValues(property);
+        csem_property_disposeValues(property);
         CSEM_Free(property);
     }
 }

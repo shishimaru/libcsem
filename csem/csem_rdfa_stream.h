@@ -26,7 +26,7 @@ typedef struct CSEM_RDFaLite_Handlers CSEM_RDFaLite_Handlers;
  * Subject :
  *   if(!property && typeof)
  */
-typedef CSEM_Bool (*CSEM_RDFaLite_StartScope)(const void *userdata, const char *resource, const CSEM_List *types);
+typedef CSEM_Bool (*CSEM_RDFaLite_StartScope)(const void *userdata, const CSEM_List *types, const char *resource);
 typedef void (*CSEM_RDFaLite_EndScope)(const void *userdata);
 
 typedef CSEM_Bool (*CSEM_RDFaLite_StartProp)(const void *userdata, const char *propName, CSEM_Bool hasUrlValue);

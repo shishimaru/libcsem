@@ -344,7 +344,7 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
         if(rdfa.isStartScope) {/* @typeof | @resource */
             if(rdfaHandler -> startScope) {
                 rdfa.freeScope = rdfaHandler -> startScope(parser -> userdata,
-                        rdfa.resource, rdfa.itemtypes);
+                        rdfa.itemtypes, rdfa.resource);
             }
         }
         /* update state of rdfa */

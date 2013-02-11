@@ -27,6 +27,8 @@ MAKEFILES="Makefile src/Makefile"
 MAKEFILES="$MAKEFILES  examples/microdata/stream/Makefile"
 MAKEFILES="$MAKEFILES  examples/microdata/tree/Makefile"
 MAKEFILES="$MAKEFILES  examples/microdata/search/Makefile"
+MAKEFILES="$MAKEFILES  examples/rdfa-lite/stream/Makefile"
+MAKEFILES="$MAKEFILES  examples/rdfa-lite/tree/Makefile"
 
 AC_ARG_ENABLE([debug],
     AC_HELP_STRING(

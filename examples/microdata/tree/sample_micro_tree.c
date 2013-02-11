@@ -11,11 +11,11 @@
 void showProperties(CSEM_List *properties, int depth);
 void showItem(CSEM_Item *item, int depth) {
     if(item) {
-        char *itemid = CSEM_Micro_Item_GetId(item);
+        char *itemid = CSEM_Item_GetId(item);
         int j = 0;
-        CSEM_List *types = CSEM_Micro_Item_GetTypes(item);
+        CSEM_List *types = CSEM_Item_GetTypes(item);
         CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
-        CSEM_List *properties = CSEM_Micro_Item_GetProperties(item);
+        CSEM_List *properties = CSEM_Item_GetProperties(item);
 
         INDENT(depth);puts("ITEM {");
         if(itemid) {
@@ -48,9 +48,9 @@ CSEM_Error showProperty(CSEM_Property *property, int depth) {
     CSEM_Error error = CSEM_ERROR_NONE;
     if(property) {
         int i = 0;
-        CSEM_List *names = CSEM_Micro_Property_GetNames(property);
+        CSEM_List *names = CSEM_Property_GetNames(property);
         CSEM_List *values = NULL, *types = NULL;
-        if((error = CSEM_Micro_Property_GetValues(property, &values, &types))) {
+        if((error = CSEM_Property_GetValues(property, &values, &types))) {
             goto FINISH;
         }
         for(i = 0; names && i < CSEM_List_Size(names); i++) {
@@ -59,12 +59,12 @@ CSEM_Error showProperty(CSEM_Property *property, int depth) {
         for(i = 0; values && i < CSEM_List_Size(values); i++) {
             int *type = CSEM_List_Get(types, i);
 
-            if(*type == CSEM_MICRO_VALUE_TYPE_STR || *type == CSEM_MICRO_VALUE_TYPE_URL) {
+            if(*type == CSEM_VALUE_TYPE_STR || *type == CSEM_VALUE_TYPE_URL) {
                 INDENT(depth);printf("\"%s\"\n", (char *)CSEM_List_Get(values, i));
-            } else if(*type == CSEM_MICRO_VALUE_TYPE_ITEM) {
+            } else if(*type == CSEM_VALUE_TYPE_ITEM) {
                 CSEM_Item *item = CSEM_List_Get(values, i);
                 showItem(item, depth + 1);
-            } else if(*type == CSEM_MICRO_VALUE_TYPE_PROPERTY) {
+            } else if(*type == CSEM_VALUE_TYPE_PROPERTY) {
                 CSEM_Property *property = CSEM_List_Get(values, i);
                 showProperty(property, depth + 1);
             }
@@ -116,13 +116,13 @@ int main(int argc, char *argv[]) {
         CSEM_List *nodes = CSEM_Document_GetChildren(doc);
         for(i = 0; i < CSEM_List_Size(nodes); i++) {
             CSEM_Node *node = CSEM_List_Get(nodes, i);
-            if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_MICRO_ITEM) {
+            if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_ITEM) {
                 CSEM_Item *item = CSEM_Node_GetObject(node);
                 showItem(item, 0);
             } else if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_MICRO_ID) {
                 CSEM_Id *id = CSEM_Node_GetObject(node);
                 showId(id, 0);
-            } else if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_MICRO_PROPERTY) {
+            } else if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_PROPERTY) {
                 CSEM_Property *property = CSEM_Node_GetObject(node);
                 showProperty(property, 0);
             }

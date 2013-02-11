@@ -15,6 +15,7 @@
 #include "test_micro_stream.h"
 #include "test_micro_tree.h"
 #include "test_rdfa_stream.h"
+#include "test_rdfa_tree.h"
 
 static CU_TestInfo testinfo_url[] = {
         //parse absolute url
@@ -126,16 +127,21 @@ static CU_TestInfo testinfo_microdata[] = {
 static CU_TestInfo testinfo_RDFaLite[] = {
         { "test stream parser : basic", test_rdfa_stream_basic},
         { "test stream parser : vocab", test_rdfa_stream_vocab},
+        { "test tree parser   : sample basic", test_rdfa_tree_basic},
+        { "test tree parser   : sample person", test_rdfa_sample_person},
+        { "test tree parser   : sample ssn", test_rdfa_sample_ssn},//*/
+        { "test tree parser   : sample event", test_rdfa_sample_event},
+
         CU_TEST_INFO_NULL,
 };
 static CU_SuiteInfo suites[] = {
-        { "utils",  NULL, NULL, testinfo_utils},
+        /*{ "utils",  NULL, NULL, testinfo_utils},
         { "list", NULL, NULL, testinfo_list},
         { "stack", NULL, NULL, testinfo_stack},
         { "ns manager", NULL, NULL, testinfo_ns_manager},
         { "url",  NULL, NULL, testinfo_url},//*/
 
-        { "microdata", NULL, NULL, testinfo_microdata},
+        //{ "microdata", NULL, NULL, testinfo_microdata},
         { "RDFa Lite", NULL, NULL, testinfo_RDFaLite},
 
         CU_SUITE_INFO_NULL,

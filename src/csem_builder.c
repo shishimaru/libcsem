@@ -13,9 +13,9 @@
 #include "csem_types.h"
 #include "csem_micro_stream_internal.h"
 
-/*#define CSEM_DEBUG_BUILDER*/
+#define CSEM_DEBUG_BUILDER
 
-static void microdata_error(const void *userdata, CSEM_Error error) {
+static void handler_error(const void *userdata, CSEM_Error error) {
     CSEM_Builder *builder = (void *)userdata;
 #ifdef CSEM_DEBUG_BUILDER
     puts("@ERROR");
@@ -35,33 +35,36 @@ static CSEM_Bool microdata_startScope(const void *userdata,
 #endif
 
     /* create new item */
-    if((error = CSEM_Micro_Item_Create(&item))) {
+    if((error = CSEM_Item_Create(&item))) {
         goto ERROR;
     }
-    CSEM_Micro_Item_SetTypes(item, types, CSEM_TRUE);
+    CSEM_Item_SetTypes(item, types, CSEM_TRUE);
     CSEM_Micro_Item_SetRefs(item, refs, CSEM_TRUE);
-    CSEM_Micro_Item_SetId(item, id, CSEM_TRUE);
+    CSEM_Item_SetId(item, id, CSEM_TRUE);
 
     /* append */
-    if(activeType == CSEM_NODE_TYPE_MICRO_PROPERTY) {
-        CSEM_Micro_Property_AddValues(activeNode -> obj.property,
-                item, CSEM_MICRO_VALUE_TYPE_ITEM);
+    if(activeType == CSEM_NODE_TYPE_PROPERTY) {
+        CSEM_Property_AddValues(activeNode -> obj.property,
+                item, CSEM_VALUE_TYPE_ITEM);
     } else if(activeType == CSEM_NODE_TYPE_DOCUMENT) {
         CSEM_Document_AppendChild(builder -> document, item -> node);
-    } else if(activeType == CSEM_NODE_TYPE_MICRO_ITEM
+    } else if(activeType == CSEM_NODE_TYPE_ITEM
             || activeType == CSEM_NODE_TYPE_MICRO_ID) {/* TODO */
         CSEM_Document_AppendChild(builder -> document, item -> node);
     } else {
         fprintf(stderr, "not implemented node type [%d]\n", activeType);
-        microdata_error(userdata, CSEM_ERROR_PARAMETER);
+        handler_error(userdata, CSEM_ERROR_PARAMETER);
     }
     /* update state */
     builder -> activeNode = item -> node;
 
     return CSEM_FALSE;
 ERROR:
-    microdata_error(userdata, error);
+    handler_error(userdata, error);
     return CSEM_TRUE;
+}
+static CSEM_Bool rdfa_startScope(const void *userdata, const CSEM_List *types, const char *resource) {
+    return microdata_startScope(userdata, types, NULL, resource);
 }
 static void microdata_endScope(const void *userdata) {
     CSEM_Builder *builder = (void *)userdata;
@@ -83,33 +86,33 @@ static CSEM_Bool microdata_startProp(const void *userdata,
     CSEM_List *propNameList = NULL;
 
 #ifdef CSEM_DEBUG_BUILDER
-    puts("@START_PROP");
+    printf("@START_PROP : %s\n", propName);
 #endif
 
     /* init */
     if((error = CSEM_Utils_Strtoks((char *)propName, HTML5_SPACES, &propNameList))) {
         goto ERROR;
     }
-    if((error = CSEM_Micro_Property_Create(&property, propNameList))) {
+    if((error = CSEM_Property_Create(&property, propNameList))) {
         goto ERROR;
     }
     /* append */
-    if(activeType == CSEM_NODE_TYPE_MICRO_ITEM) {
-        if((error = CSEM_Micro_Item_AddProperty(activeNode -> obj.item, property, CSEM_TRUE))) {
+    if(activeType == CSEM_NODE_TYPE_ITEM) {
+        if((error = CSEM_Item_AddProperty(activeNode -> obj.item, property, CSEM_TRUE))) {
             goto ERROR;
         }
     } else if(activeType == CSEM_NODE_TYPE_MICRO_ID) {
         if((error = CSEM_Micro_Id_AddProperty(activeNode -> obj.id, property))) {
             goto ERROR;
         }
-    } else if(activeType == CSEM_NODE_TYPE_MICRO_PROPERTY) {/* TODO */
+    } else if(activeType == CSEM_NODE_TYPE_PROPERTY) {
         CSEM_Property *tmpProperty = activeNode -> obj.property;
         if(builder -> buf) {
-            if((error = CSEM_Micro_Property_AddValues(tmpProperty, builder -> buf, CSEM_MICRO_VALUE_TYPE_STR))) {
+            if((error = CSEM_Property_AddValues(tmpProperty, builder -> buf, builder -> propValueType))) {
                 goto ERROR;
             }
         }
-        if((error = CSEM_Micro_Property_AddValues(tmpProperty, property, CSEM_MICRO_VALUE_TYPE_PROPERTY))) {
+        if((error = CSEM_Property_AddValues(tmpProperty, property, CSEM_VALUE_TYPE_PROPERTY))) {
             goto ERROR;
         }
     } else if(activeType == CSEM_NODE_TYPE_DOCUMENT) {/* TODO */
@@ -119,19 +122,19 @@ static CSEM_Bool microdata_startProp(const void *userdata,
         }
     } else {
         fprintf(stderr, "not implemented node type [%d]\n", activeType);
-        microdata_error(userdata, CSEM_ERROR_PARAMETER);
+        handler_error(userdata, CSEM_ERROR_PARAMETER);
     }
     /* update state */
     builder -> buf = NULL;
     builder -> propValueType = hasUrlValue ?
-            CSEM_MICRO_VALUE_TYPE_URL : CSEM_MICRO_VALUE_TYPE_STR;
+            CSEM_VALUE_TYPE_URL : CSEM_VALUE_TYPE_STR;
     builder -> activeNode = property -> node;
 
     return CSEM_TRUE;
 ERROR:
     CSEM_List_Dispose(propNameList, CSEM_TRUE);
-    CSEM_Micro_Property_Dispose(property);
-    microdata_error(userdata, error);
+    CSEM_Property_Dispose(property);
+    handler_error(userdata, error);
     return CSEM_TRUE;
 }
 static void microdata_itemProp(const void *userdata,
@@ -141,8 +144,9 @@ static void microdata_itemProp(const void *userdata,
     char *tmpBuf = NULL;
 
 #ifdef CSEM_DEBUG_BUILDER
-    puts("@PROP_VALUE");
+    printf("@PROP_VALUE : ");
     fwrite(value, 1, len, stdout);
+    printf("\n");
 #endif
 
     if(!builder -> buf) {
@@ -166,7 +170,7 @@ static void microdata_itemProp(const void *userdata,
     builder -> bufReadLen += len;
     return;
 ERROR:
-    microdata_error(userdata, error);
+    handler_error(userdata, error);
 }
 static void microdata_endProp(const void *userdata) {
     CSEM_Builder *builder = (void *)userdata;
@@ -177,8 +181,8 @@ static void microdata_endProp(const void *userdata) {
 #endif
     /* store the concatenated property value */
     if(builder -> buf) {
-        if(activeNode -> type == CSEM_NODE_TYPE_MICRO_PROPERTY) {
-            CSEM_Micro_Property_AddValues(activeNode -> obj.property,
+        if(activeNode -> type == CSEM_NODE_TYPE_PROPERTY) {
+            CSEM_Property_AddValues(activeNode -> obj.property,
                     builder -> buf, builder -> propValueType);
         } else {
             CSEM_Free(builder -> buf);
@@ -214,7 +218,7 @@ static CSEM_Bool microdata_startId(const void *userdata,
     return CSEM_FALSE;
 ERROR:
     CSEM_Micro_Id_Dispose(id);
-    microdata_error(userdata, error);
+    handler_error(userdata, error);
     return CSEM_TRUE;
 }
 static void microdata_endId(const void *userdata) {
@@ -277,7 +281,7 @@ CSEM_Error csem_builder_resolveItem(CSEM_Item *item, CSEM_List *ids) {
                 int propSize = CSEM_List_Size(props);
 
                 for(k = 0; k < propSize; k++) {
-                    if((error = CSEM_Micro_Item_AddProperty(item,
+                    if((error = CSEM_Item_AddProperty(item,
                             CSEM_List_Get(props, k), CSEM_FALSE))) {
                         goto FINISH;
                     }
@@ -286,14 +290,14 @@ CSEM_Error csem_builder_resolveItem(CSEM_Item *item, CSEM_List *ids) {
         }
     }
     {/* resolve descendant items */
-        CSEM_List *props = CSEM_Micro_Item_GetProperties(item);
+        CSEM_List *props = CSEM_Item_GetProperties(item);
         for(i = 0; props && i < CSEM_List_Size(props); i++) {
             CSEM_Property *property = CSEM_List_Get(props, i);
             CSEM_List *values = NULL, *valueTypes = NULL;
             int j = 0;
-            CSEM_Micro_Property_GetValues(property, &values, &valueTypes);
+            CSEM_Property_GetValues(property, &values, &valueTypes);
             for(j = 0; j < CSEM_List_Size(values); j++) {
-                if(*((int *)CSEM_List_Get(valueTypes, j)) == CSEM_MICRO_VALUE_TYPE_ITEM) {
+                if(*((int *)CSEM_List_Get(valueTypes, j)) == CSEM_VALUE_TYPE_ITEM) {
                     if((error = csem_builder_resolveItem(CSEM_List_Get(values, j), ids))) {
                         goto FINISH;
                     }
@@ -319,7 +323,7 @@ static CSEM_Error csem_builder_resolveDocument(CSEM_Document *doc) {
     }
     for(i = 0; nodeList && i < CSEM_List_Size(nodeList); i++) {
         CSEM_Node *node = CSEM_List_Get(nodeList, i);
-        if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_MICRO_ITEM) {
+        if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_ITEM) {
             CSEM_Item *item = CSEM_Node_GetObject(node);
             if((error = csem_builder_resolveItem(item, ids))) {
                 goto FINISH;
@@ -392,6 +396,7 @@ CSEM_Error CSEM_Builder_Create(CSEM_Builder **builder) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Builder *result = NULL;
     CSEM_Micro_Handlers *microHandler = NULL;
+    CSEM_RDFaLite_Handlers *rdfaHandler = NULL;
 
     if(!(result = CSEM_Calloc(1, sizeof(CSEM_Builder)))) {
         error = CSEM_ERROR_MEMORY;
@@ -404,6 +409,10 @@ CSEM_Error CSEM_Builder_Create(CSEM_Builder **builder) {
         if((error = CSEM_Micro_CreateHandler(&microHandler))) {
             goto ERROR;
         }
+        if((error = CSEM_RDFaLite_CreateHandler(&rdfaHandler))) {
+            goto ERROR;
+        }
+        /* handler for microdata */
         CSEM_Micro_SetStartScope(microHandler, microdata_startScope);
         CSEM_Micro_SetEndScope(microHandler, microdata_endScope);
         CSEM_Micro_SetStartItemProp(microHandler, microdata_startProp);
@@ -412,7 +421,14 @@ CSEM_Error CSEM_Builder_Create(CSEM_Builder **builder) {
         CSEM_Micro_SetStartId(microHandler, microdata_startId);
         CSEM_Micro_SetEndId(microHandler, microdata_endId);
         CSEM_Handler_SetMicrodataHandler(result -> handler, microHandler);
-        CSEM_Handler_SetErrorHandler(result -> handler, microdata_error);
+        /* handler for RDFa */
+        CSEM_RDFaLite_SetStartScope(rdfaHandler, rdfa_startScope);
+        CSEM_RDFaLite_SetEndScope(rdfaHandler, microdata_endScope);
+        CSEM_RDFaLite_SetStartItemProp(rdfaHandler, microdata_startProp);
+        CSEM_RDFaLite_SetItemProp(rdfaHandler, microdata_itemProp);
+        CSEM_RDFaLite_SetEndItemProp(rdfaHandler, microdata_endProp);
+        CSEM_Handler_SetRDFaLiteHandler(result -> handler, rdfaHandler);
+        CSEM_Handler_SetErrorHandler(result -> handler, handler_error);
 
         if((error = CSEM_Parser_Create(&(result -> parser)))) {
             goto ERROR;
@@ -426,6 +442,7 @@ CSEM_Error CSEM_Builder_Create(CSEM_Builder **builder) {
     return error;
 ERROR:
     CSEM_Micro_DisposeHandler(microHandler);
+    CSEM_RDFaLite_DisposeHandler(rdfaHandler);
     CSEM_Handler_Dispose(result -> handler, CSEM_FALSE);
     CSEM_Builder_Dispose(result);
     return error;

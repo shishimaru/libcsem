@@ -40,11 +40,11 @@ CSEM_Node *CSEM_Node_GetParent(CSEM_Node *node) {
 void *CSEM_Node_GetObject(CSEM_Node *node) {
     if(node -> type == CSEM_NODE_TYPE_DOCUMENT) {
         return node -> obj.doc;
-    } else if(node -> type == CSEM_NODE_TYPE_MICRO_ITEM) {
+    } else if(node -> type == CSEM_NODE_TYPE_ITEM) {
         return node -> obj.item;
     } else if(node -> type == CSEM_NODE_TYPE_MICRO_ID) {
         return node -> obj.id;
-    } else if(node -> type == CSEM_NODE_TYPE_MICRO_PROPERTY) {
+    } else if(node -> type == CSEM_NODE_TYPE_PROPERTY) {
         return node -> obj.property;
     }
     return NULL;
@@ -85,12 +85,12 @@ void CSEM_Document_Dispose(CSEM_Document *document) {
         int size = CSEM_List_Size(document -> children);
         for(i = 0; i < size; i++) {
             CSEM_Node *child = CSEM_List_Get(document -> children, i);
-            if(child -> type == CSEM_NODE_TYPE_MICRO_ITEM) {
-                CSEM_Micro_Item_Dispose(child -> obj.item);
+            if(child -> type == CSEM_NODE_TYPE_ITEM) {
+                CSEM_Item_Dispose(child -> obj.item);
             } else if(child -> type == CSEM_NODE_TYPE_MICRO_ID) {
                 CSEM_Micro_Id_Dispose(child -> obj.id);
-            } else if(child -> type == CSEM_NODE_TYPE_MICRO_PROPERTY) {
-                CSEM_Micro_Property_Dispose(child -> obj.property);
+            } else if(child -> type == CSEM_NODE_TYPE_PROPERTY) {
+                CSEM_Property_Dispose(child -> obj.property);
             }
         }
         CSEM_List_Dispose(document -> children, CSEM_FALSE);

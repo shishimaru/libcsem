@@ -1,0 +1,23 @@
+# $Id$
+
+TARGET = sample
+OBJS = sample_rdfa_tree.o
+CC = @CC@
+CFLAGS = @CFLAGS@
+CPPFLAGS = @CPPFLAGS@
+CPPFLAGS += -I../../../
+LDFLAGS = @LDFLAGS@
+LDFLAGS += -L../../../
+LIBS = @LIBS@
+LIBS +=  -lcsem -lxml2 
+
+$(TARGET): $(OBJS) ../../../libcsem.a
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS) $(LIBS)
+
+.c.o:
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
+
+clean:
+	rm -f $(TARGET) $(OBJS)
+
+
