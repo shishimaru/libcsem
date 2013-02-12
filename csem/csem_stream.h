@@ -63,7 +63,6 @@ void CSEM_Handler_SetErrorHandler(CSEM_Handler *handler, CSEM_Parser_ErrorHandle
 void CSEM_Handler_SetMicrodataHandler(CSEM_Handler *handler, CSEM_Micro_Handlers *microdata);
 /**
  * Set RDFa-Lite handler to the handler manager.
- * @todo
  * @param handler   [in]manager
  * @param rdfa_lite [in]RDFa-Lite handler
  */
