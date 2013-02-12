@@ -8,7 +8,6 @@
 
 #include "csem_utils.h"
 #include "csem_types.h"
-#include "csem_micro_stream_internal.h"
 #include "libxml2/libxml/HTMLparser.h"
 
 const char *HTML5_SPACES = "\x20\x09\x0a\x0c\x0d";
@@ -55,6 +54,50 @@ static void init_rdfa_startElement(RDFa_StartElement *content) {
     memset(content, 0, sizeof(RDFa_StartElement));
     content -> freeScope = CSEM_TRUE;
     content -> freeProp = CSEM_TRUE;
+}
+char *CSEM_Parser_GetAttNameForPropValue(const char *localname, const char *ns) {
+    if(localname && (!ns || !strcmp(ns, ""))) {
+        if(!strcmp(localname, "meta")) {
+            return "content";
+        } else if(!strcmp(localname, "audio")
+                || !strcmp(localname, "embed")
+                || !strcmp(localname, "iframe")
+                || !strcmp(localname, "img")
+                || !strcmp(localname, "source")
+                || !strcmp(localname, "track")
+                || !strcmp(localname, "video")) {
+            return "src";
+        } else if(!strcmp(localname, "a")
+                || !strcmp(localname, "area")
+                || !strcmp(localname, "link")) {
+            return "href";
+        } else if(!strcmp(localname, "object")) {
+            return "data";
+        } else if(!strcmp(localname, "data")) {
+            return "value";
+        } else if(!strcmp(localname, "time")) {
+            return "datetime";
+        }
+    }
+    return NULL;
+}
+CSEM_Bool CSEM_Parser_IsUrlPropElement(const char *localname, const char *ns) {
+    if(localname && (!ns || !strcmp(ns, ""))) {
+        if(!strcmp(localname, "audio")
+                || !strcmp(localname, "embed")
+                || !strcmp(localname, "iframe")
+                || !strcmp(localname, "img")
+                || !strcmp(localname, "source")
+                || !strcmp(localname, "track")
+                || !strcmp(localname, "video")
+                || !strcmp(localname, "a")
+                || !strcmp(localname, "area")
+                || !strcmp(localname, "link")
+                || !strcmp(localname, "object")) {
+            return CSEM_TRUE;
+        }
+    }
+    return CSEM_FALSE;
 }
 static CSEM_Error rdfa_curie_resolve(CSEM_NSManager *nsManager, CSEM_List *values) {
     CSEM_Error error = CSEM_ERROR_NONE;
@@ -114,7 +157,7 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
     RDFa_StartElement rdfa;
     CSEM_Handler *handler = parser -> handler;
     CSEM_Micro_Handlers *microHandler = handler ? handler -> microdata : NULL;
-    CSEM_RDFaLite_Handlers *rdfaHandler = handler ? handler -> rdfa : NULL;
+    CSEM_RDFa_Handlers *rdfaHandler = handler ? handler -> rdfa : NULL;
 
     /* init */
     init_micro_startElement(&micro);
@@ -124,12 +167,12 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
     if(microHandler) {
         (microHandler -> currentDepth)++;
         microHandler -> startPropValue = CSEM_FALSE;
-        micro.propAttName = CSEM_Micro_GetAttNameForPropValue((const char *)name, NULL);
+        micro.propAttName = CSEM_Parser_GetAttNameForPropValue((const char *)name, NULL);
     }
     if(rdfaHandler) {
         (rdfaHandler -> currentDepth)++;
         rdfaHandler -> startPropValue = CSEM_FALSE;
-        rdfa.propAttName = CSEM_Micro_GetAttNameForPropValue((const char *)name, NULL);
+        rdfa.propAttName = CSEM_Parser_GetAttNameForPropValue((const char *)name, NULL);
     }
 
 #ifdef CSEM_DEBUG_PARSER
@@ -233,29 +276,29 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
     if(microHandler) {
         /* fire microdata handler */
         if(microHandler -> startPropValue) {/* @itemprop */
-            if(microHandler -> startProp) {
-                CSEM_Bool isUrlPropElement = CSEM_Micro_IsUrlPropElement((const char *)name, NULL);
-                micro.freeProp = microHandler -> startProp(parser -> userdata, micro.propName, isUrlPropElement);
+            if(microHandler -> propStart) {
+                CSEM_Bool isUrlPropElement = CSEM_Parser_IsUrlPropElement((const char *)name, NULL);
+                micro.freeProp = microHandler -> propStart(parser -> userdata, micro.propName, isUrlPropElement);
             }
             if(micro.propAttName) {
-                if(microHandler -> itemProp) {
+                if(microHandler -> propValue) {
                     if(micro.propValue) {
-                        microHandler -> itemProp(parser -> userdata, micro.propValue, strlen(micro.propValue));
+                        microHandler -> propValue(parser -> userdata, micro.propValue, strlen(micro.propValue));
                     } else {
-                        microHandler -> itemProp(parser -> userdata, "", 0);
+                        microHandler -> propValue(parser -> userdata, "", 0);
                     }
                 }
             }
         }
         if(micro.isStartScope) {/* @itemscope */
-            if(microHandler -> startScope) {
-                micro.freeScope = microHandler -> startScope(parser -> userdata,
+            if(microHandler -> itemStart) {
+                micro.freeScope = microHandler -> itemStart(parser -> userdata,
                         micro.itemtypes, micro.itemrefs, micro.itemid);
             }
         }
         if(micro.isStartId) {/* @id */
-            if(microHandler -> startId) {
-                micro.freeId = microHandler -> startId(parser -> userdata, micro.id);
+            if(microHandler -> idStart) {
+                micro.freeId = microHandler -> idStart(parser -> userdata, micro.id);
             }
         }
         /* update state of microdata */
@@ -281,7 +324,7 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
                     goto ERROR;
                 }
                 memcpy(bufDepth, &(microHandler -> currentDepth), sizeof(int));
-                CSEM_Stack_Push(microHandler -> scopeDepth, bufDepth);
+                CSEM_Stack_Push(microHandler -> itemDepth, bufDepth);
             }
             microHandler -> startPropValue = CSEM_FALSE;/* for @itmescope && @itemprop */
         }
@@ -327,23 +370,23 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
         }
         /* fire RDFa handler */
         if(rdfaHandler -> startPropValue) {/* @property */
-            if(rdfaHandler -> startProp) {
-                CSEM_Bool isUrlPropElement = CSEM_Micro_IsUrlPropElement((const char *)name, NULL);
-                rdfa.freeProp = rdfaHandler -> startProp(parser -> userdata, rdfa.propName, isUrlPropElement);
+            if(rdfaHandler -> propStart) {
+                CSEM_Bool isUrlPropElement = CSEM_Parser_IsUrlPropElement((const char *)name, NULL);
+                rdfa.freeProp = rdfaHandler -> propStart(parser -> userdata, rdfa.propName, isUrlPropElement);
             }
             if(rdfa.propAttName) {
-                if(rdfaHandler -> itemProp) {
+                if(rdfaHandler -> propValue) {
                     if(rdfa.propValue) {
-                        rdfaHandler -> itemProp(parser -> userdata, rdfa.propValue, strlen(rdfa.propValue));
+                        rdfaHandler -> propValue(parser -> userdata, rdfa.propValue, strlen(rdfa.propValue));
                     } else {
-                        rdfaHandler -> itemProp(parser -> userdata, "", 0);
+                        rdfaHandler -> propValue(parser -> userdata, "", 0);
                     }
                 }
             }
         }
         if(rdfa.isStartScope) {/* @typeof | @resource */
-            if(rdfaHandler -> startScope) {
-                rdfa.freeScope = rdfaHandler -> startScope(parser -> userdata,
+            if(rdfaHandler -> itemStart) {
+                rdfa.freeScope = rdfaHandler -> itemStart(parser -> userdata,
                         rdfa.itemtypes, rdfa.resource);
             }
         }
@@ -370,7 +413,7 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
                     goto ERROR;
                 }
                 memcpy(bufDepth, &(rdfaHandler -> currentDepth), sizeof(int));
-                CSEM_Stack_Push(rdfaHandler -> scopeDepth, bufDepth);
+                CSEM_Stack_Push(rdfaHandler -> itemDepth, bufDepth);
             }
             /* for @property && (@typeof || @resource) */
             rdfaHandler -> startPropValue = CSEM_FALSE;
@@ -446,30 +489,30 @@ static void sax_characters(void *ctx, const xmlChar *ch, int len) {
     CSEM_Parser *parser = ctx;
     CSEM_Handler *handler = parser -> handler;
     CSEM_Micro_Handlers *microHandler = handler ? handler -> microdata : NULL;
-    CSEM_RDFaLite_Handlers *rdfaHandler = handler ? handler -> rdfa : NULL;
+    CSEM_RDFa_Handlers *rdfaHandler = handler ? handler -> rdfa : NULL;
 
 #ifdef CSEM_DEBUG_PARSER
     puts("CH");
     if(microHandler) {
         printf("current depth = %d\n", microHandler -> currentDepth);
-        show_list_int(microHandler -> scopeDepth);
+        show_list_int(microHandler -> itemDepth);
     } else if(rdfaHandler) {
         printf("current depth = %d\n", rdfaHandler -> currentDepth);
-        show_list_int(rdfaHandler -> scopeDepth);
+        show_list_int(rdfaHandler -> itemDepth);
     }
 #endif
 
     if(microHandler) {
         if(microHandler -> startPropValue) {
-            if(microHandler -> itemProp) {
-                microHandler -> itemProp(parser -> userdata, (const char *)ch, len);
+            if(microHandler -> propValue) {
+                microHandler -> propValue(parser -> userdata, (const char *)ch, len);
             }
         }
     }
     if(rdfaHandler) {
         if(rdfaHandler -> startPropValue) {
-            if(rdfaHandler -> itemProp) {
-                rdfaHandler -> itemProp(parser -> userdata, (const char *)ch, len);
+            if(rdfaHandler -> propValue) {
+                rdfaHandler -> propValue(parser -> userdata, (const char *)ch, len);
             }
         }
     }
@@ -478,28 +521,28 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
     CSEM_Parser *parser = ctx;
     CSEM_Handler *handler = parser -> handler;
     CSEM_Micro_Handlers *microHandler = handler ? handler -> microdata : NULL;
-    CSEM_RDFaLite_Handlers *rdfaHandler = handler ? handler -> rdfa : NULL;
+    CSEM_RDFa_Handlers *rdfaHandler = handler ? handler -> rdfa : NULL;
 
     if(microHandler) {
-        int *tmpScopeDepth = CSEM_Stack_Top(microHandler -> scopeDepth);
+        int *tmpScopeDepth = CSEM_Stack_Top(microHandler -> itemDepth);
         int *tmpIdDepth = CSEM_Stack_Top(microHandler -> idDepth);
         int *tmpPropDepth = CSEM_Stack_Top(microHandler -> propDepth);
 #ifdef CSEM_DEBUG_PARSER
-        show_list_int(microHandler -> scopeDepth);
+        show_list_int(microHandler -> itemDepth);
 #endif
 
         if(*tmpScopeDepth == microHandler -> currentDepth) {
-            if(microHandler -> endScope) {
-                microHandler -> endScope(parser -> userdata);
+            if(microHandler -> itemEnd) {
+                microHandler -> itemEnd(parser -> userdata);
             }
-            if(CSEM_Stack_Size(microHandler -> scopeDepth) > 1) {
-                void *depth = CSEM_Stack_Pop(microHandler -> scopeDepth);
+            if(CSEM_Stack_Size(microHandler -> itemDepth) > 1) {
+                void *depth = CSEM_Stack_Pop(microHandler -> itemDepth);
                 CSEM_Free(depth);
             }
         }
         if(*tmpIdDepth == microHandler -> currentDepth) {
-            if(microHandler -> endId) {
-                microHandler -> endId(parser -> userdata);
+            if(microHandler -> idEnd) {
+                microHandler -> idEnd(parser -> userdata);
             }
             if(CSEM_Stack_Size(microHandler -> idDepth) > 1) {
                 void *depth = CSEM_Stack_Pop(microHandler -> idDepth);
@@ -507,8 +550,8 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
             }
         }
         if(*tmpPropDepth == microHandler -> currentDepth) {
-            if(microHandler -> endProp) {
-                microHandler -> endProp(parser -> userdata);
+            if(microHandler -> propEnd) {
+                microHandler -> propEnd(parser -> userdata);
             }
             microHandler -> startPropValue = CSEM_FALSE;
 
@@ -526,21 +569,21 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
         }
     }
     if(rdfaHandler) {
-        int *tmpScopeDepth = CSEM_Stack_Top(rdfaHandler -> scopeDepth);
+        int *tmpScopeDepth = CSEM_Stack_Top(rdfaHandler -> itemDepth);
         int *tmpVocabDepth = CSEM_Stack_Top(rdfaHandler -> vocabDepth);
         int *tmpPrefixDepth = CSEM_Stack_Top(rdfaHandler -> prefixDepth);
         int *tmpPropDepth = CSEM_Stack_Top(rdfaHandler -> propDepth);
 
 #ifdef CSEM_DEBUG_PARSER
-        show_list_int(rdfaHandler -> scopeDepth);
+        show_list_int(rdfaHandler -> itemDepth);
 #endif
 
         if(*tmpScopeDepth == rdfaHandler -> currentDepth) {
-            if(rdfaHandler -> endScope) {
-                rdfaHandler -> endScope(parser -> userdata);
+            if(rdfaHandler -> itemEnd) {
+                rdfaHandler -> itemEnd(parser -> userdata);
             }
-            if(CSEM_Stack_Size(rdfaHandler -> scopeDepth) > 1) {
-                void *depth = CSEM_Stack_Pop(rdfaHandler -> scopeDepth);
+            if(CSEM_Stack_Size(rdfaHandler -> itemDepth) > 1) {
+                void *depth = CSEM_Stack_Pop(rdfaHandler -> itemDepth);
                 CSEM_Free(depth);
             }
         }
@@ -561,8 +604,8 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
             }
         }
         if(*tmpPropDepth == rdfaHandler -> currentDepth) {
-            if(rdfaHandler -> endProp) {
-                rdfaHandler -> endProp(parser -> userdata);
+            if(rdfaHandler -> propEnd) {
+                rdfaHandler -> propEnd(parser -> userdata);
             }
             rdfaHandler -> startPropValue = CSEM_FALSE;
 
@@ -699,7 +742,7 @@ void CSEM_Handler_Dispose(CSEM_Handler *handler, CSEM_Bool doFree) {
                 CSEM_Micro_DisposeHandler(handler -> microdata);
             }
             if(handler -> rdfa) {
-                CSEM_RDFaLite_DisposeHandler(handler -> rdfa);
+                CSEM_RDFa_DisposeHandler(handler -> rdfa);
             }
         }
         CSEM_Free(handler);
@@ -711,6 +754,6 @@ void CSEM_Handler_SetErrorHandler(CSEM_Handler *handler, CSEM_Parser_ErrorHandle
 void CSEM_Handler_SetMicrodataHandler(CSEM_Handler *handler, CSEM_Micro_Handlers *microdata) {
     handler -> microdata = microdata;
 }
-void CSEM_Handler_SetRDFaLiteHandler(CSEM_Handler *handler, CSEM_RDFaLite_Handlers *rdfa) {
+void CSEM_Handler_SetRDFaHandler(CSEM_Handler *handler, CSEM_RDFa_Handlers *rdfa) {
     handler -> rdfa = rdfa;
 }

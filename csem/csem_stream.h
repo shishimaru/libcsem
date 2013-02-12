@@ -67,10 +67,10 @@ void CSEM_Handler_SetMicrodataHandler(CSEM_Handler *handler, CSEM_Micro_Handlers
  * @param handler   [in]manager
  * @param rdfa_lite [in]RDFa-Lite handler
  */
-void CSEM_Handler_SetRDFaLiteHandler(CSEM_Handler *handler, CSEM_RDFaLite_Handlers *rdfa_lite);
+void CSEM_Handler_SetRDFaHandler(CSEM_Handler *handler, CSEM_RDFa_Handlers *rdfa_lite);
 /**
  * Create a streaming parser.
- * @param parser [in]created streaming parser
+ * @param parser [out]created streaming parser
  * @return error code
  */
 CSEM_Error CSEM_Parser_Create(CSEM_Parser **parser);
@@ -101,7 +101,8 @@ CSEM_Error CSEM_Parser_Parse(CSEM_Parser *parser, int fd);
  * @param terminate [in]set 1 if the chunk is final data to be parsed. Otherwise, set 0.
  * @return error code
  */
-CSEM_Error CSEM_Parser_ParseChunk(CSEM_Parser *parser, const char *chunk, int size, int terminate);
+CSEM_Error CSEM_Parser_ParseChunk(CSEM_Parser *parser,
+        const char *chunk, int size, int terminate);
 /**
  * Dispose the streaming parser.
  * @param parser [in]streming parser to be freed

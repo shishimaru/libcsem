@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Parser *stream = NULL;
     CSEM_Handler *handler = NULL;
-    CSEM_RDFaLite_Handlers *rdfaHandler = NULL;
+    CSEM_RDFa_Handlers *rdfaHandler = NULL;
     char *filename = NULL;
     int fd = -1;
 
@@ -61,17 +61,17 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "failed to create handler\n");
         goto FINISH;
     }
-    if((error = CSEM_RDFaLite_CreateHandler(&rdfaHandler))) {
+    if((error = CSEM_RDFa_CreateHandler(&rdfaHandler))) {
         fprintf(stderr, "failed to create RDFa Lite handler\n");
         goto FINISH;
     }
     /* register callback handlers to stream parser */
-    CSEM_RDFaLite_SetStartScope(rdfaHandler, startScope);
-    CSEM_RDFaLite_SetEndScope(rdfaHandler, endScope);
-    CSEM_RDFaLite_SetStartItemProp(rdfaHandler, startProp);
-    CSEM_RDFaLite_SetItemProp(rdfaHandler, itemProp);
-    CSEM_RDFaLite_SetEndItemProp(rdfaHandler, endProp);
-    CSEM_Handler_SetRDFaLiteHandler(handler, rdfaHandler);
+    CSEM_RDFa_SetItemStart(rdfaHandler, startScope);
+    CSEM_RDFa_SetItemEnd(rdfaHandler, endScope);
+    CSEM_RDFa_SetPropStart(rdfaHandler, startProp);
+    CSEM_RDFa_SetPropValue(rdfaHandler, itemProp);
+    CSEM_RDFa_SetPropEnd(rdfaHandler, endProp);
+    CSEM_Handler_SetRDFaHandler(handler, rdfaHandler);
     CSEM_Parser_SetHandler(stream, handler);
 
     /* start parse process */

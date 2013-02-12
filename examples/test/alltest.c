@@ -124,7 +124,7 @@ static CU_TestInfo testinfo_microdata[] = {
         { "test microdata API : properties.getValues()", test_microdata_tree_properties_getValues},//*/
         CU_TEST_INFO_NULL,
 };
-static CU_TestInfo testinfo_RDFaLite[] = {
+static CU_TestInfo testinfo_RDFa[] = {
         { "test stream parser : basic", test_rdfa_stream_basic},
         { "test stream parser : vocab", test_rdfa_stream_vocab},
         { "test tree parser   : sample basic", test_rdfa_tree_basic},
@@ -135,14 +135,14 @@ static CU_TestInfo testinfo_RDFaLite[] = {
         CU_TEST_INFO_NULL,
 };
 static CU_SuiteInfo suites[] = {
-        /*{ "utils",  NULL, NULL, testinfo_utils},
+        { "utils",  NULL, NULL, testinfo_utils},
         { "list", NULL, NULL, testinfo_list},
         { "stack", NULL, NULL, testinfo_stack},
         { "ns manager", NULL, NULL, testinfo_ns_manager},
         { "url",  NULL, NULL, testinfo_url},//*/
 
-        //{ "microdata", NULL, NULL, testinfo_microdata},
-        { "RDFa Lite", NULL, NULL, testinfo_RDFaLite},
+        { "microdata", NULL, NULL, testinfo_microdata},
+        { "RDFa Lite", NULL, NULL, testinfo_RDFa},
 
         CU_SUITE_INFO_NULL,
 };

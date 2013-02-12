@@ -20,11 +20,11 @@ CSEM_NS_C_BEGIN
 #include "csem_common.h"
 
 /** Array List. */
-typedef struct _CSEM_LIST CSEM_List;
+typedef struct CSEM_List CSEM_List;
 
 /**
  * Create a list instance.
- * @param initial_size [in]a initial size of the array list
+ * @param initial_size [in]initial size of the array list
  * @return a newly created array list
  */
 CSEM_List *CSEM_List_Create(size_t initial_size);

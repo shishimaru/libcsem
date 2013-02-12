@@ -8,15 +8,15 @@
 #include "csem_utils.h"
 #include "csem_types.h"
 
-CSEM_Error CSEM_RDFaLite_CreateHandler(CSEM_RDFaLite_Handlers **handler) {
+CSEM_Error CSEM_RDFa_CreateHandler(CSEM_RDFa_Handlers **handler) {
     CSEM_Error error = CSEM_ERROR_NONE;
-    CSEM_RDFaLite_Handlers *result = NULL;
+    CSEM_RDFa_Handlers *result = NULL;
     int *initScopeDepth = NULL;
     int *initVocabDepth = NULL;
     int *initPrefixDepth = NULL;
     int *initPropDepth = NULL;
 
-    if(!(result = CSEM_Calloc(1, sizeof(CSEM_RDFaLite_Handlers)))) {
+    if(!(result = CSEM_Calloc(1, sizeof(CSEM_RDFa_Handlers)))) {
         error = CSEM_ERROR_MEMORY;
         goto ERROR;
     }
@@ -27,12 +27,12 @@ CSEM_Error CSEM_RDFaLite_CreateHandler(CSEM_RDFaLite_Handlers **handler) {
     result -> currentDepth = -1;
     {/* add -1 to scopeDepth */
         int value = -1;
-        result -> scopeDepth = CSEM_Stack_Create(8);
+        result -> itemDepth = CSEM_Stack_Create(8);
         if(!(initScopeDepth = CSEM_Malloc(sizeof(int)))) {
             goto ERROR;
         }
         memcpy(initScopeDepth, &value, sizeof(int));
-        CSEM_Stack_Push(result -> scopeDepth, initScopeDepth);
+        CSEM_Stack_Push(result -> itemDepth, initScopeDepth);
     }
     {/* add -1 to vocabDepth */
         int value = -1;
@@ -66,33 +66,33 @@ CSEM_Error CSEM_RDFaLite_CreateHandler(CSEM_RDFaLite_Handlers **handler) {
     *handler = result;
     return error;
 ERROR:
-    CSEM_RDFaLite_DisposeHandler(result);
+    CSEM_RDFa_DisposeHandler(result);
     CSEM_Free(initScopeDepth);
     CSEM_Free(initPropDepth);
     return error;
 }
-void CSEM_RDFaLite_DisposeHandler(CSEM_RDFaLite_Handlers *handler) {
+void CSEM_RDFa_DisposeHandler(CSEM_RDFa_Handlers *handler) {
     if(handler) {
         CSEM_NSManager_Dispose(handler -> nsManager, CSEM_TRUE);
-        CSEM_Stack_Dispose(handler -> scopeDepth, CSEM_TRUE);
+        CSEM_Stack_Dispose(handler -> itemDepth, CSEM_TRUE);
         CSEM_Stack_Dispose(handler -> vocabDepth, CSEM_TRUE);
         CSEM_Stack_Dispose(handler -> prefixDepth, CSEM_TRUE);
         CSEM_Stack_Dispose(handler -> propDepth, CSEM_TRUE);
         CSEM_Free(handler);
     }
 }
-void CSEM_RDFaLite_SetStartScope(CSEM_RDFaLite_Handlers *handler, CSEM_RDFaLite_StartScope startScope) {
-    handler -> startScope = startScope;
+void CSEM_RDFa_SetItemStart(CSEM_RDFa_Handlers *handler, CSEM_RDFa_ItemStart itemStart) {
+    handler -> itemStart = itemStart;
 }
-void CSEM_RDFaLite_SetEndScope(CSEM_RDFaLite_Handlers *handler, CSEM_RDFaLite_EndScope endScope) {
-    handler -> endScope = endScope;
+void CSEM_RDFa_SetItemEnd(CSEM_RDFa_Handlers *handler, CSEM_RDFa_ItemEnd itemEnd) {
+    handler -> itemEnd = itemEnd;
 }
-void CSEM_RDFaLite_SetStartItemProp(CSEM_RDFaLite_Handlers *handler, CSEM_RDFaLite_StartProp startProp) {
-    handler -> startProp = startProp;
+void CSEM_RDFa_SetPropStart(CSEM_RDFa_Handlers *handler, CSEM_RDFa_PropStart propStart) {
+    handler -> propStart = propStart;
 }
-void CSEM_RDFaLite_SetItemProp(CSEM_RDFaLite_Handlers *handler, CSEM_RDFaLite_ItemProp itemProp) {
-    handler -> itemProp = itemProp;
+void CSEM_RDFa_SetPropValue(CSEM_RDFa_Handlers *handler, CSEM_RDFa_PropValue propValue) {
+    handler -> propValue = propValue;
 }
-void CSEM_RDFaLite_SetEndItemProp(CSEM_RDFaLite_Handlers *handler, CSEM_RDFaLite_EndProp endProp) {
-    handler -> endProp = endProp;
+void CSEM_RDFa_SetPropEnd(CSEM_RDFa_Handlers *handler, CSEM_RDFa_PropEnd propEnd) {
+    handler -> propEnd = propEnd;
 }

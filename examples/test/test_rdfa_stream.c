@@ -25,7 +25,7 @@ static CSEM_Bool handler_startScope(const void *userdata,
 
         Item *item = test_utils_createItem(CSEM_FALSE, CSEM_FALSE);
         item -> types = (CSEM_List *)types;
-        item -> id = resource;
+        item -> id = (char *)resource;
         item -> parent = activeItem;
 
         if(!item -> parent) {
@@ -231,15 +231,15 @@ void test_rdfa_stream_basic() {
     CSEM_Handler *handler;
     CSEM_Handler_Create(&handler);
 
-    CSEM_RDFaLite_Handlers *rdfa;
-    CSEM_RDFaLite_CreateHandler(&rdfa); {
-        CSEM_RDFaLite_SetStartScope(rdfa, handler_startScope);
-        CSEM_RDFaLite_SetEndScope(rdfa, handler_endScope);
-        CSEM_RDFaLite_SetStartItemProp(rdfa, handler_startProp);
-        CSEM_RDFaLite_SetItemProp(rdfa, handler_prop);
-        CSEM_RDFaLite_SetEndItemProp(rdfa, handler_endProp);
+    CSEM_RDFa_Handlers *rdfa;
+    CSEM_RDFa_CreateHandler(&rdfa); {
+        CSEM_RDFa_SetItemStart(rdfa, handler_startScope);
+        CSEM_RDFa_SetItemEnd(rdfa, handler_endScope);
+        CSEM_RDFa_SetPropStart(rdfa, handler_startProp);
+        CSEM_RDFa_SetPropValue(rdfa, handler_prop);
+        CSEM_RDFa_SetPropEnd(rdfa, handler_endProp);
     }
-    CSEM_Handler_SetRDFaLiteHandler(handler, rdfa);
+    CSEM_Handler_SetRDFaHandler(handler, rdfa);
     CSEM_Handler_SetErrorHandler(handler, handler_error);
 
     CSEM_Parser *parser;
@@ -350,15 +350,15 @@ void test_rdfa_stream_vocab() {
     CSEM_Handler *handler;
     CSEM_Handler_Create(&handler);
 
-    CSEM_RDFaLite_Handlers *rdfa;
-    CSEM_RDFaLite_CreateHandler(&rdfa); {
-        CSEM_RDFaLite_SetStartScope(rdfa, handler_startScope);
-        CSEM_RDFaLite_SetEndScope(rdfa, handler_endScope);
-        CSEM_RDFaLite_SetStartItemProp(rdfa, handler_startProp);
-        CSEM_RDFaLite_SetItemProp(rdfa, handler_prop);
-        CSEM_RDFaLite_SetEndItemProp(rdfa, handler_endProp);
+    CSEM_RDFa_Handlers *rdfa;
+    CSEM_RDFa_CreateHandler(&rdfa); {
+        CSEM_RDFa_SetItemStart(rdfa, handler_startScope);
+        CSEM_RDFa_SetItemEnd(rdfa, handler_endScope);
+        CSEM_RDFa_SetPropStart(rdfa, handler_startProp);
+        CSEM_RDFa_SetPropValue(rdfa, handler_prop);
+        CSEM_RDFa_SetPropEnd(rdfa, handler_endProp);
     }
-    CSEM_Handler_SetRDFaLiteHandler(handler, rdfa);
+    CSEM_Handler_SetRDFaHandler(handler, rdfa);
     CSEM_Handler_SetErrorHandler(handler, handler_error);
 
     CSEM_Parser *parser;

@@ -276,13 +276,13 @@ void test_microdata_stream_basic() {
 
     CSEM_Micro_Handlers *microdata;
     CSEM_Micro_CreateHandler(&microdata); {
-        CSEM_Micro_SetStartScope(microdata, handler_startScope);
-        CSEM_Micro_SetEndScope(microdata, handler_endScope);
-        CSEM_Micro_SetStartId(microdata, handler_startId);
-        CSEM_Micro_SetEndId(microdata, handler_endId);
-        CSEM_Micro_SetStartItemProp(microdata, handler_startProp);
-        CSEM_Micro_SetItemProp(microdata, handler_prop);
-        CSEM_Micro_SetEndItemProp(microdata, handler_endProp);
+        CSEM_Micro_SetItemStart(microdata, handler_startScope);
+        CSEM_Micro_SetItemEnd(microdata, handler_endScope);
+        CSEM_Micro_SetIdStart(microdata, handler_startId);
+        CSEM_Micro_SetIdEnd(microdata, handler_endId);
+        CSEM_Micro_SetPropStart(microdata, handler_startProp);
+        CSEM_Micro_SetPropValue(microdata, handler_prop);
+        CSEM_Micro_SetPropEnd(microdata, handler_endProp);
     }
     CSEM_Handler_SetMicrodataHandler(handler, microdata);
     CSEM_Handler_SetErrorHandler(handler, handler_error);
@@ -569,13 +569,13 @@ void test_microdata_stream_values() {
 
     CSEM_Micro_Handlers *microdata;
     CSEM_Micro_CreateHandler(&microdata); {
-        CSEM_Micro_SetStartScope(microdata, handler_startScope);
-        CSEM_Micro_SetEndScope(microdata, handler_endScope);
-        CSEM_Micro_SetStartId(microdata, handler_startId);
-        CSEM_Micro_SetEndId(microdata, handler_endId);
-        CSEM_Micro_SetStartItemProp(microdata, handler_startProp);
-        CSEM_Micro_SetItemProp(microdata, handler_prop);
-        CSEM_Micro_SetEndItemProp(microdata, handler_endProp);
+        CSEM_Micro_SetItemStart(microdata, handler_startScope);
+        CSEM_Micro_SetItemEnd(microdata, handler_endScope);
+        CSEM_Micro_SetIdStart(microdata, handler_startId);
+        CSEM_Micro_SetIdEnd(microdata, handler_endId);
+        CSEM_Micro_SetPropStart(microdata, handler_startProp);
+        CSEM_Micro_SetPropValue(microdata, handler_prop);
+        CSEM_Micro_SetPropEnd(microdata, handler_endProp);
     }
     CSEM_Handler_SetMicrodataHandler(handler, microdata);
     CSEM_Handler_SetErrorHandler(handler, handler_error);

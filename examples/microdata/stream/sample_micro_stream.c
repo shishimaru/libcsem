@@ -75,14 +75,14 @@ int main(int argc, char *argv[]) {
         goto FINISH;
     }
     /* register callback handlers to stream parser */
-    CSEM_Micro_SetStartScope(microHandler, startScope);
-    CSEM_Micro_SetStartScope(microHandler, startScope);
-    CSEM_Micro_SetEndScope(microHandler, endScope);
-    CSEM_Micro_SetStartItemProp(microHandler, startProp);
-    CSEM_Micro_SetItemProp(microHandler, itemProp);
-    CSEM_Micro_SetEndItemProp(microHandler, endProp);
-    CSEM_Micro_SetStartId(microHandler, startId);
-    CSEM_Micro_SetEndId(microHandler, endId);
+    CSEM_Micro_SetItemStart(microHandler, startScope);
+    CSEM_Micro_SetItemStart(microHandler, startScope);
+    CSEM_Micro_SetItemEnd(microHandler, endScope);
+    CSEM_Micro_SetPropStart(microHandler, startProp);
+    CSEM_Micro_SetPropValue(microHandler, itemProp);
+    CSEM_Micro_SetPropEnd(microHandler, endProp);
+    CSEM_Micro_SetIdStart(microHandler, startId);
+    CSEM_Micro_SetIdEnd(microHandler, endId);
     CSEM_Handler_SetMicrodataHandler(handler, microHandler);
     CSEM_Parser_SetHandler(stream, handler);
 

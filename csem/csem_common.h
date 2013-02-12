@@ -16,26 +16,28 @@
 
 CSEM_NS_C_BEGIN
 /**
- * @mainpage HTML5 microdata Library
- * <p>HTML5 microdata Library enables native applications to
- * extract microdata from HTML5 with high performance and small heap size.</p>
+ * @mainpage HTML5 microdata/RDFa-Lite Library
+ * <p>HTML5 microdata/RDFa-Lite Library enables native applications to
+ * extract them from HTML5 with high performance and small heap size.</p>
  * <h3>Function</h3>
  * <ul>
- *   <li><a href="http://www.w3.org/html/wg/drafts/microdata/master/">HTML5 microdata</a> parser</li>
+ *   <li>Parser for <a href="http://www.w3.org/TR/2012/WD-microdata-20121025/">HTML5 microdata</a>,
+ *       <a href="http://www.w3.org/TR/2012/REC-rdfa-lite-20120607/">RDFa Lite 1.1</a>
+ *   </li>
  *   <ul>
  *     <li>Light weight streaming parser</li>
  *     <ul>
- *       <li>Parse chunk html little by little, and when microdata is detected,
- *       the corresponding events are passed via registered callback handlers</li>
- *       <li>Because currently the parser works on SAX parser and don't create
+ *       <li>Parse chunk html little by little, and when microdata/RDFa-Lite is detected,
+ *       the corresponding events are passed via callback handlers</li>
+ *       <li>Because currently the parsers work on SAX parser and don't create
  *       large DOM tree internally, applications can reduce the memory foot print
  *     </ul>
  *     <li>Data model builder</li>
  *     <ul>
- *       <li>Create a data model for microdata based on the parsed result of underlying streaming parser</li>
- *       <li>All microdata can be accessed via HTML5 microdata API</li>
+ *       <li>Create a data model based on the parsed result of underlying streaming parser</li>
+ *       <li>All semantics of microdata/RDFa-Lite can be accessed via
+ *       <a href="http://www.w3.org/html/wg/drafts/microdata/master/#microdata-dom-api">HTML5 microdata API</a></li>
  *     </ul>
- *     <li><a href="http://www.w3.org/html/wg/drafts/microdata/master/#microdata-dom-api">microdata API</a></li>
  *   </ul>
  * </ul>
  * <h3>Platform</h3>

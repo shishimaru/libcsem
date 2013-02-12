@@ -27,17 +27,17 @@ CSEM_NS_C_BEGIN
 #include "csem_ns_manager.h"
 
 struct CSEM_Micro_Handlers {
-    CSEM_Micro_StartScope startScope;
-    CSEM_Micro_EndScope   endScope;
-    CSEM_Micro_StartProp  startProp;
-    CSEM_Micro_ItemProp   itemProp;
-    CSEM_Micro_EndProp    endProp;
-    CSEM_Micro_StartId    startId;
-    CSEM_Micro_EndId      endId;
+    CSEM_Micro_ItemStart itemStart;
+    CSEM_Micro_ItemEnd   itemEnd;
+    CSEM_Micro_PropStart propStart;
+    CSEM_Micro_PropValue propValue;
+    CSEM_Micro_PropEnd   propEnd;
+    CSEM_Micro_IdStart   idStart;
+    CSEM_Micro_IdEnd     idEnd;
 
     int currentDepth;
-    /* scope */
-    CSEM_Stack *scopeDepth;
+    /* item */
+    CSEM_Stack *itemDepth;
     /* id */
     CSEM_Stack *idDepth;
     /* prop */
@@ -45,17 +45,17 @@ struct CSEM_Micro_Handlers {
     CSEM_Stack *propDepth;
 };
 
-struct CSEM_RDFaLite_Handlers {
-    CSEM_RDFaLite_StartScope startScope;
-    CSEM_RDFaLite_EndScope   endScope;
-    CSEM_RDFaLite_StartProp  startProp;
-    CSEM_RDFaLite_ItemProp   itemProp;
-    CSEM_RDFaLite_EndProp    endProp;
+struct CSEM_RDFa_Handlers {
+    CSEM_RDFa_ItemStart itemStart;
+    CSEM_RDFa_ItemEnd   itemEnd;
+    CSEM_RDFa_PropStart propStart;
+    CSEM_RDFa_PropValue propValue;
+    CSEM_RDFa_PropEnd   propEnd;
 
     CSEM_NSManager *nsManager;
     int currentDepth;
-    /* scope */
-    CSEM_Stack *scopeDepth;
+    /* item */
+    CSEM_Stack *itemDepth;
     /* vocab */
     CSEM_Stack *vocabDepth;
     /* prefix */
@@ -67,7 +67,7 @@ struct CSEM_RDFaLite_Handlers {
 
 struct CSEM_Handler {
     CSEM_Micro_Handlers *microdata;
-    CSEM_RDFaLite_Handlers  *rdfa;
+    CSEM_RDFa_Handlers  *rdfa;
     CSEM_Parser_ErrorHandler error;
 };
 
@@ -128,7 +128,7 @@ struct CSEM_Builder {
     char *buf;
     size_t bufLen;
     size_t bufReadLen;
-    CSEM_MICRO_VALUE_TYPE propValueType;
+    CSEM_VALUE_TYPE propValueType;
 };
 
 CSEM_NS_C_END

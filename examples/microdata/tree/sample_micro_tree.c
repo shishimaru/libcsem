@@ -14,7 +14,7 @@ void showItem(CSEM_Item *item, int depth) {
         char *itemid = CSEM_Item_GetId(item);
         int j = 0;
         CSEM_List *types = CSEM_Item_GetTypes(item);
-        CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+        CSEM_List *refs = CSEM_Item_GetRefs(item);
         CSEM_List *properties = CSEM_Item_GetProperties(item);
 
         INDENT(depth);puts("ITEM {");
@@ -33,8 +33,8 @@ void showItem(CSEM_Item *item, int depth) {
 }
 void showId(CSEM_Id *id, int depth) {
     if(id) {
-        char *id_value = CSEM_Micro_Id_GetId(id);
-        CSEM_List *properties = CSEM_Micro_Id_GetProperties(id);
+        char *id_value = CSEM_Id_GetId(id);
+        CSEM_List *properties = CSEM_Id_GetProperties(id);
 
         INDENT(depth);puts("ID {");
         if(id_value) {
@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
             if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_ITEM) {
                 CSEM_Item *item = CSEM_Node_GetObject(node);
                 showItem(item, 0);
-            } else if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_MICRO_ID) {
+            } else if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_ID) {
                 CSEM_Id *id = CSEM_Node_GetObject(node);
                 showId(id, 0);
             } else if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_PROPERTY) {

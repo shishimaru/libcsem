@@ -46,7 +46,7 @@ void test_microdata_tree_values() {
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 1), "http://sample2.org/Person");
             }
             {/* refs */
-                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CSEM_List *refs = CSEM_Item_GetRefs(item);
                 CU_ASSERT_EQUAL(CSEM_List_Size(refs), 2);
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 0), "address");
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 1), "phone");
@@ -492,7 +492,7 @@ void test_microdata_tree_recursive_itemprop() {
                 CU_ASSERT_EQUAL(types, NULL);
             }
             {/* refs */
-                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CSEM_List *refs = CSEM_Item_GetRefs(item);
                 CU_ASSERT_EQUAL(refs, NULL);
             }
             {/* properties */
@@ -651,7 +651,7 @@ void test_microdata_tree_basic_resolve() {
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 1), "http://sample2.org/Person");
             }
             {/* refs */
-                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CSEM_List *refs = CSEM_Item_GetRefs(item);
                 CU_ASSERT_EQUAL(CSEM_List_Size(refs), 2);
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 0), "address");
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 1), "phone");
@@ -700,7 +700,7 @@ void test_microdata_tree_basic_resolve() {
                         CU_ASSERT_EQUAL(CSEM_Item_GetId(item), NULL);
                         CU_ASSERT_EQUAL(CSEM_Item_GetTypes(item), NULL);
 
-                        CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                        CSEM_List *refs = CSEM_Item_GetRefs(item);
                         CU_ASSERT_EQUAL(CSEM_List_Size(refs), 1);
                         CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 0), "address");
 
@@ -872,7 +872,7 @@ void test_microdata_tree_resolve_recursive_items() {
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types_a, 0), "http://sample.org/A");
             }
             {/* refs */
-                CSEM_List *refs_a = CSEM_Micro_Item_GetRefs(item_a);
+                CSEM_List *refs_a = CSEM_Item_GetRefs(item_a);
                 CU_ASSERT_EQUAL(CSEM_List_Size(refs_a), 1);
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs_a, 0), "B");
             }
@@ -900,7 +900,7 @@ void test_microdata_tree_resolve_recursive_items() {
                             CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types_b, 0), "http://sample.org/B");
                         }
                         {/* refs */
-                            CSEM_List *refs_b = CSEM_Micro_Item_GetRefs(item_b);
+                            CSEM_List *refs_b = CSEM_Item_GetRefs(item_b);
                             CU_ASSERT_EQUAL(CSEM_List_Size(refs_b), 1);
                             CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs_b, 0), "C");
                         }
@@ -928,7 +928,7 @@ void test_microdata_tree_resolve_recursive_items() {
                                         CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types_c, 0), "http://sample.org/C");
                                     }
                                     {/* refs */
-                                        CSEM_List *refs_c = CSEM_Micro_Item_GetRefs(item_c);
+                                        CSEM_List *refs_c = CSEM_Item_GetRefs(item_c);
                                         CU_ASSERT_EQUAL(CSEM_List_Size(refs_c), 1);
                                         CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs_c, 0), "D");
                                     }
@@ -956,7 +956,7 @@ void test_microdata_tree_resolve_recursive_items() {
                                                     CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types_d, 0), "http://sample.org/D");
                                                 }
                                                 {/* refs */
-                                                    CSEM_List *refs_d = CSEM_Micro_Item_GetRefs(item_d);
+                                                    CSEM_List *refs_d = CSEM_Item_GetRefs(item_d);
                                                     CU_ASSERT_EQUAL(CSEM_List_Size(refs_d), 1);
                                                     CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs_d, 0), "E");
                                                 }
@@ -984,7 +984,7 @@ void test_microdata_tree_resolve_recursive_items() {
                                                                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types_e, 0), "http://sample.org/E");
                                                             }
                                                             {/* refs */
-                                                                CSEM_List *refs_e = CSEM_Micro_Item_GetRefs(item_e);
+                                                                CSEM_List *refs_e = CSEM_Item_GetRefs(item_e);
                                                                 CU_ASSERT_EQUAL(refs_e, NULL);
                                                             }
                                                             {/* properties */
@@ -1056,7 +1056,7 @@ void test_microdata_tree_chunked() {
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 1), "http://sample2.org/Person");
             }
             {/* refs */
-                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CSEM_List *refs = CSEM_Item_GetRefs(item);
                 CU_ASSERT_EQUAL(CSEM_List_Size(refs), 2);
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 0), "address");
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 1), "phone");
@@ -1105,7 +1105,7 @@ void test_microdata_tree_chunked() {
                         CU_ASSERT_EQUAL(CSEM_Item_GetId(item), NULL);
                         CU_ASSERT_EQUAL(CSEM_Item_GetTypes(item), NULL);
 
-                        CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                        CSEM_List *refs = CSEM_Item_GetRefs(item);
                         CU_ASSERT_EQUAL(CSEM_List_Size(refs), 1);
                         CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 0), "address");
 
@@ -1585,7 +1585,7 @@ void test_microdata_tree_getNamedProperties() {
 
                     CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(valueTypes, 0)), CSEM_VALUE_TYPE_ITEM);
                     CSEM_Item *item_band = CSEM_List_Get(values, 0);
-                    CSEM_List *refs = CSEM_Micro_Item_GetRefs(item_band);
+                    CSEM_List *refs = CSEM_Item_GetRefs(item_band);
                     CU_ASSERT_EQUAL(CSEM_List_Size(refs), 1);
                     CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 0), "address");
                 }
@@ -1807,7 +1807,7 @@ void test_microdata_tree_schema_org_event_ex1() {
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/Event");
             }
             {/* refs */
-                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CSEM_List *refs = CSEM_Item_GetRefs(item);
                 CU_ASSERT_EQUAL(refs, NULL);
             }
             {/* properties */
@@ -1932,7 +1932,7 @@ void test_microdata_tree_schema_org_event_ex2() {
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/MusicGroup");
             }
             {/* refs */
-                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CSEM_List *refs = CSEM_Item_GetRefs(item);
                 CU_ASSERT_EQUAL(refs, NULL);
             }
             {/* properties */
@@ -1974,7 +1974,7 @@ void test_microdata_tree_schema_org_event_ex2() {
                             CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/VideoObject");
                         }
                         {/* refs */
-                            CSEM_List *refs = CSEM_Micro_Item_GetRefs(tmpItem);
+                            CSEM_List *refs = CSEM_Item_GetRefs(tmpItem);
                             CU_ASSERT_EQUAL(refs, NULL);
                         }
                         {/* properties */
@@ -2060,7 +2060,7 @@ void test_microdata_tree_schema_org_event_ex2() {
                             CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/MusicRecording");
                         }
                         {/* refs */
-                            CSEM_List *refs = CSEM_Micro_Item_GetRefs(tmpItem);
+                            CSEM_List *refs = CSEM_Item_GetRefs(tmpItem);
                             CU_ASSERT_EQUAL(refs, NULL);
                         }
                         {/* properties */
@@ -2320,7 +2320,7 @@ void test_microdata_tree_schema_org_person() {
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/Person");
             }
             {/* refs */
-                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CSEM_List *refs = CSEM_Item_GetRefs(item);
                 CU_ASSERT_EQUAL(refs, NULL);
             }
             {/* properties */
@@ -2390,7 +2390,7 @@ void test_microdata_tree_schema_org_person() {
                             CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/PostalAddress");
                         }
                         {/* refs */
-                            CSEM_List *refs = CSEM_Micro_Item_GetRefs(tmpItem);
+                            CSEM_List *refs = CSEM_Item_GetRefs(tmpItem);
                             CU_ASSERT_EQUAL(refs, NULL);
                         }
                         {/* properties */
@@ -2569,7 +2569,7 @@ void test_microdata_tree_schema_org_place_ex1() {
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/LocalBusiness");
             }
             {/* refs */
-                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CSEM_List *refs = CSEM_Item_GetRefs(item);
                 CU_ASSERT_EQUAL(refs, NULL);
             }
             {/* properties */
@@ -2624,7 +2624,7 @@ void test_microdata_tree_schema_org_place_ex1() {
                             CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/PostalAddress");
                         }
                         {/* refs */
-                            CSEM_List *refs = CSEM_Micro_Item_GetRefs(tmpItem);
+                            CSEM_List *refs = CSEM_Item_GetRefs(tmpItem);
                             CU_ASSERT_EQUAL(refs, NULL);
                         }
                         {/* properties */
@@ -2735,7 +2735,7 @@ void test_microdata_tree_schema_org_place_ex2() {
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/Place");
             }
             {/* refs */
-                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CSEM_List *refs = CSEM_Item_GetRefs(item);
                 CU_ASSERT_EQUAL(refs, NULL);
             }
             {/* properties */
@@ -2777,7 +2777,7 @@ void test_microdata_tree_schema_org_place_ex2() {
                             CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/GeoCoordinates");
                         }
                         {/* refs */
-                            CSEM_List *refs = CSEM_Micro_Item_GetRefs(tmpItem);
+                            CSEM_List *refs = CSEM_Item_GetRefs(tmpItem);
                             CU_ASSERT_EQUAL(refs, NULL);
                         }
                         {/* properties */
@@ -2859,7 +2859,7 @@ void test_microdata_tree_schema_org_place_ex4() {
                 CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://schema.org/CivicStructure");
             }
             {/* refs */
-                CSEM_List *refs = CSEM_Micro_Item_GetRefs(item);
+                CSEM_List *refs = CSEM_Item_GetRefs(item);
                 CU_ASSERT_EQUAL(refs, NULL);
             }
             {/* properties */

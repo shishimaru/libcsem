@@ -9,7 +9,7 @@
 #include "csem/csem_list.h"
 #include "csem_utils.h"
 
-struct _CSEM_LIST {
+struct CSEM_List {
     size_t initial_size;
     size_t used_size;
     size_t allocated_size;
@@ -42,9 +42,11 @@ void CSEM_List_Dispose(CSEM_List *list, CSEM_Bool freeData) {
 }
 CSEM_Error CSEM_List_Add(CSEM_List *list, const void *data) {
     if(list->used_size >= list->allocated_size) {
-        if(!(list->data = realloc(list->data, sizeof(void *) * (list->allocated_size + list->initial_size)))) {
+        void *tmp = NULL;
+        if(!(tmp = realloc(list->data, sizeof(void *) * (list->allocated_size + list->initial_size)))) {
             return CSEM_ERROR_MEMORY;
         }
+        list->data = tmp;
         list->allocated_size = list->allocated_size + list->initial_size;
     }
     list-> data[list->used_size++] = (void *)data;

@@ -4,7 +4,6 @@
  * uchida@w3.org
  */
 #include <string.h>
-#include "csem_micro_stream_internal.h"
 #include "csem_utils.h"
 #include "csem_types.h"
 
@@ -22,12 +21,12 @@ CSEM_Error CSEM_Micro_CreateHandler(CSEM_Micro_Handlers **handler) {
     result -> currentDepth = -1;
     {/* add -1 to scopeDepth */
         int value = -1;
-        result -> scopeDepth = CSEM_Stack_Create(8);
+        result -> itemDepth = CSEM_Stack_Create(8);
         if(!(initScopeDepth = CSEM_Malloc(sizeof(int)))) {
             goto ERROR;
         }
         memcpy(initScopeDepth, &value, sizeof(int));
-        CSEM_Stack_Push(result -> scopeDepth, initScopeDepth);
+        CSEM_Stack_Push(result -> itemDepth, initScopeDepth);
     }
     {/* add -1 to idDepth */
         /*result -> idDepth = -1; TODO */
@@ -60,74 +59,30 @@ ERROR:
 }
 void CSEM_Micro_DisposeHandler(CSEM_Micro_Handlers *handler) {
     if(handler) {
-        CSEM_Stack_Dispose(handler -> scopeDepth, CSEM_TRUE);
+        CSEM_Stack_Dispose(handler -> itemDepth, CSEM_TRUE);
         CSEM_Stack_Dispose(handler -> idDepth, CSEM_TRUE);
         CSEM_Stack_Dispose(handler -> propDepth, CSEM_TRUE);
         CSEM_Free(handler);
     }
 }
-void CSEM_Micro_SetStartScope(CSEM_Micro_Handlers *handler, CSEM_Micro_StartScope startScope) {
-    handler -> startScope = startScope;
+void CSEM_Micro_SetItemStart(CSEM_Micro_Handlers *handler, CSEM_Micro_ItemStart itemStart) {
+    handler -> itemStart = itemStart;
 }
-void CSEM_Micro_SetEndScope(CSEM_Micro_Handlers *handler, CSEM_Micro_EndScope endScope) {
-    handler -> endScope = endScope;
+void CSEM_Micro_SetItemEnd(CSEM_Micro_Handlers *handler, CSEM_Micro_ItemEnd itemEnd) {
+    handler -> itemEnd = itemEnd;
 }
-void CSEM_Micro_SetStartItemProp(CSEM_Micro_Handlers *handler, CSEM_Micro_StartProp startProp) {
-    handler -> startProp = startProp;
+void CSEM_Micro_SetPropStart(CSEM_Micro_Handlers *handler, CSEM_Micro_PropStart propStart) {
+    handler -> propStart = propStart;
 }
-void CSEM_Micro_SetItemProp(CSEM_Micro_Handlers *handler, CSEM_Micro_ItemProp itemProp) {
-    handler -> itemProp = itemProp;
+void CSEM_Micro_SetPropValue(CSEM_Micro_Handlers *handler, CSEM_Micro_PropValue propValue) {
+    handler -> propValue = propValue;
 }
-void CSEM_Micro_SetEndItemProp(CSEM_Micro_Handlers *handler, CSEM_Micro_EndProp endProp) {
-    handler -> endProp = endProp;
+void CSEM_Micro_SetPropEnd(CSEM_Micro_Handlers *handler, CSEM_Micro_PropEnd propEnd) {
+    handler -> propEnd = propEnd;
 }
-void CSEM_Micro_SetStartId(CSEM_Micro_Handlers *handler, CSEM_Micro_StartId startId) {
-    handler -> startId = startId;
+void CSEM_Micro_SetIdStart(CSEM_Micro_Handlers *handler, CSEM_Micro_IdStart idStart) {
+    handler -> idStart = idStart;
 }
-void CSEM_Micro_SetEndId(CSEM_Micro_Handlers *handler, CSEM_Micro_EndId endId) {
-    handler -> endId = endId;
-}
-char *CSEM_Micro_GetAttNameForPropValue(const char *localname, const char *ns) {
-    if(localname && (!ns || !strcmp(ns, ""))) {
-        if(!strcmp(localname, "meta")) {
-            return "content";
-        } else if(!strcmp(localname, "audio")
-                || !strcmp(localname, "embed")
-                || !strcmp(localname, "iframe")
-                || !strcmp(localname, "img")
-                || !strcmp(localname, "source")
-                || !strcmp(localname, "track")
-                || !strcmp(localname, "video")) {
-            return "src";
-        } else if(!strcmp(localname, "a")
-                || !strcmp(localname, "area")
-                || !strcmp(localname, "link")) {
-            return "href";
-        } else if(!strcmp(localname, "object")) {
-            return "data";
-        } else if(!strcmp(localname, "data")) {
-            return "value";
-        } else if(!strcmp(localname, "time")) {
-            return "datetime";
-        }
-    }
-    return NULL;
-}
-CSEM_Bool CSEM_Micro_IsUrlPropElement(const char *localname, const char *ns) {
-    if(localname && (!ns || !strcmp(ns, ""))) {
-        if(!strcmp(localname, "audio")
-                || !strcmp(localname, "embed")
-                || !strcmp(localname, "iframe")
-                || !strcmp(localname, "img")
-                || !strcmp(localname, "source")
-                || !strcmp(localname, "track")
-                || !strcmp(localname, "video")
-                || !strcmp(localname, "a")
-                || !strcmp(localname, "area")
-                || !strcmp(localname, "link")
-                || !strcmp(localname, "object")) {
-            return CSEM_TRUE;
-        }
-    }
-    return CSEM_FALSE;
+void CSEM_Micro_SetIdEnd(CSEM_Micro_Handlers *handler, CSEM_Micro_IdEnd idEnd) {
+    handler -> idEnd = idEnd;
 }

@@ -42,7 +42,7 @@ void *CSEM_Node_GetObject(CSEM_Node *node) {
         return node -> obj.doc;
     } else if(node -> type == CSEM_NODE_TYPE_ITEM) {
         return node -> obj.item;
-    } else if(node -> type == CSEM_NODE_TYPE_MICRO_ID) {
+    } else if(node -> type == CSEM_NODE_TYPE_ID) {
         return node -> obj.id;
     } else if(node -> type == CSEM_NODE_TYPE_PROPERTY) {
         return node -> obj.property;
@@ -87,8 +87,8 @@ void CSEM_Document_Dispose(CSEM_Document *document) {
             CSEM_Node *child = CSEM_List_Get(document -> children, i);
             if(child -> type == CSEM_NODE_TYPE_ITEM) {
                 CSEM_Item_Dispose(child -> obj.item);
-            } else if(child -> type == CSEM_NODE_TYPE_MICRO_ID) {
-                CSEM_Micro_Id_Dispose(child -> obj.id);
+            } else if(child -> type == CSEM_NODE_TYPE_ID) {
+                CSEM_Id_Dispose(child -> obj.id);
             } else if(child -> type == CSEM_NODE_TYPE_PROPERTY) {
                 CSEM_Property_Dispose(child -> obj.property);
             }

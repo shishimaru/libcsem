@@ -27,43 +27,43 @@ typedef struct CSEM_Id CSEM_Id;
  * Get \@itemref values.
  * @param item [in]item
  */
-CSEM_List *CSEM_Micro_Item_GetRefs(CSEM_Item *item);
+CSEM_List *CSEM_Item_GetRefs(CSEM_Item *item);
 /**
  * Set \@itemref values.
  * @param item [in]item
  * @param refs [in]\@itemref values (not copied internally)
  * @param free [in]if #CSEM_TRUE is set, the old \@itemref values are freed.
  */
-CSEM_Error CSEM_Micro_Item_SetRefs(CSEM_Item *item, const CSEM_List *refs, CSEM_Bool free);
+CSEM_Error CSEM_Item_SetRefs(CSEM_Item *item, const CSEM_List *refs, CSEM_Bool free);
 /**
  * Create id object with \@id value
  * @param id    [out]id object to be created
  * @param value [in]id value (not copied internally)
  * @return error code
  */
-CSEM_Error CSEM_Micro_Id_Create(CSEM_Id **id, const char *value);
+CSEM_Error CSEM_Id_Create(CSEM_Id **id, const char *value);
 /**
  * Dispose id object.
  * @param id [in]id object to be freed
  */
-void CSEM_Micro_Id_Dispose(CSEM_Id *id);
+void CSEM_Id_Dispose(CSEM_Id *id);
 /**
  * Get properties of the id object.
  * @param id [in]id object
  */
-CSEM_List *CSEM_Micro_Id_GetProperties(CSEM_Id *id);
+CSEM_List *CSEM_Id_GetProperties(CSEM_Id *id);
 /**
  * Add a property to the id object.
  * @param id       [in]id object
  * @param property [in]property to be added
  * @return error code
  */
-CSEM_Error CSEM_Micro_Id_AddProperty(CSEM_Id *id, CSEM_Property *property);
+CSEM_Error CSEM_Id_AddProperty(CSEM_Id *id, CSEM_Property *property);
 /**
  * Get \@id value of the id object.
  * @param id [in]id object
  */
-char *CSEM_Micro_Id_GetId(CSEM_Id *id);
+char *CSEM_Id_GetId(CSEM_Id *id);
 
 CSEM_NS_C_END
 

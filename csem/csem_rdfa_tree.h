@@ -19,11 +19,13 @@ CSEM_NS_C_BEGIN
 #include "csem_tree.h"
 
 /**
- * Item object defined with \@itemscope.
+ * Item object.
  */
 typedef struct CSEM_Item CSEM_Item;
 /**
- * Property object defined with \@itemprop.
+ * Property object
+ * defined with \@itemprop of microdata, or
+ * defined with \@property of RDFa Lite
  */
 typedef struct CSEM_Property CSEM_Property;
 /**
@@ -33,12 +35,12 @@ typedef enum {
     /** String */
     CSEM_VALUE_TYPE_STR = 0,
     /** URL */
-    CSEM_VALUE_TYPE_URL = 1,
+    CSEM_VALUE_TYPE_URL,
     /** Item */
-    CSEM_VALUE_TYPE_ITEM = 2,
+    CSEM_VALUE_TYPE_ITEM,
     /** Property */
-    CSEM_VALUE_TYPE_PROPERTY = 3
-} CSEM_MICRO_VALUE_TYPE;
+    CSEM_VALUE_TYPE_PROPERTY
+} CSEM_VALUE_TYPE;
 /**
  * Create an item object.
  * @param item [out]item object to be created
@@ -51,28 +53,32 @@ CSEM_Error CSEM_Item_Create(CSEM_Item **item);
  */
 void CSEM_Item_Dispose(CSEM_Item *item);
 /**
- * Get \@itemid value of the item.
+ * Get the unique identification of the item.
+ * \@itemid of microdata or \@resource of RDFa Lite
  * @param item [in]item
  */
 char *CSEM_Item_GetId(CSEM_Item *item);
 /**
- * Set \@itemid value.
+ * Set a unique identification of the item.
+ * \@itemid of microdata or \@resource of RDFa Lite.
  * @param item [in]item
- * @param id   [in]\@itemid value (not copied internally)
+ * @param id   [in]id (not copied internally)
  * @param free [in]if #CSEM_TRUE is set, the old value is freed.
  * @return error code
  */
 CSEM_Error CSEM_Item_SetId(CSEM_Item *item, const char *id, CSEM_Bool free);
 /**
- * Get \@itemtype values.
+ * Get the type values of the item.
+ * \@itemtype of microdata or \@typeof of RDFa Lite.
  * @param item [in]item
  */
 CSEM_List *CSEM_Item_GetTypes(const CSEM_Item *item);
 /**
- * Set \@itemtype values.
+ * Set type values of the item.
+ * \@itemtype of microdata or \@typeof of RDFa Lite.
  * @param item  [in]item
- * @param types [in]\@itemtype values (not copied internally)
- * @param free  [in]if #CSEM_TRUE is set, the old \@itemtype values are freed.
+ * @param types [in]type values (not copied internally)
+ * @param free  [in]if #CSEM_TRUE is set, the old values are freed.
  */
 CSEM_Error CSEM_Item_SetTypes(CSEM_Item *item, const CSEM_List *types, CSEM_Bool free);
 /**
@@ -98,8 +104,9 @@ CSEM_Error CSEM_Item_GetNamedPropertes(const CSEM_Item *item, const char *name, 
 CSEM_Error CSEM_Item_AddProperty(CSEM_Item *item, CSEM_Property *property, CSEM_Bool changeParent);
 /**
  * Create a property object which has the specified property names.
+ * \@itemprop of microdata or \@property of RDFa Lite.
  * @param property [out]property object to be created
- * @param names    [in]\@itemprop value (not copied internally)
+ * @param names    [in]property names (not copied internally)
  * @return error code
  */
 CSEM_Error CSEM_Property_Create(CSEM_Property **property, CSEM_List *names);
@@ -114,7 +121,8 @@ void CSEM_Property_Dispose(CSEM_Property *property);
  */
 CSEM_List *CSEM_Property_GetNames(CSEM_Property *property);
 /**
- * Get values and the types of the values of the specified property. The type of values[n] is valueTypes[n].
+ * Get values and the types of the values of the specified property.
+ * The type of values[n] is valueTypes[n].
  * @param property   [in]property
  * @param values     [out]values
  * @param valueTypes [out]types of the values
@@ -128,9 +136,10 @@ CSEM_Error CSEM_Property_GetValues(CSEM_Property *property, CSEM_List **values, 
  * @param type     [in]type of the value
  * @return error code
  */
-CSEM_Error CSEM_Property_AddValues(CSEM_Property *property, void *value, CSEM_MICRO_VALUE_TYPE type);
+CSEM_Error CSEM_Property_AddValues(CSEM_Property *property, void *value, CSEM_VALUE_TYPE type);
 /**
- * Get values and the types of the values of the specified properties. The type of values[n] is valueTypes[n].
+ * Get values and the types of the values of the specified properties.
+ * The type of values[n] is valueTypes[n].
  * @param properties [in]properties
  * @param values     [out]values (applications need to free with CSEM_List_Dispose(values, CSEM_FALSE))
  * @param valueTypes [out]types of the values (applications need to free with CSEM_List_Dispose(valueTypes, CSEM_FALSE))
@@ -138,9 +147,10 @@ CSEM_Error CSEM_Property_AddValues(CSEM_Property *property, void *value, CSEM_MI
  */
 CSEM_Error CSEM_Properties_GetValues(CSEM_List *properties, CSEM_List **values, CSEM_List **valueTypes);
 /**
- * Get items which have the specified \@itemtype.
+ * Get items which have the specified types.
+ * \@itemtype of microdata or \@typeof of RDFa Lite.
  * @param doc   [in]document object
- * @param types [in]\@itemtype value
+ * @param types [in]type values
  * @param items [out]matched items (application need to free with CSEM_List_Dispose(items, CSEM_FALSE))
  * @return error code
  */

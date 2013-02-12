@@ -19,7 +19,7 @@ CSEM_NS_C_BEGIN
 #include "csem_list.h"
 
 /**
- * Handlers for HTML5 microdata.
+ * Handlers for HTML5 microdata streaming parser.
  */
 typedef struct CSEM_Micro_Handlers CSEM_Micro_Handlers;
 /**
@@ -29,55 +29,56 @@ typedef struct CSEM_Micro_Handlers CSEM_Micro_Handlers;
  * @param refs     [out]references of the item
  * @param id       [out]item id
  * @return #CSEM_TRUE if the passed microdata on this event should be
- * freed by library. If applications would like to keep the passed
- * microdata for further processing, return #CSEM_FALSE.
+ * freed by library. If applications would like to keep it for further
+ * processing, return #CSEM_FALSE.
  */
-typedef CSEM_Bool (*CSEM_Micro_StartScope)(const void *userdata, const CSEM_List *types, const CSEM_List *refs, const char *id);
+typedef CSEM_Bool (*CSEM_Micro_ItemStart)(const void *userdata,
+        const CSEM_List *types, const CSEM_List *refs, const char *id);
 /**
  * Handler for end scope of an item.
  * @param userdata [out]user data
  */
-typedef void (*CSEM_Micro_EndScope)(const void *userdata);
+typedef void (*CSEM_Micro_ItemEnd)(const void *userdata);
 /**
- * Handler for start property.
+ * Handler for start scope of a property.
  * @param userdata [out]user data
  * @param propName [out]the property name TODO : support space separated names
  * @param hasUrlValue [out]#CSEM_TRUE if the value type of the property is URL.
  * @return #CSEM_TRUE if the passed microdata on this event should be
- * freed by library. If applications would like to keep the passed
- * microdata for further processing, return #CSEM_FALSE.
+ * freed by library. If applications would like to keep the passed it for further
+ * processing, return #CSEM_FALSE.
  */
-typedef CSEM_Bool (*CSEM_Micro_StartProp)(const void *userdata, const char *propName, CSEM_Bool hasUrlValue);
+typedef CSEM_Bool (*CSEM_Micro_PropStart)(const void *userdata, const char *propName, CSEM_Bool hasUrlValue);
 /**
- * Handler for property value. If the length of the value is long,
- * the values are divided and this handler is called back more than once.
+ * Handler for property value. The values may be divided into pieces
+ * with multiple call back.
  * @param userdata [out]user data
- * @param value    [out]the value
- * @param len      [out]the length of the value
+ * @param value    [out]property value
+ * @param len      [out]length of the value
  */
-typedef void (*CSEM_Micro_ItemProp)(const void *userdata, const char *value, int len);
+typedef void (*CSEM_Micro_PropValue)(const void *userdata, const char *value, int len);
 /**
- * Handler for end property.
+ * Handler for end scope of a property.
  * @param userdata [out]user data
  */
-typedef void (*CSEM_Micro_EndProp)(const void *userdata);
+typedef void (*CSEM_Micro_PropEnd)(const void *userdata);
 /**
- * Handler for start id referenced by items with \@itemref.
+ * Handler for start scope of an id referenced by \@itemref.
  * @param userdata [out]user data
  * @param id       [out]id
  * @return #CSEM_TRUE if the passed microdata on this event should be
  * freed by library. If applications would like to keep the passed
  * microdata for further processing, return #CSEM_FALSE.
  */
-typedef CSEM_Bool (*CSEM_Micro_StartId)(const void *userdata, const char *id);
+typedef CSEM_Bool (*CSEM_Micro_IdStart)(const void *userdata, const char *id);
 /**
- * Handler for end id.
+ * Handler for end scope of an id.
  * @param userdata [out]user data
  */
-typedef void (*CSEM_Micro_EndId)(const void *userdata);
+typedef void (*CSEM_Micro_IdEnd)(const void *userdata);
 /**
  * Create a handler manager for microdata.
- * @param handler [in]created handler manager
+ * @param handler [out]created handler manager
  * @return error code
  */
 CSEM_Error CSEM_Micro_CreateHandler(CSEM_Micro_Handlers **handler);
@@ -87,47 +88,47 @@ CSEM_Error CSEM_Micro_CreateHandler(CSEM_Micro_Handlers **handler);
  */
 void CSEM_Micro_DisposeHandler(CSEM_Micro_Handlers *handler);
 /**
- * Set start cope handler to the handler manager.
+ * Set item start handler to the handler manager.
  * @param handler    [in]handler manager
- * @param startScope [in]start cope handler
+ * @param startScope [in]item start handler
  */
-void CSEM_Micro_SetStartScope(CSEM_Micro_Handlers *handler, CSEM_Micro_StartScope startScope);
+void CSEM_Micro_SetItemStart(CSEM_Micro_Handlers *handler, CSEM_Micro_ItemStart startScope);
 /**
- * Set end cope handler to the handler manager.
+ * Set item end handler to the handler manager.
  * @param handler  [in]handler manager
- * @param endScope [in]end cope handler
+ * @param endScope [in]item end handler
  */
-void CSEM_Micro_SetEndScope(CSEM_Micro_Handlers *handler, CSEM_Micro_EndScope endScope);
+void CSEM_Micro_SetItemEnd(CSEM_Micro_Handlers *handler, CSEM_Micro_ItemEnd endScope);
 /**
- * Set start property handler to the handler manager.
+ * Set property start handler to the handler manager.
  * @param handler   [in]handler manager
- * @param startProp [in]start property handler
+ * @param startProp [in]property start handler
  */
-void CSEM_Micro_SetStartItemProp(CSEM_Micro_Handlers *handler, CSEM_Micro_StartProp startProp);
+void CSEM_Micro_SetPropStart(CSEM_Micro_Handlers *handler, CSEM_Micro_PropStart startProp);
 /**
  * Set property value handler to the handler manager.
  * @param handler   [in]handler manager
  * @param propValue [in]property value handler
  */
-void CSEM_Micro_SetItemProp(CSEM_Micro_Handlers *handler, CSEM_Micro_ItemProp propValue);
+void CSEM_Micro_SetPropValue(CSEM_Micro_Handlers *handler, CSEM_Micro_PropValue propValue);
 /**
- * Set end property handler to the handler manager.
+ * Set property end handler to the handler manager.
  * @param handler [in]handler manager
- * @param endProp [in]end property handler
+ * @param endProp [in]property end handler
  */
-void CSEM_Micro_SetEndItemProp(CSEM_Micro_Handlers *handler, CSEM_Micro_EndProp endProp);
+void CSEM_Micro_SetPropEnd(CSEM_Micro_Handlers *handler, CSEM_Micro_PropEnd endProp);
 /**
- * Set start id handler to the handler manager.
+ * Set id start handler to the handler manager.
  * @param handler [in]handler manager
- * @param startId [in]start id handler
+ * @param startId [in]id start handler
  */
-void CSEM_Micro_SetStartId(CSEM_Micro_Handlers *handler, CSEM_Micro_StartId startId);
+void CSEM_Micro_SetIdStart(CSEM_Micro_Handlers *handler, CSEM_Micro_IdStart startId);
 /**
- * Set end id handler to the handler manager.
+ * Set id end handler to the handler manager.
  * @param handler [in]handler manager
- * @param endId   [in]end id handler
+ * @param endId   [in]id end handler
  */
-void CSEM_Micro_SetEndId(CSEM_Micro_Handlers *handler, CSEM_Micro_EndId endId);
+void CSEM_Micro_SetIdEnd(CSEM_Micro_Handlers *handler, CSEM_Micro_IdEnd endId);
 
 CSEM_NS_C_END
 

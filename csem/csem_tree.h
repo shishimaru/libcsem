@@ -25,12 +25,12 @@ typedef enum CSEM_NODE_TYPE {
     CSEM_NODE_TYPE_NONE = 0,
     /** document node */
     CSEM_NODE_TYPE_DOCUMENT,
-    /** item node of microdata */
+    /** item node */
     CSEM_NODE_TYPE_ITEM,
-    /** property node of microdata */
+    /** property node */
     CSEM_NODE_TYPE_PROPERTY,
-    /** id node of microdata */
-    CSEM_NODE_TYPE_MICRO_ID
+    /** id node for microdata */
+    CSEM_NODE_TYPE_ID
 } CSEM_NODE_TYPE;
 /**
  * Root node of the tree.
@@ -48,7 +48,8 @@ typedef struct CSEM_Node CSEM_Node;
  * @param parent [in]parent node
  * @return error code
  */
-CSEM_Error CSEM_Node_Create(CSEM_Node **node, CSEM_NODE_TYPE type, void *obj, CSEM_Node *parent);
+CSEM_Error CSEM_Node_Create(CSEM_Node **node,
+        CSEM_NODE_TYPE type, void *obj, CSEM_Node *parent);
 /**
  * Get node type.
  * @param node [in]node

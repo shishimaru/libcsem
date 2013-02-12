@@ -1,6 +1,6 @@
 # $Id$
 AC_PREREQ(2.57)
-AC_INIT(Microdata Library, 0.1, uchida@w3.org)
+AC_INIT(Microdata Library, 0.2, uchida@w3.org)
 AC_CONFIG_SRCDIR([src])
 AC_CONFIG_HEADER([csem/csem_config.h])
 

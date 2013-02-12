@@ -1,15 +1,14 @@
-* HTML5 microdata library:
+* HTML5 microdata/RDFa-Lite library:
 
  - Light weight streaming parser
-   - Parse chunked html and microdata events are passed via callback handlers
-   - Applications can reduce the memory foot print because it don't create
-     huge HTML tree internally
+   - Parse chunked html and microdata/RDFa-Lite events are passed
+     via callback handlers
+   - Applications can reduce memory foot print because
+     huge HTML tree internally isn't internally created
 
  - Data model builder
    - Create a microdata model based on the underlying streaming parser result
-   - All microdata can be accessed via API
-
- - HTML5 microdata API
+   - All semantics of microdata/RDFa-Lite can be accessed via HTML5 microdata API
 
 * How to build binary:
 
