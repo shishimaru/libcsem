@@ -1,4 +1,4 @@
-* HTML5 microdata/RDFa-Lite library:
+* microdata/RDFa-Lite library:
 
  - Light weight streaming parser
    - Parse chunked html and microdata/RDFa-Lite events are passed
@@ -7,7 +7,7 @@
      huge HTML tree internally isn't internally created
 
  - Data model builder
-   - Create a microdata model based on the underlying streaming parser result
+   - Create a data model based on the underlying streaming parser result
    - All semantics of microdata/RDFa-Lite can be accessed via HTML5 microdata API
 
 * How to build binary:

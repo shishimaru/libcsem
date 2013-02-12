@@ -16,8 +16,8 @@
 
 CSEM_NS_C_BEGIN
 /**
- * @mainpage HTML5 microdata/RDFa-Lite Library
- * <p>HTML5 microdata/RDFa-Lite Library enables native applications to
+ * @mainpage microdata/RDFa-Lite Library
+ * <p>microdata/RDFa-Lite Library enables native applications to
  * extract them from HTML5 with high performance and small heap size.</p>
  * <h3>Function</h3>
  * <ul>
