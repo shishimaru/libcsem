@@ -17,26 +17,29 @@ struct CSEM_List {
 };
 
 CSEM_List *CSEM_List_Create(size_t initial_size) {
-    CSEM_List *list;
+    CSEM_List *list = NULL;
 
-    list = CSEM_Malloc(sizeof(CSEM_List));
-    if(!list) {
-        return NULL;
+    if(!(list = CSEM_Malloc(sizeof(CSEM_List)))) {
+        goto ERROR;
     }
-    memset(list, 0, sizeof(CSEM_List));
-
-    list -> data = CSEM_Malloc(sizeof(void *) * initial_size);
-    memset(list -> data, 0, sizeof(void *) * initial_size);
+    if(!(list -> data = CSEM_Calloc(initial_size, sizeof(void *)))) {
+        goto ERROR;
+    }
 
     list -> initial_size = initial_size;
     list -> used_size = 0;
     list -> allocated_size = initial_size;
     return list;
+ERROR:
+    CSEM_List_Dispose(list, CSEM_FALSE);
+    return list;
 }
 void CSEM_List_Dispose(CSEM_List *list, CSEM_Bool freeData) {
     if(list) {
         CSEM_List_Clear(list, freeData);
-        CSEM_Free(list -> data);
+        if(list -> data) {
+            CSEM_Free(list -> data);
+        }
         CSEM_Free(list);
     }
 }

@@ -40,13 +40,13 @@
 #define PACKAGE_BUGREPORT "uchida@w3.org"
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "Microdata Library"
+#define PACKAGE_NAME "microdata/RDFa-Lite Library"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Microdata Library 0.2"
+#define PACKAGE_STRING "microdata/RDFa-Lite Library 0.2"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "microdata-library"
+#define PACKAGE_TARNAME "microdata-rdfa-lite-library"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""

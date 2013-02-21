@@ -12,10 +12,7 @@
 #include "csem_utils.h"
 
 char *CSEM_Utils_Strcpy(const char *src) {
-    if(!src) {
-        return NULL;
-    }
-    return CSEM_Utils_Strncpy(src, strlen(src));
+    return src ? CSEM_Utils_Strncpy(src, strlen(src)) : NULL;
 }
 char *CSEM_Utils_Strncpy(const char *src, size_t srcLen) {
     char *dest = NULL;
