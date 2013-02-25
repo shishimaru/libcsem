@@ -8,7 +8,6 @@
 #include <CUnit/Util.h>
 
 #include "test_utils.h"
-#include "test_url.h"
 #include "test_list.h"
 #include "test_stack.h"
 #include "test_ns_manager.h"
@@ -17,63 +16,6 @@
 #include "test_rdfa_stream.h"
 #include "test_rdfa_tree.h"
 
-static CU_TestInfo testinfo_url[] = {
-        //parse absolute url
-        { "test url : scheme", test_url_scheme},
-        { "test url : scheme host", test_url_scheme_host},
-        { "test url : scheme host port", test_url_scheme_host_port},
-        { "test url : scheme host port path", test_url_scheme_host_port_path},
-        { "test url : scheme host port path query", test_url_http_scheme_host_port_path_query},
-
-        { "test url : scheme host path", test_url_scheme_host_path},
-        { "test url : scheme host path query", test_url_http_scheme_host_path_query},
-        { "test url : scheme host path fragment", test_url_http_scheme_host_path_fragment},
-        { "test url : scheme host path query fragment", test_url_http_scheme_host_path_query_fragment},
-        { "test url : file scheme path", test_url_file_path},
-        { "test url : file scheme path query", test_url_file_path},
-        { "test url : file scheme path fragment", test_url_file_path_fragment},
-        { "test url : file scheme path query fragment", test_url_file_path_query_fragment},
-
-        //parse relative url
-        { "test url : path", test_url_path},
-        { "test url : path query", test_url_http_path_query},
-        { "test url : path fragment", test_url_http_path_fragment},
-        { "test url : path query fragment", test_url_http_path_query_fragment},
-
-        //parser error
-        { "test url error : scheme", test_url_error_scheme},
-        { "test url error : scheme host", test_url_error_scheme_host},
-        { "test url error : scheme host port", test_url_error_scheme_host_port},
-        { "test url error : scheme host port path", test_url_error_scheme_host_port_path},
-        { "test url error : scheme host port path query", test_url_http_error_scheme_host_port_path_query},
-        { "test url error : scheme host port path query segment", test_url_http_error_scheme_host_port_path_query_segment},
-
-        { "test url error : long scheme", test_url_error_long_scheme},
-        { "test url error : long host", test_url_error_long_host},
-        { "test url error : long port", test_url_error_long_port},
-        { "test url error : long path", test_url_error_long_path},
-        { "test url error : long query", test_url_http_error_long_query},
-        { "test url error : long fragment", test_url_http_error_long_fragment},
-
-        //resolve relative url
-        {"test url merge : merge path", test_url_merge_mergePath},
-        {"test url merge : remove dot segments", test_url_merge_removeDotSegments},
-        {"test url merge : merge url", test_url_merge_mergeUrl},
-        {"test url merge : merge abnormal url", test_url_merge_mergeAbnormalUrl},
-
-        //writer
-        { "test url writer", test_url_writer},
-
-        //writer error
-        { "test url writer error : long scheme", test_url_writer_error_long_scheme},
-        { "test url writer error : long host", test_url_writer_error_long_host},
-        { "test url writer error : long port", test_url_writer_error_long_port},
-        { "test url writer error : long path", test_url_writer_error_long_path},
-        { "test url writer error : long query", test_url_http_writer_error_long_query},
-        { "test url writer error : long fragment", test_url_http_writer_error_long_fragment},
-
-        CU_TEST_INFO_NULL,
-};
 static CU_TestInfo testinfo_utils[] = {
         { "test utils : strcpy", test_utils_strcpy},
         { "test utils : strncpy", test_utils_strncpy},
@@ -129,8 +71,9 @@ static CU_TestInfo testinfo_RDFa[] = {
         { "test stream parser : vocab", test_rdfa_stream_vocab},
         { "test tree parser   : sample basic", test_rdfa_tree_basic},
         { "test tree parser   : sample person", test_rdfa_sample_person},
-        { "test tree parser   : sample ssn", test_rdfa_sample_ssn},//*/
-        { "test tree parser   : sample event", test_rdfa_sample_event},
+        { "test tree parser   : sample ssn", test_rdfa_sample_ssn},
+        { "test tree parser   : sample event", test_rdfa_sample_event},//*/
+        { "test tree parser   : sample place", test_rdfa_sample_place},
 
         CU_TEST_INFO_NULL,
 };
@@ -138,8 +81,7 @@ static CU_SuiteInfo suites[] = {
         { "utils",  NULL, NULL, testinfo_utils},
         { "list", NULL, NULL, testinfo_list},
         { "stack", NULL, NULL, testinfo_stack},
-        { "ns manager", NULL, NULL, testinfo_ns_manager},
-        { "url",  NULL, NULL, testinfo_url},//*/
+        { "ns manager", NULL, NULL, testinfo_ns_manager},//*/
 
         { "microdata", NULL, NULL, testinfo_microdata},
         { "RDFa Lite", NULL, NULL, testinfo_RDFa},
