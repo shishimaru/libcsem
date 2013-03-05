@@ -23,7 +23,7 @@ CSEM_NS_C_BEGIN
 #include "csem/csem_rdfa_stream.h"
 #include "csem/csem_builder.h"
 #include "csem/csem_micro_tree.h"
-#include "csem/csem_stack.h"
+#include "csem_stack.h"
 #include "csem_ns_manager.h"
 
 struct CSEM_Micro_Handlers {

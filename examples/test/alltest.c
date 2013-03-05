@@ -81,7 +81,7 @@ static CU_SuiteInfo suites[] = {
         { "ns manager", NULL, NULL, testinfo_ns_manager},//*/
 
         { "microdata", NULL, NULL, testinfo_microdata},
-        //{ "RDFa Lite", NULL, NULL, testinfo_RDFa},
+        { "RDFa Lite", NULL, NULL, testinfo_RDFa},
 
         CU_SUITE_INFO_NULL,
 };

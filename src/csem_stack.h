@@ -17,7 +17,7 @@
 CSEM_NS_C_BEGIN
 
 #include <stddef.h>
-#include "csem_common.h"
+#include "csem/csem_common.h"
 
 /** Stack. */
 typedef struct CSEM_Stack CSEM_Stack;

@@ -114,4 +114,5 @@ CSEM_NS_C_END
 
 /**
  * \example sample_micro_stream.c
+ * \example sample_rdfa_stream.c
  */

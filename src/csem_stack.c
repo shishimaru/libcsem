@@ -4,8 +4,8 @@
  * uchida@w3.org
  */
 #include "csem_utils.h"
-#include "csem/csem_stack.h"
 #include "csem/csem_list.h"
+#include "csem_stack.h"
 
 struct CSEM_Stack {
     CSEM_List *list;

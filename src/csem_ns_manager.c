@@ -5,7 +5,6 @@
  */
 #include <string.h>
 #include "csem/csem_common.h"
-#include "csem/csem_stack.h"
 #include "csem_ns_manager.h"
 #include "csem_utils.h"
 

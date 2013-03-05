@@ -162,4 +162,5 @@ CSEM_NS_C_END
 
 /**
  * \example sample_rdfa_tree.c
+ * \example sample_rdfa_search.c
  */
