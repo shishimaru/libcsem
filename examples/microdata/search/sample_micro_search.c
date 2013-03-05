@@ -69,7 +69,11 @@ int main(int argc, char *argv[]) {
             for(j = 0; j < CSEM_List_Size(values); j++) {
                 int *valueType = CSEM_List_Get(valueTypes, j);
                 if(*valueType == CSEM_VALUE_TYPE_STR || *valueType == CSEM_VALUE_TYPE_URL) {
-                    printf("%s\n", (char *)CSEM_List_Get(values, j));
+                    printf("\"%s\"\n", (char *)CSEM_List_Get(values, j));
+                } else if(*valueType == CSEM_VALUE_TYPE_ITEM) {
+                    printf("SUB_ITEM\n");
+                } else if(*valueType == CSEM_VALUE_TYPE_PROPERTY) {
+                    printf("SUB_PROPERTY\n");
                 }
             }
 FINISH_NAMED_PROPERTIES:

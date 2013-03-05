@@ -197,25 +197,23 @@ static CSEM_Error csem_item_getItems(const CSEM_Item *item, const CSEM_List *typ
     int i = 0;
 
     if(types) {/* check the types of the item itself */
-        for(i = 0; i < CSEM_List_Size(types); i++) {
+        int match = 0;
+        for(i = 0, match = 0; i < CSEM_List_Size(types); i++) {
             char *type = CSEM_List_Get(types, i);
-            if(!type || !strcmp(type, "")) {
-                if((error = CSEM_List_Add(items, item))) {
-                    goto FINISH;
+
+            int j = 0;
+            CSEM_List *itemTypes = CSEM_Item_GetTypes(item);
+            for(j = 0; itemTypes && j < CSEM_List_Size(itemTypes); j++) {
+                char *itemType = CSEM_List_Get(itemTypes, j);
+                if(type && !strcmp(type, itemType)) {
+                    match++;
+                    break;
                 }
-                goto FINISH_APPEND;
-            } else {
-                int j = 0;
-                CSEM_List *itemTypes = CSEM_Item_GetTypes(item);
-                for(j = 0; itemTypes && j < CSEM_List_Size(itemTypes); j++) {
-                    char *itemType = CSEM_List_Get(itemTypes, j);
-                    if(!strcmp(type, itemType)) {
-                        if((error = CSEM_List_Add(items, item))) {
-                            goto FINISH;
-                        }
-                        goto FINISH_APPEND;
-                    }
-                }
+            }
+        }
+        if(match == CSEM_List_Size(types)) {
+            if((error = CSEM_List_Add(items, item))) {
+                goto FINISH;
             }
         }
     } else {
@@ -223,14 +221,13 @@ static CSEM_Error csem_item_getItems(const CSEM_Item *item, const CSEM_List *typ
             goto FINISH;
         }
     }
-FINISH_APPEND:
-    {/* check descendant items */
+    /*{//check descendant items
         CSEM_List *properties = CSEM_Item_GetProperties(item);
         for(i = 0; properties && i < CSEM_List_Size(properties); i++) {
             CSEM_Property *property = CSEM_List_Get(properties, i);
             CSEM_List *values = NULL, *valueTypes = NULL;
             CSEM_Property_GetValues(property, &values, &valueTypes);
-            {/* check item value */
+            {// check item value
                 int j = 0;
                 int valueSize = CSEM_List_Size(values);
                 for(j = 0; j < valueSize; j++) {
@@ -243,7 +240,7 @@ FINISH_APPEND:
                 }
             }
         }
-    }
+    }*/
 FINISH:
     return error;
 }

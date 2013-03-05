@@ -11,7 +11,7 @@ CSEM_Bool startScope(const void *userdata, const CSEM_List *types, const char *r
         printf("\t@resource=\"%s\"\n", resource);
     }
     for(i = 0; types && i < CSEM_List_Size(types); i++) {
-        printf("\t@itemtype=\"%s\"\n", (char *)CSEM_List_Get(types, i));
+        printf("\t@typeof=\"%s\"\n", (char *)CSEM_List_Get(types, i));
     }
     return CSEM_TRUE;
 }
@@ -20,7 +20,7 @@ void endScope(const void *userdata) {
 }
 CSEM_Bool startProp(const void *userdata, const char *propName, CSEM_Bool hasUrlValue) {
     puts("START_PROP");
-    printf("\t@itemprop=\"%s\"\n", propName);
+    printf("\t@property=\"%s\"\n", propName);
     return CSEM_TRUE;
 }
 void itemProp(const void *userdata, const char *value, int len) {

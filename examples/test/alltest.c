@@ -25,14 +25,12 @@ static CU_TestInfo testinfo_utils[] = {
         { "test utils : unquote", test_utils_unquote},
         { "test utils : tolower", test_utils_tolower},
         { "test utils : tostring", test_utils_tostring},
-
         CU_TEST_INFO_NULL,
 };
 static CU_TestInfo testinfo_list[] = {
         { "test list : basic feature", test_list},
         { "test list : clear feature", test_list_clear},
         { "test list : dispose", test_list_dispose},
-
         CU_TEST_INFO_NULL,
 };
 static CU_TestInfo testinfo_stack[] = {
@@ -55,10 +53,10 @@ static CU_TestInfo testinfo_microdata[] = {
         { "test tree parser   : chunked builder", test_microdata_tree_chunked},
         { "test tree parser   : schema.org/event/ex1", test_microdata_tree_schema_org_event_ex1},
         { "test tree parser   : schema.org/event/ex2", test_microdata_tree_schema_org_event_ex2},
-        { "test tree parser   : schema.org/person", test_microdata_tree_schema_org_person},//*/
+        { "test tree parser   : schema.org/person", test_microdata_tree_schema_org_person},
         { "test tree parser   : schema.org/place/ex1", test_microdata_tree_schema_org_place_ex1},
         { "test tree parser   : schema.org/place/ex2", test_microdata_tree_schema_org_place_ex2},
-        { "test tree parser   : schema.org/place/ex4", test_microdata_tree_schema_org_place_ex4},
+        { "test tree parser   : schema.org/place/ex4", test_microdata_tree_schema_org_place_ex4},//*/
         { "test microdata API : document.getItems(NULL)", test_microdata_tree_getItems_no_types},
         { "test microdata API : document.getItems([types])", test_microdata_tree_getItems_with_types},
         { "test microdata API : item.getNamedPropertries(name)", test_microdata_tree_getNamedProperties},
@@ -74,7 +72,6 @@ static CU_TestInfo testinfo_RDFa[] = {
         { "test tree parser   : sample ssn", test_rdfa_sample_ssn},
         { "test tree parser   : sample event", test_rdfa_sample_event},//*/
         { "test tree parser   : sample place", test_rdfa_sample_place},
-
         CU_TEST_INFO_NULL,
 };
 static CU_SuiteInfo suites[] = {
@@ -84,7 +81,7 @@ static CU_SuiteInfo suites[] = {
         { "ns manager", NULL, NULL, testinfo_ns_manager},//*/
 
         { "microdata", NULL, NULL, testinfo_microdata},
-        { "RDFa Lite", NULL, NULL, testinfo_RDFa},
+        //{ "RDFa Lite", NULL, NULL, testinfo_RDFa},
 
         CU_SUITE_INFO_NULL,
 };

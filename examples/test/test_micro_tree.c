@@ -1266,14 +1266,10 @@ void test_microdata_tree_getItems_no_types() {
         CSEM_List *types = NULL;
         CSEM_Document_GetItems(doc, types, &items);
 
-        CU_ASSERT_EQUAL(CSEM_List_Size(items), 2);
+        CU_ASSERT_EQUAL(CSEM_List_Size(items), 1);
         {/* 1st item */
             CSEM_Item *item = CSEM_List_Get(items, 0);
             CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
-        }
-        {/* 2nd item */
-            CSEM_Item *item = CSEM_List_Get(items, 1);
-            CU_ASSERT_EQUAL(CSEM_Item_GetId(item), NULL);
         }
         {/* dispose temporaries */
             CSEM_List_Dispose(types, CSEM_FALSE);
@@ -1287,15 +1283,7 @@ void test_microdata_tree_getItems_no_types() {
         CSEM_List_Add(types, "");
         CSEM_Document_GetItems(doc, types, &items);
 
-        CU_ASSERT_EQUAL(CSEM_List_Size(items), 2);
-        {/* 1st item */
-            CSEM_Item *item = CSEM_List_Get(items, 0);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
-        }
-        {/* 2nd item */
-            CSEM_Item *item = CSEM_List_Get(items, 1);
-            CU_ASSERT_EQUAL(CSEM_Item_GetId(item), NULL);
-        }
+        CU_ASSERT_EQUAL(CSEM_List_Size(items), 0);
         {/* dispose temporaries */
             CSEM_List_Dispose(types, CSEM_FALSE);
             /* dispose the search result item */
@@ -1309,15 +1297,7 @@ void test_microdata_tree_getItems_no_types() {
         CSEM_List_Add(types, "");
         CSEM_Document_GetItems(doc, types, &items);
 
-        CU_ASSERT_EQUAL(CSEM_List_Size(items), 2);
-        {/* 1st item */
-            CSEM_Item *item = CSEM_List_Get(items, 0);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
-        }
-        {/* 2nd item */
-            CSEM_Item *item = CSEM_List_Get(items, 1);
-            CU_ASSERT_EQUAL(CSEM_Item_GetId(item), NULL);
-        }
+        CU_ASSERT_EQUAL(CSEM_List_Size(items), 0);
         {/* dispose temporaries */
             CSEM_List_Dispose(types, CSEM_FALSE);
             /* dispose the search result item */
@@ -1331,15 +1311,7 @@ void test_microdata_tree_getItems_no_types() {
         CSEM_List_Add(types, NULL);
         CSEM_Document_GetItems(doc, types, &items);
 
-        CU_ASSERT_EQUAL(CSEM_List_Size(items), 2);
-        {/* 1st item */
-            CSEM_Item *item = CSEM_List_Get(items, 0);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
-        }
-        {/* 2nd item */
-            CSEM_Item *item = CSEM_List_Get(items, 1);
-            CU_ASSERT_EQUAL(CSEM_Item_GetId(item), NULL);
-        }
+        CU_ASSERT_EQUAL(CSEM_List_Size(items), 0);
         {/* dispose temporaries */
             CSEM_List_Dispose(types, CSEM_FALSE);
             /* dispose the search result item */
@@ -1353,15 +1325,7 @@ void test_microdata_tree_getItems_no_types() {
         CSEM_List_Add(types, "");
         CSEM_Document_GetItems(doc, types, &items);
 
-        CU_ASSERT_EQUAL(CSEM_List_Size(items), 2);
-        {/* 1st item */
-            CSEM_Item *item = CSEM_List_Get(items, 0);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
-        }
-        {/* 2nd item */
-            CSEM_Item *item = CSEM_List_Get(items, 1);
-            CU_ASSERT_EQUAL(CSEM_Item_GetId(item), NULL);
-        }
+        CU_ASSERT_EQUAL(CSEM_List_Size(items), 0);
         {/* dispose temporaries */
             CSEM_List_Dispose(types, CSEM_FALSE);
             /* dispose the search result item */
@@ -1375,15 +1339,7 @@ void test_microdata_tree_getItems_no_types() {
         CSEM_List_Add(types, NULL);
         CSEM_Document_GetItems(doc, types, &items);
 
-        CU_ASSERT_EQUAL(CSEM_List_Size(items), 2);
-        {/* 1st item */
-            CSEM_Item *item = CSEM_List_Get(items, 0);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
-        }
-        {/* 2nd item */
-            CSEM_Item *item = CSEM_List_Get(items, 1);
-            CU_ASSERT_EQUAL(CSEM_Item_GetId(item), NULL);
-        }
+        CU_ASSERT_EQUAL(CSEM_List_Size(items), 0);
         {/* dispose temporaries */
             CSEM_List_Dispose(types, CSEM_FALSE);
             /* dispose the search result item */
@@ -1397,15 +1353,7 @@ void test_microdata_tree_getItems_no_types() {
         CSEM_List_Add(types, "");
         CSEM_Document_GetItems(doc, types, &items);
 
-        CU_ASSERT_EQUAL(CSEM_List_Size(items), 2);
-        {/* 1st item */
-            CSEM_Item *item = CSEM_List_Get(items, 0);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
-        }
-        {/* 2nd item */
-            CSEM_Item *item = CSEM_List_Get(items, 1);
-            CU_ASSERT_EQUAL(CSEM_Item_GetId(item), NULL);
-        }
+        CU_ASSERT_EQUAL(CSEM_List_Size(items), 0);
         {/* dispose temporaries */
             CSEM_List_Dispose(types, CSEM_FALSE);
             /* dispose the search result item */
@@ -1475,7 +1423,7 @@ void test_microdata_tree_getItems_with_types() {
     {/* check results */
         CSEM_List *items = NULL;
         CSEM_List *types = CSEM_List_Create(8);
-        CSEM_List_Add(types, "http://sample1.org/Person");
+        CSEM_List_Add(types, "http://sample.org/Person");
         CSEM_List_Add(types, "http://sample2.org/Person");
         CSEM_Document_GetItems(doc, types, &items);
 
@@ -1490,6 +1438,56 @@ void test_microdata_tree_getItems_with_types() {
             CSEM_List_Dispose(items, CSEM_FALSE);
         }
     }
+    {/* check results */
+        CSEM_List *items = NULL;
+        CSEM_List *types = CSEM_List_Create(8);
+        CSEM_List_Add(types, "http://sample.org/Person");
+        CSEM_List_Add(types, "http://sample2.org/Person");
+        CSEM_List_Add(types, "http://sample2.org/Person");
+        CSEM_Document_GetItems(doc, types, &items);
+
+        CU_ASSERT_EQUAL(CSEM_List_Size(items), 1);
+        {/* 1st item */
+            CSEM_Item *item = CSEM_List_Get(items, 0);
+            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
+        }
+        {/* dispose temporaries */
+            CSEM_List_Dispose(types, CSEM_FALSE);
+            /* dispose the search result item */
+            CSEM_List_Dispose(items, CSEM_FALSE);
+        }
+    }
+    {/* check results */
+        CSEM_List *items = NULL;
+        CSEM_List *types = CSEM_List_Create(8);
+        CSEM_List_Add(types, "http://sampleX.org/Person");
+        CSEM_List_Add(types, "http://sample2.org/Person");
+        CSEM_Document_GetItems(doc, types, &items);
+
+        CU_ASSERT_EQUAL(CSEM_List_Size(items), 0);
+        {/* dispose temporaries */
+            CSEM_List_Dispose(types, CSEM_FALSE);
+            /* dispose the search result item */
+            CSEM_List_Dispose(items, CSEM_FALSE);
+        }
+    }
+    {/* check results */
+        CSEM_List *items = NULL;
+        CSEM_List *types = CSEM_List_Create(8);
+        CSEM_List_Add(types, "http://sample.org/Person");
+        CSEM_List_Add(types, "http://sample2.org/Person");
+        CSEM_List_Add(types, "http://xxx.org");
+
+        CSEM_Document_GetItems(doc, types, &items);
+
+        CU_ASSERT_EQUAL(CSEM_List_Size(items), 0);
+        {/* dispose temporaries */
+            CSEM_List_Dispose(types, CSEM_FALSE);
+            /* dispose the search result item */
+            CSEM_List_Dispose(items, CSEM_FALSE);
+        }
+    }
+
 FINISH:
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
@@ -1714,25 +1712,37 @@ void test_microdata_tree_properties_getValues() {
         CSEM_List_Dispose(values, CSEM_FALSE);
         CSEM_List_Dispose(valueTypes, CSEM_FALSE);
     }
-    {/* search 2nd item's properties whose name is "city" */
+    {/* search child item's properties whose name is "city" */
         CSEM_Item *item = NULL; {
-            CSEM_List *items = NULL;
-            CSEM_Document_GetItems(doc, NULL, &items);
-            item = CSEM_List_Get(items, 1);
-            CSEM_List_Dispose(items, CSEM_FALSE);
+            CSEM_List *nodes = CSEM_Document_GetChildren(doc);
+            CSEM_Node *node = CSEM_List_Get(nodes, 0);
+            item = CSEM_Node_GetObject(node);
         }
-        CSEM_List *properties = NULL;
-        CSEM_Item_GetNamedPropertes(item, "city", &properties);
+        CSEM_List *top_properties = NULL;
+        CSEM_Item_GetNamedPropertes(item, "band", &top_properties);
 
         CSEM_List *values = NULL, *valueTypes = NULL;
         {/* check results */
-            CSEM_Properties_GetValues(properties, &values, &valueTypes);
+            CSEM_Properties_GetValues(top_properties, &values, &valueTypes);
 
             CU_ASSERT_EQUAL(CSEM_List_Size(values), 1)
-            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Boston");
+            CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(valueTypes, 0)), CSEM_VALUE_TYPE_ITEM);
+
+            CSEM_Item *sub_item = CSEM_List_Get(values, 0);
+            CSEM_List *sub_properties = NULL;
+            CSEM_List *sub_values = NULL, *sub_valueTypes = NULL; {
+                CSEM_Item_GetNamedPropertes(sub_item, "city", &sub_properties);
+                CSEM_Properties_GetValues(sub_properties, &sub_values, &sub_valueTypes);
+                CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(sub_valueTypes, 0)), CSEM_VALUE_TYPE_STR);
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(sub_values, 0), "Boston");
+            }
+            /* dispose the search result item */
+            CSEM_List_Dispose(sub_properties, CSEM_FALSE);
+            CSEM_List_Dispose(sub_values, CSEM_FALSE);
+            CSEM_List_Dispose(sub_valueTypes, CSEM_FALSE);
         }
         /* dispose the search result item */
-        CSEM_List_Dispose(properties, CSEM_FALSE);
+        CSEM_List_Dispose(top_properties, CSEM_FALSE);
         CSEM_List_Dispose(values, CSEM_FALSE);
         CSEM_List_Dispose(valueTypes, CSEM_FALSE);
     }

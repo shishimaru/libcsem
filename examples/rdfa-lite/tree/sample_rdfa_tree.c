@@ -18,10 +18,10 @@ void showItem(CSEM_Item *item, int depth) {
 
         INDENT(depth);puts("ITEM {");
         if(itemid) {
-            INDENT(depth);printf("@itemid=%s\n", itemid);
+            INDENT(depth);printf("@resource=%s\n", itemid);
         }
         for(j = 0; types && j < CSEM_List_Size(types); j++) {
-            INDENT(depth);printf("@itemtype=%s\n", (char *)CSEM_List_Get(types, j));
+            INDENT(depth);printf("@typeof=%s\n", (char *)CSEM_List_Get(types, j));
         }
         showProperties(properties, depth);
         INDENT(depth);puts("}");
@@ -37,7 +37,7 @@ CSEM_Error showProperty(CSEM_Property *property, int depth) {
             goto FINISH;
         }
         for(i = 0; names && i < CSEM_List_Size(names); i++) {
-            INDENT(depth);printf("@itemprop=%s\n", (char *)CSEM_List_Get(names, i));
+            INDENT(depth);printf("@property=%s\n", (char *)CSEM_List_Get(names, i));
         }
         for(i = 0; values && i < CSEM_List_Size(values); i++) {
             int *type = CSEM_List_Get(types, i);

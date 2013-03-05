@@ -3710,6 +3710,7 @@ MAKEFILES="$MAKEFILES  examples/microdata/tree/Makefile"
 MAKEFILES="$MAKEFILES  examples/microdata/search/Makefile"
 MAKEFILES="$MAKEFILES  examples/rdfa-lite/stream/Makefile"
 MAKEFILES="$MAKEFILES  examples/rdfa-lite/tree/Makefile"
+#MAKEFILES="$MAKEFILES  examples/rdfa-lite/search/Makefile"
 
 # Check whether --enable-debug was given.
 if test "${enable_debug+set}" = set; then :

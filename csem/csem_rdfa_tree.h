@@ -147,7 +147,7 @@ CSEM_Error CSEM_Property_AddValues(CSEM_Property *property, void *value, CSEM_VA
  */
 CSEM_Error CSEM_Properties_GetValues(CSEM_List *properties, CSEM_List **values, CSEM_List **valueTypes);
 /**
- * Get items which have the specified types.
+ * Get top-level items which have all of the specified types.
  * \@itemtype of microdata or \@typeof of RDFa Lite.
  * @param doc   [in]document object
  * @param types [in]type values
