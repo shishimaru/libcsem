@@ -42,7 +42,7 @@ void csem_ns_pairs_dispose(CSEM_NS_Pairs *pairs, CSEM_Bool freeData) {
 void csem_ns_list_dispose(CSEM_NS_List *nsList, CSEM_Bool freeData) {
     if(nsList) {
         int i = 0;
-        for(i = 0; i < CSEM_List_Size(nsList); i++) {
+        FOR(i, 0, CSEM_List_Size(nsList)) {
             CSEM_NS_Pairs *pairs = CSEM_List_Get(nsList, i);
             csem_ns_pairs_dispose(pairs, freeData);
         }
@@ -61,7 +61,7 @@ FINISH:
 void CSEM_NSManager_Dispose(CSEM_NSManager *manager, CSEM_Bool freeData) {
     if(manager) {
         int i = 0;
-        for(i = 0; i < CSEM_List_Size(manager -> stack); i++) {
+        FOR(i, 0, CSEM_List_Size(manager -> stack)) {
             CSEM_NS_List *nsList = CSEM_List_Get(manager -> stack, i);
             csem_ns_list_dispose(nsList, freeData);
         }
@@ -105,7 +105,7 @@ FINISH:
 const char *csem_ns_list_getURI(CSEM_NS_List *nsList, const char *prefix) {
     const char *result = NULL;
     int i = 0;
-    for(i = 0; i < CSEM_List_Size(nsList); i++) {
+    FOR(i, 0, CSEM_List_Size(nsList)) {
         CSEM_NS_Pairs *pairs = CSEM_List_Get(nsList, i);
         if(prefix) {
             if(pairs -> prefix && !strcmp(prefix, pairs -> prefix)) {

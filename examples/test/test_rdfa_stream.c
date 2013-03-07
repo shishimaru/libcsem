@@ -17,7 +17,7 @@ extern const int EVENT_PROP_VALUE;
 static Item *activeItem = NULL;
 static CSEM_Bool state_prop_value = CSEM_FALSE;
 static CSEM_Bool handler_startScope(const void *userdata,
-        const CSEM_List *types, const char *resource){
+        const CSEM_Url *resource, const CSEM_List *types){
     puts("@startScope");
 
     TestResult *actual = (void *)userdata; {
@@ -25,7 +25,10 @@ static CSEM_Bool handler_startScope(const void *userdata,
 
         Item *item = test_utils_createItem(CSEM_FALSE, CSEM_FALSE);
         item -> types = (CSEM_List *)types;
-        item -> id = (char *)resource;
+        {/* resource */
+            CSEM_URL_Serialize(resource, &(item -> id));
+            CSEM_URL_Dispose((CSEM_Url *)resource);
+        }
         item -> parent = activeItem;
 
         if(!item -> parent) {
@@ -122,7 +125,7 @@ void test_rdfa_stream_basic() {
     TestResult *expected = test_utils_createTestResult(); {/* setup expected results */
         {
             Item *item1 = test_utils_createItem(CSEM_TRUE, CSEM_TRUE);
-            item1 -> id = "main";
+            item1 -> id = "http://localhost/test/main";
             CSEM_List_Add(item1 -> types, "http://schema.org/Person");
             CSEM_List_Add(item1 -> types, "http://schema.org/Person");
 
@@ -138,7 +141,7 @@ void test_rdfa_stream_basic() {
                 CSEM_List_Add(item1 -> prop_name, "jobTitle");
 
                 Item *item2 = test_utils_createItem(CSEM_TRUE, CSEM_TRUE); {
-                    item2 -> id = "sub1";
+                    item2 -> id = "http://localhost/test/sub1";
                     CSEM_List_Add(item2 -> types, "http://schema2.org/MusicRecording");
                     CSEM_List_Add(item2 -> types, "http://schema2.org/MusicRecording");
                     CSEM_List_Add(item2 -> prop_name, "byArtist");
@@ -151,7 +154,7 @@ void test_rdfa_stream_basic() {
                 CSEM_List_Add(item1 -> prop_name, "jobTitle");
 
                 Item *item2 = test_utils_createItem(CSEM_TRUE, CSEM_TRUE); {
-                    item2 -> id = "sub2";
+                    item2 -> id = "http://localhost/test/sub2";
                     CSEM_List_Add(item2 -> types, "http://schema.org/MusicRecording");
                     CSEM_List_Add(item2 -> types, "http://schema2.org/MusicRecording");
                     CSEM_List_Add(item2 -> prop_name, "byArtist");
@@ -248,9 +251,12 @@ void test_rdfa_stream_basic() {
     }
     CSEM_Parser_SetUserdata(parser, actual);
     CSEM_Parser_SetHandler(parser, handler);
+    CSEM_Url *baseURL; {
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Parser_SetBaseURL(parser, baseURL);
+    }
 
     int fd = -1;
-
     if(!(fd = open("./data/rdfa-lite-basic.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
@@ -266,6 +272,7 @@ void test_rdfa_stream_basic() {
 FINISH:
     CSEM_Parser_Dispose(parser);
     CSEM_Handler_Dispose(handler, CSEM_TRUE);
+    CSEM_URL_Dispose(baseURL);
 
     test_utils_disposeTestActual(expected, CSEM_FALSE);
     test_utils_disposeTestActual(actual, CSEM_TRUE);
@@ -275,7 +282,7 @@ void test_rdfa_stream_vocab() {
     TestResult *expected = test_utils_createTestResult(); {/* setup expected results */
         {
             Item *item = test_utils_createItem(CSEM_TRUE, CSEM_TRUE);
-            item -> id = "#manu";
+            item -> id = "http://localhost/test/#manu";
             CSEM_List_Add(item -> types, "http://xmlns.com/foaf/0.1/Person");
 
             {
@@ -294,7 +301,7 @@ void test_rdfa_stream_vocab() {
             CSEM_List_Add(expected -> items, item);
         }{
             Item *item = test_utils_createItem(CSEM_TRUE, CSEM_TRUE);
-            item -> id = "#alex";
+            item -> id = "http://localhost/test/#alex";
             CSEM_List_Add(item -> types, "http://xmlns.com/foaf/0.1/Person");
 
             {
@@ -305,7 +312,7 @@ void test_rdfa_stream_vocab() {
             CSEM_List_Add(expected -> items, item);
         }{
             Item *item = test_utils_createItem(CSEM_TRUE, CSEM_TRUE);
-            item -> id = "#brian";
+            item -> id = "http://localhost/test/#brian";
             CSEM_List_Add(item -> types, "http://xmlns.com/foaf/0.1/Person");
 
             {
@@ -367,9 +374,11 @@ void test_rdfa_stream_vocab() {
     }
     CSEM_Parser_SetUserdata(parser, actual);
     CSEM_Parser_SetHandler(parser, handler);
+    CSEM_Url *baseURL;
+    CSEM_URL_Parse("http://localhost/test/", &baseURL);
+    CSEM_Parser_SetBaseURL(parser, baseURL);
 
     int fd = -1;
-
     if(!(fd = open("./data/rdfa-lite-ssn.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
@@ -385,6 +394,7 @@ void test_rdfa_stream_vocab() {
 FINISH:
     CSEM_Parser_Dispose(parser);
     CSEM_Handler_Dispose(handler, CSEM_TRUE);
+    CSEM_URL_Dispose(baseURL);
 
     test_utils_disposeTestActual(expected, CSEM_FALSE);
     test_utils_disposeTestActual(actual, CSEM_TRUE);

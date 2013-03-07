@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <CUnit/CUnit.h>
 
-#include "csem/csem_stack.h"
+#include "csem_stack.h"
 
 void test_stack() {
     CSEM_Stack *stack = CSEM_Stack_Create(2);

@@ -17,6 +17,7 @@
 CSEM_NS_C_BEGIN
 
 #include "csem_tree.h"
+#include "csem_url.h"
 
 /**
  * Data model builder.
@@ -28,6 +29,12 @@ typedef struct CSEM_Builder CSEM_Builder;
  * @return error code
  */
 CSEM_Error CSEM_Builder_Create(CSEM_Builder **builder);
+/**
+ * Set base URL.
+ * @param builder [in]builder
+ * @param baseURL [in]base URL
+ */
+void CSEM_Builder_SetBaseURL(CSEM_Builder *builder, CSEM_Url *baseURL);
 /**
  * Parse the specified input stream and build a data model.
  * @param builder [in]builder

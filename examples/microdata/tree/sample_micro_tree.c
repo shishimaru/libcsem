@@ -1,25 +1,30 @@
 /* $Id$ */
 #include <stdio.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include "csem/csem_builder.h"
 #include "csem/csem_micro_tree.h"
 
 #define INDENT(n) {int i=0;for(i=0;i<n;i++){printf("  ");}}
+
 /**
  * Sample of microdata tree builder.
  */
 void showProperties(CSEM_List *properties, int depth);
 void showItem(CSEM_Item *item, int depth) {
     if(item) {
-        char *itemid = CSEM_Item_GetId(item);
         int j = 0;
+        CSEM_Url *itemidURL = CSEM_Item_GetId(item);
         CSEM_List *types = CSEM_Item_GetTypes(item);
         CSEM_List *refs = CSEM_Item_GetRefs(item);
         CSEM_List *properties = CSEM_Item_GetProperties(item);
 
         INDENT(depth);puts("ITEM {");
-        if(itemid) {
+        if(itemidURL) {
+            char *itemid = NULL;
+            CSEM_URL_Serialize(itemidURL, &itemid);
             INDENT(depth);printf("@itemid=%s\n", itemid);
+            free(itemid);
         }
         for(j = 0; types && j < CSEM_List_Size(types); j++) {
             INDENT(depth);printf("@itemtype=%s\n", (char *)CSEM_List_Get(types, j));
@@ -83,6 +88,7 @@ void showProperties(CSEM_List *properties, int depth) {
 int main(int argc, char *argv[]) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Builder *builder = NULL;
+    CSEM_Url *baseURL = NULL;
     CSEM_Document *doc = NULL;
     char *filename = NULL;
     int fd = -1;
@@ -99,6 +105,11 @@ int main(int argc, char *argv[]) {
     if((error = CSEM_Builder_Create(&builder))) {
         goto FINISH;
     }
+    /* set base url */
+    if((error = CSEM_URL_Parse("http://localhost/test/", &baseURL))) {
+        goto FINISH;
+    }
+    CSEM_Builder_SetBaseURL(builder, baseURL);
     /* start build process */
     if(!(fd = open(filename, O_RDONLY))) {
         fprintf(stderr, "failed to open %s\n", filename);
@@ -132,6 +143,7 @@ int main(int argc, char *argv[]) {
 FINISH:
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
+    CSEM_URL_Dispose(baseURL);
     puts("END");
     return error ? 1 : 0;
 }

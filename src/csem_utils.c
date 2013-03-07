@@ -33,7 +33,7 @@ CSEM_Bool CSEM_Utils_Strcat(char *to, size_t to_size, int from_number, ...) {
     va_list ap;
     va_start(ap, from_number);
 
-    for(i = 0; i < from_number; i++) {
+    REP(i, from_number) {
         from = va_arg(ap, char *);
 
         if(strlen(to) + strlen(from) < to_size) {
@@ -119,7 +119,7 @@ CSEM_Error CSEM_Utils_ToString(unsigned char *bin, size_t binLen, char **string)
     if(!(*string = CSEM_Malloc(binLen * 2 + 1))) {
         return CSEM_ERROR_MEMORY;
     }
-    for(i = 0; i < binLen; i++) {
+    REP(i, binLen) {
         sprintf((*string) + i * 2, "%02x", bin[i]);
     }
     (*string)[binLen * 2] = '\0';

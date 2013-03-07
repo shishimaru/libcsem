@@ -19,8 +19,7 @@ extern const int EVENT_END_ID;
 static Item *activeItem = NULL;
 static CSEM_Bool state_prop_value = CSEM_FALSE;
 static CSEM_Bool handler_startScope(const void *userdata,
-        const CSEM_List *types, const CSEM_List *refs,
-        const char *id) {
+        const CSEM_Url *id, const CSEM_List *types, const CSEM_List *refs) {
     puts("@startScope");
 
     TestResult *actual = (void *)userdata; {
@@ -29,7 +28,10 @@ static CSEM_Bool handler_startScope(const void *userdata,
         Item *item = test_utils_createItem(CSEM_FALSE, CSEM_FALSE);
         item -> types = (CSEM_List *)types;
         item -> refs = (CSEM_List *)refs;
-        item -> id = (char *)id;
+        {
+            CSEM_URL_Serialize(id, &(item -> id));
+            CSEM_URL_Dispose((CSEM_Url *)id);
+        }
         item -> parent = activeItem;
 
         if(!item -> parent) {
@@ -159,7 +161,7 @@ void test_microdata_stream_basic() {
             CSEM_List_Add(item1 -> types, "http://sample2.org/Person");
             CSEM_List_Add(item1 -> refs, "address");
             CSEM_List_Add(item1 -> refs, "phone");
-            item1 -> id = "urn:sample:0001";
+            item1 -> id = "http://localhost/test/neil3655";
 
             {/* prop name : values */
                 CSEM_List_Add(item1 -> prop_name, "name");
@@ -293,9 +295,13 @@ void test_microdata_stream_basic() {
     }
     CSEM_Parser_SetUserdata(parser, actual);
     CSEM_Parser_SetHandler(parser, handler);
+    CSEM_Url *baseURL = NULL;
+    {/* set baseURL */
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Parser_SetBaseURL(parser, baseURL);
+    }
 
     int fd = -1;
-
     if(!(fd = open("./data/micro-basic.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
@@ -312,6 +318,7 @@ void test_microdata_stream_basic() {
 FINISH:
     CSEM_Parser_Dispose(parser);
     CSEM_Handler_Dispose(handler, CSEM_TRUE);
+    CSEM_URL_Dispose(baseURL);
 
     test_utils_disposeTestActual(expected, CSEM_FALSE);
     test_utils_disposeTestActual(actual, CSEM_TRUE);
@@ -325,7 +332,7 @@ void test_microdata_stream_values() {
             CSEM_List_Add(item1 -> types, "http://sample2.org/Person");
             CSEM_List_Add(item1 -> refs, "address");
             CSEM_List_Add(item1 -> refs, "phone");
-            item1 -> id = "urn:sample:0001";
+            item1 -> id = "http://sample.org:8080/";
 
             {/* prop name : values */
                 CSEM_List_Add(item1 -> prop_name, "name");
@@ -586,9 +593,13 @@ void test_microdata_stream_values() {
     }
     CSEM_Parser_SetUserdata(parser, actual);
     CSEM_Parser_SetHandler(parser, handler);
+    CSEM_Url *baseURL = NULL;
+    {/* set baseURL */
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Parser_SetBaseURL(parser, baseURL);
+    }
 
     int fd = -1;
-
     if(!(fd = open("./data/micro-5-4-Values.html", O_RDONLY))) {
         CU_FAIL_FATAL("failed fopen");
         goto FINISH;
@@ -605,6 +616,7 @@ void test_microdata_stream_values() {
 FINISH:
     CSEM_Parser_Dispose(parser);
     CSEM_Handler_Dispose(handler, CSEM_TRUE);
+    CSEM_URL_Dispose(baseURL);
 
     test_utils_disposeTestActual(expected, CSEM_FALSE);
     test_utils_disposeTestActual(actual, CSEM_TRUE);

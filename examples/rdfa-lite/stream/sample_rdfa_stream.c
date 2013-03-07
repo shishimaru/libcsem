@@ -1,14 +1,18 @@
 /* $Id$ */
 #include <stdio.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include "csem/csem_stream.h"
 
-CSEM_Bool startScope(const void *userdata, const CSEM_List *types, const char *resource) {
+CSEM_Bool startScope(const void *userdata, const CSEM_Url *resource, const CSEM_List *types) {
     int i = 0;
     puts("START_SCOPE");
 
     if(resource) {
-        printf("\t@resource=\"%s\"\n", resource);
+        char *resource_str = NULL;
+        CSEM_URL_Serialize(resource, &resource_str);
+        printf("\t@resource=\"%s\"\n", resource_str);
+        free(resource_str);
     }
     for(i = 0; types && i < CSEM_List_Size(types); i++) {
         printf("\t@typeof=\"%s\"\n", (char *)CSEM_List_Get(types, i));
@@ -39,6 +43,7 @@ void endProp(const void *userdata) {
 int main(int argc, char *argv[]) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Parser *stream = NULL;
+    CSEM_Url *baseURL = NULL;
     CSEM_Handler *handler = NULL;
     CSEM_RDFa_Handlers *rdfaHandler = NULL;
     char *filename = NULL;
@@ -57,6 +62,12 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "failed to create parser\n");
         goto FINISH;
     }
+    /* set base url */
+    if((error = CSEM_URL_Parse("http://localhost/test/", &baseURL))) {
+        goto FINISH;
+    }
+    CSEM_Parser_SetBaseURL(stream, baseURL);
+    /* register callback handlers to stream parser */
     if((error = CSEM_Handler_Create(&handler))) {
         fprintf(stderr, "failed to create handler\n");
         goto FINISH;
@@ -65,7 +76,6 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "failed to create RDFa Lite handler\n");
         goto FINISH;
     }
-    /* register callback handlers to stream parser */
     CSEM_RDFa_SetItemStart(rdfaHandler, startScope);
     CSEM_RDFa_SetItemEnd(rdfaHandler, endScope);
     CSEM_RDFa_SetPropStart(rdfaHandler, startProp);
@@ -86,6 +96,7 @@ int main(int argc, char *argv[]) {
 FINISH:
     CSEM_Parser_Dispose(stream);
     CSEM_Handler_Dispose(handler, CSEM_TRUE);
+    CSEM_URL_Dispose(baseURL);
     puts("END");
     return error ? 1 : 0;
 }

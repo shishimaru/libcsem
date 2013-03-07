@@ -1,24 +1,29 @@
 /* $Id$ */
 #include <stdio.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include "csem/csem_builder.h"
 #include "csem/csem_rdfa_tree.h"
 
 #define INDENT(n) {int i=0;for(i=0;i<n;i++){printf("  ");}}
+
 /**
  * Sample of microdata tree builder.
  */
-void showProperties(CSEM_List *properties, int depth);
-void showItem(CSEM_Item *item, int depth) {
+static void showProperties(CSEM_List *properties, int depth);
+static void showItem(CSEM_Item *item, int depth) {
     if(item) {
-        char *itemid = CSEM_Item_GetId(item);
         int j = 0;
+        CSEM_Url *resourceURL = CSEM_Item_GetId(item);
         CSEM_List *types = CSEM_Item_GetTypes(item);
         CSEM_List *properties = CSEM_Item_GetProperties(item);
 
         INDENT(depth);puts("ITEM {");
-        if(itemid) {
-            INDENT(depth);printf("@resource=%s\n", itemid);
+        if(resourceURL) {
+            char *resource = NULL;
+            CSEM_URL_Serialize(resourceURL, &resource);
+            INDENT(depth);printf("@resource=%s\n", resource);
+            free(resource);
         }
         for(j = 0; types && j < CSEM_List_Size(types); j++) {
             INDENT(depth);printf("@typeof=%s\n", (char *)CSEM_List_Get(types, j));
@@ -27,7 +32,7 @@ void showItem(CSEM_Item *item, int depth) {
         INDENT(depth);puts("}");
     }
 }
-CSEM_Error showProperty(CSEM_Property *property, int depth) {
+static CSEM_Error showProperty(CSEM_Property *property, int depth) {
     CSEM_Error error = CSEM_ERROR_NONE;
     if(property) {
         int i = 0;
@@ -56,7 +61,7 @@ CSEM_Error showProperty(CSEM_Property *property, int depth) {
 FINISH:
     return error;
 }
-void showProperties(CSEM_List *properties, int depth) {
+static void showProperties(CSEM_List *properties, int depth) {
     int i = 0;
     for(i = 0; properties && i < CSEM_List_Size(properties); i++) {
         CSEM_Property *property = CSEM_List_Get(properties, i);
@@ -66,6 +71,7 @@ void showProperties(CSEM_List *properties, int depth) {
 int main(int argc, char *argv[]) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Builder *builder = NULL;
+    CSEM_Url *baseURL = NULL;
     CSEM_Document *doc = NULL;
     char *filename = NULL;
     int fd = -1;
@@ -82,6 +88,11 @@ int main(int argc, char *argv[]) {
     if((error = CSEM_Builder_Create(&builder))) {
         goto FINISH;
     }
+    /* set base url */
+    if((error = CSEM_URL_Parse("http://localhost/test/", &baseURL))) {
+        goto FINISH;
+    }
+    CSEM_Builder_SetBaseURL(builder, baseURL);
     /* start build process */
     if(!(fd = open(filename, O_RDONLY))) {
         fprintf(stderr, "failed to open %s\n", filename);
@@ -112,7 +123,7 @@ int main(int argc, char *argv[]) {
 FINISH:
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
+    CSEM_URL_Dispose(baseURL);
     puts("END");
     return error ? 1 : 0;
 }
-

@@ -17,6 +17,7 @@
 CSEM_NS_C_BEGIN
 
 #include "csem_tree.h"
+#include "csem_url.h"
 
 /**
  * Item object.
@@ -57,16 +58,16 @@ void CSEM_Item_Dispose(CSEM_Item *item);
  * \@itemid of microdata or \@resource of RDFa Lite
  * @param item [in]item
  */
-char *CSEM_Item_GetId(CSEM_Item *item);
+CSEM_Url *CSEM_Item_GetId(CSEM_Item *item);
 /**
  * Set a unique identification of the item.
  * \@itemid of microdata or \@resource of RDFa Lite.
  * @param item [in]item
- * @param id   [in]id (not copied internally)
+ * @param id   [in]id
  * @param free [in]if #CSEM_TRUE is set, the old value is freed.
  * @return error code
  */
-CSEM_Error CSEM_Item_SetId(CSEM_Item *item, const char *id, CSEM_Bool free);
+CSEM_Error CSEM_Item_SetId(CSEM_Item *item, const CSEM_Url *id, CSEM_Bool free);
 /**
  * Get the type values of the item.
  * \@itemtype of microdata or \@typeof of RDFa Lite.

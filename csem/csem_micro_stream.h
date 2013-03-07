@@ -17,6 +17,7 @@
 CSEM_NS_C_BEGIN
 
 #include "csem_list.h"
+#include "csem_url.h"
 
 /**
  * Handlers for HTML5 microdata streaming parser.
@@ -25,15 +26,15 @@ typedef struct CSEM_Micro_Handlers CSEM_Micro_Handlers;
 /**
  * Handler for start scope of an item.
  * @param userdata [out]user data
+ * @param id       [out]item id
  * @param types    [out]types of the item
  * @param refs     [out]references of the item
- * @param id       [out]item id
  * @return #CSEM_TRUE if the passed microdata on this event should be
  * freed by library. If applications would like to keep it for further
  * processing, return #CSEM_FALSE.
  */
 typedef CSEM_Bool (*CSEM_Micro_ItemStart)(const void *userdata,
-        const CSEM_List *types, const CSEM_List *refs, const char *id);
+        const CSEM_Url *id, const CSEM_List *types, const CSEM_List *refs);
 /**
  * Handler for end scope of an item.
  * @param userdata [out]user data

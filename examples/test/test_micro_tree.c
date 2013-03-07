@@ -21,6 +21,11 @@ void test_microdata_tree_values() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
+    CSEM_Url *baseURL = NULL;
+    {/* set baseURL */
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Builder_SetBaseURL(builder, baseURL);
+    }
     if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
@@ -38,7 +43,12 @@ void test_microdata_tree_values() {
             CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
 
             CSEM_Item *item = CSEM_Node_GetObject(node);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
+            {
+                char *id = NULL;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://sample.org:8080/");
+                free(id);
+            }
             {/* types */
                 CSEM_List *types = CSEM_Item_GetTypes(item);
                 CU_ASSERT_EQUAL(CSEM_List_Size(types), 2);
@@ -423,6 +433,7 @@ void test_microdata_tree_values() {
     }
 
 FINISH:
+    CSEM_URL_Dispose(baseURL);
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
 }
@@ -469,6 +480,11 @@ void test_microdata_tree_recursive_itemprop() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
+    CSEM_Url *baseURL = NULL;
+    {/* set baseURL */
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Builder_SetBaseURL(builder, baseURL);
+    }
     if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
@@ -486,7 +502,12 @@ void test_microdata_tree_recursive_itemprop() {
             CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
 
             CSEM_Item *item = CSEM_Node_GetObject(node);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "root");
+            {
+                char *id = NULL;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/root");
+                free(id);
+            }
             {/* types */
                 CSEM_List *types = CSEM_Item_GetTypes(item);
                 CU_ASSERT_EQUAL(types, NULL);
@@ -610,6 +631,7 @@ void test_microdata_tree_recursive_itemprop() {
     }
 
 FINISH:
+    CSEM_URL_Dispose(baseURL);
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
 }
@@ -643,7 +665,12 @@ void test_microdata_tree_basic_resolve() {
             CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
 
             CSEM_Item *item = CSEM_Node_GetObject(node);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
+            {
+                char *id = NULL;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "neil3655");
+                free(id);
+            }
             {/* types */
                 CSEM_List *types = CSEM_Item_GetTypes(item);
                 CU_ASSERT_EQUAL(CSEM_List_Size(types), 2);
@@ -848,6 +875,11 @@ void test_microdata_tree_resolve_recursive_items() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
+    CSEM_Url *baseURL = NULL;
+    {/* set baseURL */
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Builder_SetBaseURL(builder, baseURL);
+    }
     if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
@@ -865,7 +897,12 @@ void test_microdata_tree_resolve_recursive_items() {
             CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
 
             CSEM_Item *item_a = CSEM_Node_GetObject(node);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item_a), "A");
+            {
+                char *id = NULL;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item_a), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/A");
+                free(id);
+            }
             {/* types */
                 CSEM_List *types_a = CSEM_Item_GetTypes(item_a);
                 CU_ASSERT_EQUAL(CSEM_List_Size(types_a), 1);
@@ -893,7 +930,12 @@ void test_microdata_tree_resolve_recursive_items() {
                     {/* item B */
                         CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_ITEM);
                         CSEM_Item *item_b = CSEM_List_Get(values, 0);
-                        CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item_b), "B");
+                        {
+                            char *id = NULL;
+                            CSEM_URL_Serialize(CSEM_Item_GetId(item_b), &id);
+                            CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/B");
+                            free(id);
+                        }
                         {/* types */
                             CSEM_List *types_b = CSEM_Item_GetTypes(item_b);
                             CU_ASSERT_EQUAL(CSEM_List_Size(types_b), 1);
@@ -921,7 +963,12 @@ void test_microdata_tree_resolve_recursive_items() {
                                 {/* item C */
                                     CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_ITEM);
                                     CSEM_Item *item_c = CSEM_List_Get(values, 0);
-                                    CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item_c), "C");
+                                    {
+                                        char *id = NULL;
+                                        CSEM_URL_Serialize(CSEM_Item_GetId(item_c), &id);
+                                        CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/C");
+                                        free(id);
+                                    }
                                     {/* types */
                                         CSEM_List *types_c = CSEM_Item_GetTypes(item_c);
                                         CU_ASSERT_EQUAL(CSEM_List_Size(types_c), 1);
@@ -949,7 +996,12 @@ void test_microdata_tree_resolve_recursive_items() {
                                             {/* item D */
                                                 CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_ITEM);
                                                 CSEM_Item *item_d = CSEM_List_Get(values, 0);
-                                                CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item_d), "D");
+                                                {
+                                                    char *id = NULL;
+                                                    CSEM_URL_Serialize(CSEM_Item_GetId(item_d), &id);
+                                                    CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/D");
+                                                    free(id);
+                                                }
                                                 {/* types */
                                                     CSEM_List *types_d = CSEM_Item_GetTypes(item_d);
                                                     CU_ASSERT_EQUAL(CSEM_List_Size(types_d), 1);
@@ -977,7 +1029,12 @@ void test_microdata_tree_resolve_recursive_items() {
                                                         {/* Item E */
                                                             CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_ITEM);
                                                             CSEM_Item *item_e = CSEM_List_Get(values, 0);
-                                                            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item_e), "E");
+                                                            {
+                                                                char *id = NULL;
+                                                                CSEM_URL_Serialize(CSEM_Item_GetId(item_e), &id);
+                                                                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/E");
+                                                                free(id);
+                                                            }
                                                             {/* types */
                                                                 CSEM_List *types_e = CSEM_Item_GetTypes(item_e);
                                                                 CU_ASSERT_EQUAL(CSEM_List_Size(types_e), 1);
@@ -1007,6 +1064,7 @@ void test_microdata_tree_resolve_recursive_items() {
     }
 
 FINISH:
+    CSEM_URL_Dispose(baseURL);
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
 }
@@ -1048,7 +1106,12 @@ void test_microdata_tree_chunked() {
             CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
 
             CSEM_Item *item = CSEM_Node_GetObject(node);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
+            {
+                char *id = NULL;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "neil3655");
+                free(id);
+            }
             {/* types */
                 CSEM_List *types = CSEM_Item_GetTypes(item);
                 CU_ASSERT_EQUAL(CSEM_List_Size(types), 2);
@@ -1253,6 +1316,10 @@ void test_microdata_tree_getItems_no_types() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
+    CSEM_Url *baseURL = NULL; {
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Builder_SetBaseURL(builder, baseURL);
+    }
     if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
@@ -1269,7 +1336,12 @@ void test_microdata_tree_getItems_no_types() {
         CU_ASSERT_EQUAL(CSEM_List_Size(items), 1);
         {/* 1st item */
             CSEM_Item *item = CSEM_List_Get(items, 0);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
+            {
+                char *id = NULL;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/neil3655");
+                free(id);
+            }
         }
         {/* dispose temporaries */
             CSEM_List_Dispose(types, CSEM_FALSE);
@@ -1364,6 +1436,7 @@ void test_microdata_tree_getItems_no_types() {
 FINISH:
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
+    CSEM_URL_Dispose(baseURL);
 }
 void test_microdata_tree_getItems_with_types() {
     CSEM_Error error = CSEM_ERROR_NONE;
@@ -1377,6 +1450,10 @@ void test_microdata_tree_getItems_with_types() {
     if((error = CSEM_Builder_Create(&builder))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
+    }
+    CSEM_Url *baseURL = NULL; {
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Builder_SetBaseURL(builder, baseURL);
     }
     if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
@@ -1395,7 +1472,13 @@ void test_microdata_tree_getItems_with_types() {
         CU_ASSERT_EQUAL(CSEM_List_Size(items), 1);
         {/* 1st item */
             CSEM_Item *item = CSEM_List_Get(items, 0);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
+
+            {
+                char *id = NULL;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/neil3655");
+                free(id);
+            }
         }
         {/* dispose temporaries */
             CSEM_List_Dispose(types, CSEM_FALSE);
@@ -1412,7 +1495,12 @@ void test_microdata_tree_getItems_with_types() {
         CU_ASSERT_EQUAL(CSEM_List_Size(items), 1);
         {/* 1st item */
             CSEM_Item *item = CSEM_List_Get(items, 0);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
+            {
+                char *id = NULL;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/neil3655");
+                free(id);
+            }
         }
         {/* dispose temporaries */
             CSEM_List_Dispose(types, CSEM_FALSE);
@@ -1430,7 +1518,12 @@ void test_microdata_tree_getItems_with_types() {
         CU_ASSERT_EQUAL(CSEM_List_Size(items), 1);
         {/* 1st item */
             CSEM_Item *item = CSEM_List_Get(items, 0);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
+            {
+                char *id = NULL;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/neil3655");
+                free(id);
+            }
         }
         {/* dispose temporaries */
             CSEM_List_Dispose(types, CSEM_FALSE);
@@ -1449,7 +1542,12 @@ void test_microdata_tree_getItems_with_types() {
         CU_ASSERT_EQUAL(CSEM_List_Size(items), 1);
         {/* 1st item */
             CSEM_Item *item = CSEM_List_Get(items, 0);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "urn:sample:0001");
+            {
+                char *id = NULL;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/neil3655");
+                free(id);
+            }
         }
         {/* dispose temporaries */
             CSEM_List_Dispose(types, CSEM_FALSE);
@@ -1491,6 +1589,7 @@ void test_microdata_tree_getItems_with_types() {
 FINISH:
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
+    CSEM_URL_Dispose(baseURL);
 }
 void test_microdata_tree_getNamedProperties() {
     CSEM_Error error = CSEM_ERROR_NONE;

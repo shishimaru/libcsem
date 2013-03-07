@@ -23,6 +23,7 @@ CSEM_NS_C_BEGIN
 #include "csem/csem_rdfa_stream.h"
 #include "csem/csem_builder.h"
 #include "csem/csem_micro_tree.h"
+#include "csem/csem_url.h"
 #include "csem_stack.h"
 #include "csem_ns_manager.h"
 
@@ -75,6 +76,7 @@ struct CSEM_Parser {
     char buf[CSEM_DEFAULT_BUF_SIZE];
     void *userdata;
     CSEM_Handler *handler;
+    CSEM_Url *baseURL;
 
     /* underlying SAX parser */
     htmlSAXHandler sax;
@@ -98,7 +100,7 @@ struct CSEM_Document {
 };
 struct CSEM_Item {
     CSEM_Node *node;
-    char *id;
+    CSEM_Url *id;
     CSEM_List *types;
     CSEM_List *refs;
     CSEM_List *props;

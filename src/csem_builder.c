@@ -23,7 +23,7 @@ static void handler_error(const void *userdata, CSEM_Error error) {
     builder -> error = error;
 }
 static CSEM_Bool microdata_startScope(const void *userdata,
-        const CSEM_List *types, const CSEM_List *refs, const char *id) {
+        const CSEM_Url *id, const CSEM_List *types, const CSEM_List *refs) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Builder *builder = (void *)userdata;
     CSEM_Node *activeNode = builder -> activeNode;
@@ -63,8 +63,8 @@ ERROR:
     handler_error(userdata, error);
     return CSEM_TRUE;
 }
-static CSEM_Bool rdfa_startScope(const void *userdata, const CSEM_List *types, const char *resource) {
-    return microdata_startScope(userdata, types, NULL, resource);
+static CSEM_Bool rdfa_startScope(const void *userdata, const CSEM_Url *resource, const CSEM_List *types) {
+    return microdata_startScope(userdata, resource, types, NULL);
 }
 static void microdata_endScope(const void *userdata) {
     CSEM_Builder *builder = (void *)userdata;
@@ -194,8 +194,7 @@ static void microdata_endProp(const void *userdata) {
         builder -> activeNode = builder -> activeNode -> parent;
     }
 }
-static CSEM_Bool microdata_startId(const void *userdata,
-        const char *idValue) {
+static CSEM_Bool microdata_startId(const void *userdata, const char *idValue) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Builder *builder = (void *)userdata;
     CSEM_Id *id = NULL;
@@ -391,6 +390,9 @@ CSEM_Error CSEM_Builder_GetDocument(CSEM_Builder *builder, CSEM_Document **doc) 
     *doc = builder -> document;
 FINISH:
     return error;
+}
+void CSEM_Builder_SetBaseURL(CSEM_Builder *builder, CSEM_Url *baseURL) {
+    CSEM_Parser_SetBaseURL(builder -> parser, baseURL);
 }
 CSEM_Error CSEM_Builder_Create(CSEM_Builder **builder) {
     CSEM_Error error = CSEM_ERROR_NONE;

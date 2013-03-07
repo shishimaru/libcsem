@@ -3,7 +3,7 @@
 TARGET = ../libcsem.a
 OBJS = csem_builder.o csem_list.o csem_micro_stream.o csem_micro_tree.o\
        csem_ns_manager.o csem_rdfa_stream.o csem_rdfa_tree.o\
-       csem_stack.o csem_stream.o csem_tree.o csem_utils.o
+       csem_stack.o csem_stream.o csem_tree.o csem_url.o csem_utils.o
 DEFS = @DEFS@
 CPPFLAGS += -I/usr/include/libxml2 -I../
 

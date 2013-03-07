@@ -17,6 +17,7 @@
 CSEM_NS_C_BEGIN
 
 #include "csem_list.h"
+#include "csem_url.h"
 
 /**
  * Handlers for RDFa-Lite streaming parser.
@@ -25,12 +26,12 @@ typedef struct CSEM_RDFa_Handlers CSEM_RDFa_Handlers;
 /**
  * Handler for start scope of an item.
  * @param userdata [out]user data
- * @param types    [out]types of the item
  * @param resource [out]item id
+ * @param types    [out]types of the item
  * @return #CSEM_TRUE if the passed RDFa on this event should be freed by library.
  * If applications would like to keep it for further processing, return #CSEM_FALSE.
  */
-typedef CSEM_Bool (*CSEM_RDFa_ItemStart)(const void *userdata, const CSEM_List *types, const char *resource);
+typedef CSEM_Bool (*CSEM_RDFa_ItemStart)(const void *userdata, const CSEM_Url *resource, const CSEM_List *types);
 /**
  * Handler for end scope of an item.
  * @param userdata [out]user data

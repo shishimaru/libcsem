@@ -51,6 +51,11 @@ void test_rdfa_tree_basic() {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
     }
+    CSEM_Url *baseURL = NULL;
+    {/* set baseURL */
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Builder_SetBaseURL(builder, baseURL);
+    }
     if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
@@ -68,7 +73,12 @@ void test_rdfa_tree_basic() {
             CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
 
             CSEM_Item *item = CSEM_Node_GetObject(node);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "main");
+            {
+                char *id = NULL;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/main");
+                free(id);
+            }
             {/* types */
                 CSEM_List *types = CSEM_Item_GetTypes(item);
                 CU_ASSERT_EQUAL(CSEM_List_Size(types), 2);
@@ -119,7 +129,12 @@ void test_rdfa_tree_basic() {
                     {/* Item */
                         CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_ITEM);
                         CSEM_Item *subItem = CSEM_List_Get(values, 0);
-                        CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(subItem), "sub1");
+                        {
+                            char *id;
+                            CSEM_URL_Serialize(CSEM_Item_GetId(subItem), &id);
+                            CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/sub1");
+                            free(id);
+                        }
                         {/* types */
                             CSEM_List *types = CSEM_Item_GetTypes(subItem);
                             CU_ASSERT_EQUAL(CSEM_List_Size(types), 2);
@@ -159,7 +174,12 @@ void test_rdfa_tree_basic() {
                     {/* Item */
                         CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_ITEM);
                         CSEM_Item *subItem = CSEM_List_Get(values, 0);
-                        CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(subItem), "sub2");
+                        {
+                            char *id;
+                            CSEM_URL_Serialize(CSEM_Item_GetId(subItem), &id);
+                            CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/sub2");
+                            free(id);
+                        }
                         {/* types */
                             CSEM_List *types = CSEM_Item_GetTypes(subItem);
                             CU_ASSERT_EQUAL(CSEM_List_Size(types), 2);
@@ -232,6 +252,7 @@ void test_rdfa_tree_basic() {
     }
 
 FINISH:
+    CSEM_URL_Dispose(baseURL);
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
 }
@@ -247,6 +268,11 @@ void test_rdfa_sample_person() {
     if((error = CSEM_Builder_Create(&builder))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
+    }
+    CSEM_Url *baseURL = NULL;
+    {/* set baseURL */
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Builder_SetBaseURL(builder, baseURL);
     }
     if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
@@ -366,6 +392,7 @@ void test_rdfa_sample_person() {
     }
 
 FINISH:
+    CSEM_URL_Dispose(baseURL);
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
 }
@@ -381,6 +408,11 @@ void test_rdfa_sample_ssn() {
     if((error = CSEM_Builder_Create(&builder))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
+    }
+    CSEM_Url *baseURL = NULL;
+    {/* set baseURL */
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Builder_SetBaseURL(builder, baseURL);
     }
     if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
@@ -399,7 +431,12 @@ void test_rdfa_sample_ssn() {
             CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
 
             CSEM_Item *item = CSEM_Node_GetObject(node);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "#manu");
+            {
+                char *id;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/#manu");
+                free(id);
+            }
             {/* types */
                 CSEM_List *types = CSEM_Item_GetTypes(item);
                 CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
@@ -458,7 +495,12 @@ void test_rdfa_sample_ssn() {
             CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
 
             CSEM_Item *item = CSEM_Node_GetObject(node);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "#alex");
+            {
+                char *id;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/#alex");
+                free(id);
+            }
             {/* types */
                 CSEM_List *types = CSEM_Item_GetTypes(item);
                 CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
@@ -489,7 +531,12 @@ void test_rdfa_sample_ssn() {
             CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
 
             CSEM_Item *item = CSEM_Node_GetObject(node);
-            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "#brian");
+            {
+                char *id;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/#brian");
+                free(id);
+            }
             {/* types */
                 CSEM_List *types = CSEM_Item_GetTypes(item);
                 CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
@@ -518,6 +565,7 @@ void test_rdfa_sample_ssn() {
     }
 
 FINISH:
+    CSEM_URL_Dispose(baseURL);
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
 }
@@ -533,6 +581,11 @@ void test_rdfa_sample_event() {
     if((error = CSEM_Builder_Create(&builder))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
+    }
+    CSEM_Url *baseURL = NULL;
+    {/* set baseURL */
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Builder_SetBaseURL(builder, baseURL);
     }
     if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
@@ -760,6 +813,7 @@ void test_rdfa_sample_event() {
     }
 
 FINISH:
+    CSEM_URL_Dispose(baseURL);
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
 }
@@ -775,6 +829,11 @@ void test_rdfa_sample_place() {
     if((error = CSEM_Builder_Create(&builder))) {
         CU_FAIL_FATAL("failed parse");
         goto FINISH;
+    }
+    CSEM_Url *baseURL = NULL;
+    {/* set baseURL */
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Builder_SetBaseURL(builder, baseURL);
     }
     if((error = CSEM_Builder_Parse(builder, fd))) {
         CU_FAIL_FATAL("failed parse");
@@ -794,7 +853,10 @@ void test_rdfa_sample_place() {
 
             CSEM_Item *item = CSEM_Node_GetObject(node);
             {/* resource */
-                CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(item), "#bbg");
+                char *id;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/#bbg");
+                free(id);
             }
             {/* types */
                 CSEM_List *types = CSEM_Item_GetTypes(item);
@@ -848,7 +910,10 @@ void test_rdfa_sample_place() {
                         CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_ITEM);
                         CSEM_Item *subItem = CSEM_List_Get(values, 0);
                         {/* resource */
-                            CU_ASSERT_STRING_EQUAL(CSEM_Item_GetId(subItem), "#bbg-address");
+                            char *id;
+                            CSEM_URL_Serialize(CSEM_Item_GetId(subItem), &id);
+                            CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/#bbg-address");
+                            free(id);
                         }
                         {/* types */
                             CSEM_List *types = CSEM_Item_GetTypes(subItem);
@@ -925,6 +990,7 @@ void test_rdfa_sample_place() {
     }
 
 FINISH:
+    CSEM_URL_Dispose(baseURL);
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
 }

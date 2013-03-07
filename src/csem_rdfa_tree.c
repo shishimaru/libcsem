@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "csem/csem_rdfa_tree.h"
+#include "csem/csem_url.h"
 #include "csem_utils.h"
 #include "csem_types.h"
 
@@ -58,19 +59,19 @@ ERROR:
     CSEM_Property_Dispose(result);
     return error;
 }
-char *CSEM_Item_GetId(CSEM_Item *item) {
+CSEM_Url *CSEM_Item_GetId(CSEM_Item *item) {
     return item -> id;
 }
-CSEM_Error CSEM_Item_SetId(CSEM_Item *item, const char *id, CSEM_Bool doFree) {
+CSEM_Error CSEM_Item_SetId(CSEM_Item *item, const CSEM_Url *id, CSEM_Bool doFree) {
     CSEM_Error error = CSEM_ERROR_NONE;
     if(!id) {
         error = CSEM_ERROR_PARAMETER;
         goto FINISH;
     }
     if(doFree) {
-        CSEM_Free(item -> id);
+        CSEM_URL_Dispose(item -> id);
     }
-    item -> id = (char *)id;
+    item -> id = (CSEM_Url *)id;
 
 FINISH:
     return error;
@@ -334,7 +335,7 @@ void CSEM_Item_Dispose(CSEM_Item *item) {
             CSEM_List_Dispose(item -> props, CSEM_FALSE);
         }
         CSEM_Node_Dispose(item -> node);
-        CSEM_Free(item -> id);
+        CSEM_URL_Dispose(item -> id);
         CSEM_List_Dispose(item -> types, CSEM_TRUE);
         CSEM_List_Dispose(item -> refs, CSEM_TRUE);
         CSEM_Free(item);

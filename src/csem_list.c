@@ -60,8 +60,8 @@ CSEM_Bool CSEM_List_Contains(const CSEM_List *list, const void *data) {
     return index != -1;
 }
 int CSEM_List_IndexOf(const CSEM_List *list, const void *data) {
-    int i = -1;
-    for(i = 0; i < list->used_size; i++) {
+    int i = 0;
+    FOR(i, 0, list -> used_size) {
         if(list->data[i] == data) {
             return i;
         }

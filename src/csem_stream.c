@@ -23,6 +23,8 @@ typedef struct {
     char *propAttName;
     char *propValue;
     char *itemid;
+    CSEM_Url *itemidURL;
+    CSEM_Url *resolvedItemidURL;
     char *id;
     CSEM_Bool freeScope;
     CSEM_Bool freeId;
@@ -40,6 +42,8 @@ typedef struct {
     char *propAttName;
     char *propValue;
     char *resource;
+    CSEM_Url *resourceURL;
+    CSEM_Url *resolvedResourceURL;
     CSEM_Bool freeScope;
     CSEM_Bool freeProp;
 } RDFa_StartElement;
@@ -292,8 +296,16 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
         }
         if(micro.isStartScope) {/* @itemscope */
             if(microHandler -> itemStart) {
+                if(micro.itemid) {
+                    CSEM_URL_Parse(micro.itemid, &(micro.itemidURL));
+                    if(parser -> baseURL) {
+                        CSEM_URL_Merge(parser -> baseURL, micro.itemidURL, &(micro.resolvedItemidURL));
+                    } else {
+                        CSEM_URL_Copy(micro.itemidURL, &(micro.resolvedItemidURL));
+                    }
+                }
                 micro.freeScope = microHandler -> itemStart(parser -> userdata,
-                        micro.itemtypes, micro.itemrefs, micro.itemid);
+                        micro.resolvedItemidURL, micro.itemtypes, micro.itemrefs);
             }
         }
         if(micro.isStartId) {/* @id */
@@ -386,8 +398,16 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
         }
         if(rdfa.isStartScope) {/* @typeof | @resource */
             if(rdfaHandler -> itemStart) {
+                if(rdfa.resource) {
+                    CSEM_URL_Parse(rdfa.resource, &(rdfa.resourceURL));
+                    if(parser -> baseURL) {
+                        CSEM_URL_Merge(parser -> baseURL, rdfa.resourceURL, &(rdfa.resolvedResourceURL));
+                    } else {
+                        CSEM_URL_Copy(rdfa.resourceURL, &(rdfa.resolvedResourceURL));
+                    }
+                }
                 rdfa.freeScope = rdfaHandler -> itemStart(parser -> userdata,
-                        rdfa.itemtypes, rdfa.resource);
+                        rdfa.resolvedResourceURL, rdfa.itemtypes);
             }
         }
         /* update state of rdfa */
@@ -452,11 +472,15 @@ ERROR:
     CSEM_Free(micro.propValue);
     CSEM_Free(rdfa.propValue);
     CSEM_List_Dispose(rdfa.prefixes, CSEM_FALSE);
+    CSEM_Free(micro.itemid);
+    CSEM_URL_Dispose(micro.itemidURL);
+    CSEM_Free(rdfa.resource);
+    CSEM_URL_Dispose(rdfa.resourceURL);
 
     if(micro.freeScope) {
         CSEM_List_Dispose(micro.itemtypes, CSEM_TRUE);
         CSEM_List_Dispose(micro.itemrefs, CSEM_TRUE);
-        CSEM_Free(micro.itemid);
+        CSEM_Free(micro.resolvedItemidURL);
     }
     if(micro.freeId) {
         CSEM_Free(micro.id);
@@ -466,7 +490,7 @@ ERROR:
     }
     if(rdfa.freeScope) {
         CSEM_List_Dispose(rdfa.itemtypes, CSEM_TRUE);
-        CSEM_Free(rdfa.resource);
+        CSEM_URL_Dispose(rdfa.resolvedResourceURL);
     }
     if(rdfa.freeProp) {
         CSEM_Free(rdfa.propName);
@@ -659,6 +683,9 @@ static CSEM_Error csem_parser_init(CSEM_Parser *parser) {
     return error;
 ERROR:
     return error;
+}
+void CSEM_Parser_SetBaseURL(CSEM_Parser *parser, CSEM_Url *baseURL) {
+    parser -> baseURL = baseURL;
 }
 CSEM_Error CSEM_Parser_Parse(CSEM_Parser *parser, int fd) {
     CSEM_Error error = CSEM_ERROR_NONE;

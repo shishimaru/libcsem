@@ -28,6 +28,10 @@ CSEM_NS_C_BEGIN
 #define CSEM_MAX(x, y) ((x) > (y) ? (x) : (y))
 #define CSEM_MIN(x, y) ((x) < (y) ? (x) : (y))
 
+#define FOR(i,a,b) for(i=(a);i<(b);++i)
+#define REP(i,n) FOR(i,0,n)
+#define CLR(a) memset((a), 0 ,sizeof(a))
+
 char      *CSEM_Utils_Strcpy(const char *src);
 char      *CSEM_Utils_Strncpy(const char *src, size_t srcLen);
 CSEM_Bool  CSEM_Utils_Strcat(char *to, size_t to_size, int from_number, ...);

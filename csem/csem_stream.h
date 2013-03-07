@@ -18,6 +18,7 @@ CSEM_NS_C_BEGIN
 
 #include "csem_micro_stream.h"
 #include "csem_rdfa_stream.h"
+#include "csem_url.h"
 
 /**
  * Streaming parser.
@@ -85,6 +86,12 @@ void CSEM_Parser_SetUserdata(CSEM_Parser *parser, void *userdata);
  * @param handler [in]handler manager
  */
 void CSEM_Parser_SetHandler(CSEM_Parser *parser, CSEM_Handler *handler);
+/**
+ * Set base URL.
+ * @param parser  [in]streaming parser
+ * @param baseURL [in]base URL
+ */
+void CSEM_Parser_SetBaseURL(CSEM_Parser *parser, CSEM_Url *baseURL);
 /**
  * Start the parsing process.
  * @param parser [in]streaming parser
