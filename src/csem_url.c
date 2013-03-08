@@ -382,6 +382,21 @@ CSEM_Error CSEM_URL_Parse(const char *urlstring, CSEM_Url **url) {
 
     return error;
 }
+CSEM_Bool CSEM_URL_Equal(const CSEM_Url *u1, const CSEM_Url *u2) {
+    CSEM_Bool res = CSEM_FALSE;
+    if(!u1 || !u2) {
+        res = !u1 && !u2 ? CSEM_TRUE : CSEM_FALSE;
+    } else {
+        res = CSEM_Utils_Strcmp(u1 -> scheme, u2 -> scheme) &&
+                CSEM_Utils_Strcmp(u1 -> hostname, u2 -> hostname) &&
+                CSEM_Utils_Strcmp(u1 -> port, u2 -> port) &&
+                CSEM_Utils_Strcmp(u1 -> path, u2 -> path) &&
+                CSEM_Utils_Strcmp(u1 -> query, u2 -> query) &&
+                CSEM_Utils_Strcmp(u1 -> fragment, u2 -> fragment) ?
+                        CSEM_TRUE : CSEM_FALSE;
+    }
+    return res;
+}
 /**
  *  Section 5.2.3 Merge Paths
  */

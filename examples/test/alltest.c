@@ -68,7 +68,7 @@ static CU_TestInfo testinfo_url[] = {
         { "test url error : scheme host port", test_url_error_scheme_host_port},
         { "test url error : scheme host port path", test_url_error_scheme_host_port_path},
         { "test url error : scheme host port path query", test_url_http_error_scheme_host_port_path_query},
-        { "test url error : scheme host port path query segment", test_url_http_error_scheme_host_port_path_query_segment},
+        { "test url error : scheme host port path query fragment", test_url_http_error_scheme_host_port_path_query_segment},
 
         { "test url error : long scheme", test_url_error_long_scheme},
         { "test url error : long host", test_url_error_long_host},
@@ -82,6 +82,15 @@ static CU_TestInfo testinfo_url[] = {
         {"test url merge : remove dot segments", test_url_merge_removeDotSegments},
         {"test url merge : merge url", test_url_merge_mergeUrl},
         {"test url merge : merge abnormal url", test_url_merge_mergeAbnormalUrl},
+
+        {"test url equals : scheme", test_url_equal_scheme},
+        {"test url equals : scheme host", test_url_equal_scheme_host},
+        {"test url equals : scheme host port", test_url_equal_scheme_host_port},
+        {"test url equals : scheme host port path", test_url_equal_scheme_host_port_path},
+        {"test url equals : scheme host port path query", test_url_equal_scheme_host_port_path_query},
+        {"test url equals : scheme host port path fragment", test_url_equal_scheme_host_port_path_fragment},
+        {"test url equals : scheme host port path query fragment", test_url_equal_scheme_host_port_path_query_fragment},
+        {"test url equals : null check", test_url_equal_null},
 
         //writer
         { "test url writer", test_url_writer},
@@ -135,12 +144,12 @@ static CU_TestInfo testinfo_RDFa[] = {
 static CU_SuiteInfo suites[] = {
         { "utils",  NULL, NULL, testinfo_utils},
         { "list", NULL, NULL, testinfo_list},
-        { "stack", NULL, NULL, testinfo_stack},
+        { "stack", NULL, NULL, testinfo_stack},//*/
         { "url", NULL, NULL, testinfo_url},
-        { "ns manager", NULL, NULL, testinfo_ns_manager},//*/
+        { "ns manager", NULL, NULL, testinfo_ns_manager},
 
         { "microdata", NULL, NULL, testinfo_microdata},
-        { "RDFa Lite", NULL, NULL, testinfo_RDFa},
+        { "RDFa Lite", NULL, NULL, testinfo_RDFa},//*/
 
         CU_SUITE_INFO_NULL,
 };

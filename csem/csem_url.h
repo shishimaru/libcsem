@@ -68,6 +68,13 @@ CSEM_Error CSEM_URL_Serialize(const CSEM_Url *url, char **urlstring);
  * @return error code
  */
 CSEM_Error CSEM_URL_Merge(const CSEM_Url *base, const CSEM_Url *relative, CSEM_Url **merged);
+/**
+ * Compare the specified URLs.
+ * @param u1 [in]url
+ * @param u2 [in]url
+ * @return result
+ */
+CSEM_Bool CSEM_URL_Equal(const CSEM_Url *u1, const CSEM_Url *u2);
 
 CSEM_NS_C_END
 

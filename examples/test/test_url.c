@@ -1852,7 +1852,250 @@ void test_url_merge_mergeAbnormalUrl() {
         free(urlstring);
     }
 }
-
+void test_url_equal_scheme() {
+    CSEM_Url *u1 = NULL, *u2 = NULL;
+    {
+        CSEM_URL_Parse("http", &u1);
+        CSEM_URL_Parse("http", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        u1 = CSEM_URL_Create();
+        u2 = CSEM_URL_Create();
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http", &u1);
+        CSEM_URL_Parse("https", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http", &u1);
+        u2 = CSEM_URL_Create();
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        u1 = CSEM_URL_Create();
+        u2 = CSEM_URL_Create();
+        u2 -> scheme = CSEM_Utils_Strcpy("http");
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }
+}
+void test_url_equal_scheme_host() {
+    CSEM_Url *u1 = NULL, *u2 = NULL;
+    {
+        CSEM_URL_Parse("http://localhost", &u1);
+        CSEM_URL_Parse("http://localhost", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://", &u1);
+        CSEM_URL_Parse("http://", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost1", &u1);
+        CSEM_URL_Parse("http://localhost2", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost", &u1);
+        CSEM_URL_Parse("http://", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }
+}
+void test_url_equal_scheme_host_port() {
+    CSEM_Url *u1 = NULL, *u2 = NULL;
+    {
+        CSEM_URL_Parse("http://localhost:8000", &u1);
+        CSEM_URL_Parse("http://localhost:8000", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost", &u1);
+        CSEM_URL_Parse("http://localhost", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000", &u1);
+        CSEM_URL_Parse("http://localhost:8888", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000", &u1);
+        CSEM_URL_Parse("http://localhost", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }
+}
+void test_url_equal_scheme_host_port_path() {
+    CSEM_Url *u1 = NULL, *u2 = NULL;
+    {
+        CSEM_URL_Parse("http://localhost:8000/t", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000", &u1);
+        CSEM_URL_Parse("http://localhost:8000", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t1", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t2", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t", &u1);
+        CSEM_URL_Parse("http://localhost:8000", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }
+}
+void test_url_equal_scheme_host_port_path_query() {
+    CSEM_Url *u1 = NULL, *u2 = NULL;
+    {
+        CSEM_URL_Parse("http://localhost:8000/t?a=1", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t?a=1", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t?a", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t?a", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t?", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t?", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t?a=1", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t?a=2", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t?a=1", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t?b=1", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t?a", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }
+}
+void test_url_equal_scheme_host_port_path_fragment() {
+    CSEM_Url *u1 = NULL, *u2 = NULL;
+    {
+        CSEM_URL_Parse("http://localhost:8000/t#a", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t#a", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t#", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t#", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t#", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t#a", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t#b", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t#a", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t#", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t#a", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }
+}
+void test_url_equal_scheme_host_port_path_query_fragment() {
+    CSEM_Url *u1 = NULL, *u2 = NULL;
+    {
+        CSEM_URL_Parse("http://localhost:8000/t?a=1#b", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t?a=1#b", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t?a#", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t?a#", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t?", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t?#", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t?a=1#a", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t?a=1#b", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_URL_Parse("http://localhost:8000/t?a=1#a", &u1);
+        CSEM_URL_Parse("http://localhost:8000/t?a=1", &u2);
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }
+}
+void test_url_equal_null() {
+    {
+        CSEM_Url *u1 = NULL, *u2 = NULL;
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_TRUE);
+    }{
+        CSEM_Url *u1 = NULL, *u2 = NULL;
+        u1 = CSEM_URL_Create();
+        CU_ASSERT_EQUAL(CSEM_URL_Equal(u1, u2), CSEM_FALSE);
+        CSEM_URL_Dispose(u1);
+    }
+}
 void test_url_writer() {
     CSEM_Url url;
     char *result;

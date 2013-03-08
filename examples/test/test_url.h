@@ -33,11 +33,21 @@ void test_url_error_long_path();
 void test_url_http_error_long_query();
 void test_url_http_error_long_fragment();
 
-//join
+//merge
 void test_url_merge_mergePath();
 void test_url_merge_removeDotSegments();
 void test_url_merge_mergeUrl();
 void test_url_merge_mergeAbnormalUrl();
+
+//equal
+void test_url_equal_scheme();
+void test_url_equal_scheme_host();
+void test_url_equal_scheme_host_port();
+void test_url_equal_scheme_host_port_path();
+void test_url_equal_scheme_host_port_path_query();
+void test_url_equal_scheme_host_port_path_fragment();
+void test_url_equal_scheme_host_port_path_query_fragment();
+void test_url_equal_null();
 
 //writer
 void test_url_writer();

@@ -94,6 +94,9 @@ CSEM_Error CSEM_Utils_Strntoks(char *src, size_t srcLen, const char *delim, CSEM
 ERROR:
     return error;
 }
+CSEM_Bool  CSEM_Utils_Strcmp(const char *s1, const char *s2) {
+    return s1 && s2 ? !strcmp(s1, s2) : !s1 && !s2;
+}
 void CSEM_Utils_Unquote(char *in, size_t inLen, char **out) {
     *out = NULL;
 

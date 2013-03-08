@@ -37,6 +37,7 @@ char      *CSEM_Utils_Strncpy(const char *src, size_t srcLen);
 CSEM_Bool  CSEM_Utils_Strcat(char *to, size_t to_size, int from_number, ...);
 CSEM_Error CSEM_Utils_Strtoks(char *src, const char *delim, CSEM_List **tokens);
 CSEM_Error CSEM_Utils_Strntoks(char *src, size_t srcLen, const char *delim, CSEM_List **tokens);
+CSEM_Bool  CSEM_Utils_Strcmp(const char *s1, const char *s2);
 void       CSEM_Utils_Unquote(char *in, size_t inLen, char **out);
 void       CSEM_Utils_ToLower(char *in);
 CSEM_Error CSEM_Utils_ToString(unsigned char *bin, size_t binLen, char **string);
