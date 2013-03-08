@@ -210,6 +210,23 @@ void test_utils_strntoks() {
         CU_ASSERT_EQUAL(tokens, NULL);
     }
 }
+void test_utils_strhash() {
+    {
+        const char *s1 = "abcdefghijklm";
+        const char *s2 = "abcdefghijklmn";
+        int h1 = CSEM_Utils_Strhash(s1);
+        int h2 = CSEM_Utils_Strhash(s2);
+        CU_ASSERT_NOT_EQUAL(h1, h2);
+    }{
+        const char *s1 = NULL;
+        int h = CSEM_Utils_Strhash(s1);
+        CU_ASSERT_EQUAL(h, 0);
+    }{
+        const char *s1 = "";
+        int h = CSEM_Utils_Strhash(s1);
+        CU_ASSERT_EQUAL(h, 0);
+    }
+}
 void test_utils_unquote() {
     char *out = NULL;
     char in[1024];

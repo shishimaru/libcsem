@@ -2096,6 +2096,46 @@ void test_url_equal_null() {
         CSEM_URL_Dispose(u1);
     }
 }
+void test_url_hash() {
+    {
+        CSEM_Url *u1 = NULL, *u2 = NULL;
+        CSEM_URL_Parse("http://localhost:8080/t1?a=1#b", &u1);
+        CSEM_URL_Parse("http://localhost:8080/t1?a=1#c", &u2);
+
+        int h1, h2;
+        CSEM_URL_Hash(u1, &h1);
+        CSEM_URL_Hash(u2, &h2);
+
+        //check
+        CU_ASSERT_NOT_EQUAL(h1, h2);
+
+        //dispose
+        CSEM_URL_Dispose(u1);
+        CSEM_URL_Dispose(u2);
+    }{
+        CSEM_Url *u1 = NULL, *u2 = NULL;
+        CSEM_URL_Parse("http://localhost:8080/t1?a=1#b", &u1);
+
+        int h1, h2;
+        CSEM_URL_Hash(u1, &h1);
+        CSEM_URL_Hash(u2, &h2);
+
+        //check
+        CU_ASSERT_NOT_EQUAL(h1, h2);
+
+        //dispose
+        CSEM_URL_Dispose(u1);
+    }{
+        CSEM_Url *u1 = NULL, *u2 = NULL;
+
+        int h1, h2;
+        CSEM_URL_Hash(u1, &h1);
+        CSEM_URL_Hash(u2, &h2);
+
+        //check
+        CU_ASSERT_EQUAL(h1, h2);
+    }
+}
 void test_url_writer() {
     CSEM_Url url;
     char *result;

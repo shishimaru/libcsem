@@ -75,6 +75,13 @@ CSEM_Error CSEM_URL_Merge(const CSEM_Url *base, const CSEM_Url *relative, CSEM_U
  * @return result
  */
 CSEM_Bool CSEM_URL_Equal(const CSEM_Url *u1, const CSEM_Url *u2);
+/*
+ * Get hash code of the URL.
+ * @param url  [in]url
+ * @param hash [out]hash code
+ * @return error code
+ */
+CSEM_Error CSEM_URL_Hash(const CSEM_Url *url, int *hash);
 
 CSEM_NS_C_END
 

@@ -97,6 +97,16 @@ ERROR:
 CSEM_Bool  CSEM_Utils_Strcmp(const char *s1, const char *s2) {
     return s1 && s2 ? !strcmp(s1, s2) : !s1 && !s2;
 }
+int CSEM_Utils_Strhash(const char *s) {
+    int h = 0, len = 0;
+    if(s && (len = strlen(s))) {
+        int i = 0, offset = 0;
+        for(i = 0; i < len; i++) {
+            h = 31 * h + s[offset++];
+        }
+    }
+    return h;
+}
 void CSEM_Utils_Unquote(char *in, size_t inLen, char **out) {
     *out = NULL;
 

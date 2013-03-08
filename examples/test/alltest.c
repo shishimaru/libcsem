@@ -23,6 +23,7 @@ static CU_TestInfo testinfo_utils[] = {
         { "test utils : strcat", test_utils_strcat},
         { "test utils : split", test_utils_strtoks},
         { "test utils : nsplit", test_utils_strntoks},
+        { "test utils : hash", test_utils_strhash},
         { "test utils : unquote", test_utils_unquote},
         { "test utils : tolower", test_utils_tolower},
         { "test utils : tostring", test_utils_tostring},
@@ -83,6 +84,7 @@ static CU_TestInfo testinfo_url[] = {
         {"test url merge : merge url", test_url_merge_mergeUrl},
         {"test url merge : merge abnormal url", test_url_merge_mergeAbnormalUrl},
 
+        //equal
         {"test url equals : scheme", test_url_equal_scheme},
         {"test url equals : scheme host", test_url_equal_scheme_host},
         {"test url equals : scheme host port", test_url_equal_scheme_host_port},
@@ -91,6 +93,9 @@ static CU_TestInfo testinfo_url[] = {
         {"test url equals : scheme host port path fragment", test_url_equal_scheme_host_port_path_fragment},
         {"test url equals : scheme host port path query fragment", test_url_equal_scheme_host_port_path_query_fragment},
         {"test url equals : null check", test_url_equal_null},
+
+        //hash
+        {"test url hash : hash code", test_url_hash},
 
         //writer
         { "test url writer", test_url_writer},

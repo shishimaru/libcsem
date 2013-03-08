@@ -49,6 +49,9 @@ void test_url_equal_scheme_host_port_path_fragment();
 void test_url_equal_scheme_host_port_path_query_fragment();
 void test_url_equal_null();
 
+//hash
+void test_url_hash();
+
 //writer
 void test_url_writer();
 void test_url_writer_error_long_scheme();

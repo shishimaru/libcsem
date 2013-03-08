@@ -397,6 +397,21 @@ CSEM_Bool CSEM_URL_Equal(const CSEM_Url *u1, const CSEM_Url *u2) {
     }
     return res;
 }
+CSEM_Error CSEM_URL_Hash(const CSEM_Url *url, int *hash) {
+    CSEM_Error error = CSEM_ERROR_NONE;
+    int res = 0;
+    if(url) {
+        char *urlstring = NULL;
+        if((error = CSEM_URL_Serialize(url, &urlstring))) {
+            goto FINISH;
+        }
+        res = CSEM_Utils_Strhash(urlstring);
+        CSEM_Free(urlstring);
+    }
+FINISH:
+    *hash = res;
+    return error;
+}
 /**
  *  Section 5.2.3 Merge Paths
  */

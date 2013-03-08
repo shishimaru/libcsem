@@ -22,6 +22,7 @@ void test_utils_strncpy();
 void test_utils_strcat();
 void test_utils_strtoks();
 void test_utils_strntoks();
+void test_utils_strhash();
 void test_utils_unquote();
 void test_utils_tolower();
 void test_utils_tostring();
