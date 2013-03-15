@@ -1,10 +1,10 @@
 * microdata/RDFa-Lite library:
 
  - Light weight streaming parser
-   - Parse chunked html and microdata/RDFa-Lite events are passed
-     via callback handlers
-   - Applications can reduce memory foot print because
-     huge HTML tree internally isn't internally created
+   - Parse chunked HTML and extract both microdata[1]/RDFa-Lite[2] via
+     corresponding event handlers
+   - Applications can reduce memory foot print
+     because huge HTML tree isn't internally created
 
  - Data model builder
    - Create a data model based on the underlying streaming parser result
@@ -31,18 +31,21 @@
  
 * Sample programs
 
- - Examples for each module can be found in $LIBRARY_ROOT/examples/microdata
+ - Examples for each module can be found under $LIBRARY_ROOT/examples
 
 * Code quality
 
- - Tested with microdata examples of scheme.org and W3C spec
  - No memory leak with valgrind
- - Nice code coverage
+ - Nice code coverage (more than 80%)
 
 * License
 
- - W3C Software Notice and License
+ - W3C Software Notice and License[3]
 
 * Author
 
  - Hitoshi Uchida <uchida@w3.org>
+
+[1] http://www.w3.org/TR/2012/REC-rdfa-lite-20120607/
+[2] http://www.w3.org/TR/2012/WD-microdata-20121025/
+[3] http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231

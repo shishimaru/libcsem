@@ -65,7 +65,9 @@ CSEM_Error CSEM_Utils_Strtoks(char *src, const char *delim, CSEM_List **tokens) 
             error = CSEM_ERROR_MEMORY;
             goto ERROR;
         }
-        CSEM_List_Add(result, value);
+        if((error = CSEM_List_Add(result, value))) {
+            goto ERROR;
+        }
         in = NULL;
     }
 

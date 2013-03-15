@@ -27,7 +27,6 @@ CSEM_NS_C_BEGIN
 
 #define CSEM_MAX(x, y) ((x) > (y) ? (x) : (y))
 #define CSEM_MIN(x, y) ((x) < (y) ? (x) : (y))
-
 #define FOR(i,a,b) for(i=(a);i<(b);++i)
 #define REP(i,n) FOR(i,0,n)
 #define CLR(a) memset((a), 0 ,sizeof(a))

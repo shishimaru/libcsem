@@ -24,28 +24,41 @@ typedef struct CSEM_Url {
     char *hostname;
     char *port;
     char *path;
-    /** query part excluding '?' */
     char *query;
-    /** fragment part excluding '#' */
     char *fragment;
 } CSEM_Url;
 
 /**
- * Create a url instance.
+ * Create url instance.
  */
 CSEM_Url *CSEM_URL_Create();
 /**
- * Dispose the specified url instance.
- * @param url [in]url instance to be freed
+ * Dispose the url.
+ * @param url [in]url to be freed
  */
 void CSEM_URL_Dispose(CSEM_Url *url);
 /**
- * Parse a RFC3986 url string.
- * @param urlstring [in]url to be parsed
- * @param url       [out]url instance
+ * Parse a url string.
+ * @param urlstring [in]url string
+ * @param url       [out]created url instance
  * @return error code
  */
 CSEM_Error CSEM_URL_Parse(const char *urlstring, CSEM_Url **url);
+/**
+ * Serialize a url as string format.
+ * @param url       [in]url
+ * @param urlstring [out]string representation of the url
+ * @return error code
+ */
+CSEM_Error CSEM_URL_Serialize(const CSEM_Url *url, char **urlstring);
+/**
+ * Merge a base url and a relative url.
+ * @param base     [in]base url
+ * @param relative [in]relative url
+ * @param merged   [out]merged url
+ * @return error code
+ */
+CSEM_Error CSEM_URL_Merge(const CSEM_Url *base, const CSEM_Url *relative, CSEM_Url **merged);
 /**
  * Copy the specified url.
  * @param src  [in]the source url
@@ -53,21 +66,6 @@ CSEM_Error CSEM_URL_Parse(const char *urlstring, CSEM_Url **url);
  * @return error code
  */
 CSEM_Error CSEM_URL_Copy(const CSEM_Url *src, CSEM_Url **dist);
-/**
- * Serialize the specified url.
- * @param url       [in]url
- * @param urlstring [out]string representation of the url
- * @return error code related to url serializing
- */
-CSEM_Error CSEM_URL_Serialize(const CSEM_Url *url, char **urlstring);
-/**
- * Merge a base url and a relative url based on a relative url resolution of RFC3986.
- * @param base     [in]base url
- * @param relative [in]relative url
- * @param merged   [out]merged url
- * @return error code
- */
-CSEM_Error CSEM_URL_Merge(const CSEM_Url *base, const CSEM_Url *relative, CSEM_Url **merged);
 /**
  * Compare the specified URLs.
  * @param u1 [in]url
