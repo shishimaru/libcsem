@@ -1,5 +1,5 @@
 var viewer = {
-    requestURL: "https://people.csail.mit.edu/uchida/work/semweb/demo/libcsem/extract.cgi?url=",
+    requestURL: "https://people.csail.mit.edu/uchida/work/semweb/demo/annotation-viewer/extract.cgi?url=",
     
     show: function(url) {
       var req = new XMLHttpRequest();
