@@ -1,8 +1,8 @@
 {
   "name": "HTML5 Annotation Viewer",
-  "version": "0.1",
+  "version": "0.2",
   "manifest_version": 2,
-  "description": "This extension demonstrates to extract HTML5 annotations like microdata/RDFa-Lite",
+  "description": "This extension enables to take a look into HTML5 annotations like microdata/RDFa-Lite",
   "icons": {"128": "icon.png"},
   "permissions": ["tabs", "https://people.csail.mit.edu/*"],
   "browser_action": {
