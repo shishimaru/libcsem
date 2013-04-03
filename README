@@ -32,6 +32,7 @@
 * Sample programs
 
  - Examples for each module can be found under $LIBRARY_ROOT/examples
+ - A sample program based on Chrome extension [3]
 
 * Code quality
 
@@ -40,7 +41,7 @@
 
 * License
 
- - W3C Software Notice and License[3]
+ - W3C Software Notice and License[4]
 
 * Author
 
@@ -48,4 +49,5 @@
 
 [1] http://www.w3.org/TR/2012/REC-rdfa-lite-20120607/
 [2] http://www.w3.org/TR/2012/WD-microdata-20121025/
-[3] http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
+[3] https://chrome.google.com/webstore/detail/html5-annotation-viewer/omopnhbadhcofdohecpodpngdeepjjek
+[4] http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231

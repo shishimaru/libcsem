@@ -1,7 +1,9 @@
 $Id$
 
-2013-02-??:
+2013-04-03:
     * Release Version 0.2
     * Supported RDFa Lite
+    * Added sample demo based on chrome extension
+    * Fixed bugs
 2013-01-29:
     * Release Version 0.1
