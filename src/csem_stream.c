@@ -386,7 +386,7 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
         /* fire RDFa handler */
         if(rdfaHandler -> startPropValue) {/* @property */
             rdfaHandler -> isPropValue = CSEM_TRUE;
-            if(rdfaHandler -> propStart, rdfa.propName) {
+            if(rdfaHandler -> propStart && rdfa.propName) {
                 CSEM_Bool isUrlPropElement = CSEM_Parser_IsUrlPropElement((const char *)name, NULL);
                 rdfa.freeProp = rdfaHandler -> propStart(parser -> userdata, rdfa.propName, isUrlPropElement);
             }
