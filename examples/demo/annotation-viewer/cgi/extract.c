@@ -17,11 +17,11 @@ static size_t write_data(void *ptr, size_t size, size_t nmemb, void *userdata) {
 static CSEM_Error get(char *url, CSEM_Document **doc) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Document *res = NULL;
-
     CSEM_Builder *builder = NULL;
     CSEM_Url *baseURL = NULL;
     CURL *curl = NULL;
     CURLcode curlres = CURLE_OK;
+    struct curl_slist *headers=NULL;
 
     /* init libcsem */
     if((error = CSEM_Builder_Create(&builder))) {
@@ -41,6 +41,9 @@ static CSEM_Error get(char *url, CSEM_Document **doc) {
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, builder);
+    /* pretend user agent to resolve 4XX response */
+    headers = curl_slist_append(headers, "User-Agent: Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
     /* start build process */
     if((curlres = curl_easy_perform(curl))) {
@@ -52,6 +55,7 @@ static CSEM_Error get(char *url, CSEM_Document **doc) {
     *doc = res;
 
 FINISH:
+    curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
     CSEM_Builder_Dispose(builder);
     CSEM_URL_Dispose(baseURL);
@@ -194,7 +198,7 @@ void serialize(char *url) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_Document *doc = NULL;
 
-    if((error = get(url, &doc))) {
+    if(!url || (error = get(url, &doc))) {
         printf("{\"error\" : \"failed to retrieve\"}\n");
         goto ERROR;
     }
@@ -202,29 +206,29 @@ void serialize(char *url) {
         show(doc);
     } else {
         printf("{\"error\" : \"failed to parse\"}\n");
+        goto ERROR;
     }
 ERROR:
     CSEM_Document_Dispose(doc);
 }
-
 int main(int argc, char *argv[]) {
-    int i = 0;
-    CSEM_List *queries = NULL;
+    char *query = NULL;
+    char *url = NULL;
     printf("Content-Type: application/json\n\n");
     {
-        char *query_str = getenv("QUERY_STRING");
-        if(!query_str || !strcmp(query_str, "")) {
-            query_str = argv[1];
-        }
-        Utils_Strtoks(query_str, "&", &queries);
-    }
-    for(i = 0; i < CSEM_List_Size(queries); i++) {
-        char *query = CSEM_List_Get(queries, i);
-        if(!strncmp(query, "url=", 4)) {
-            char *url = query + 4;
-            serialize(url);
+        query = getenv("QUERY_STRING");
+        if(!query) {/* for commandline debug */
+            if(argc > 1) {
+                query = argv[1];
+            } else {
+                goto FINISH;
+            }
         }
     }
-    CSEM_List_Dispose(queries, CSEM_TRUE);
+    if(!strncmp(query, "url=", 4)) {
+        url = query + 4;
+    }
+FINISH:
+    serialize(url);
     return 0;
 }

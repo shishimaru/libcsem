@@ -1,7 +1,7 @@
 # $Id$
 
 TARGET = extract.cgi
-OBJS = aggregator.o utils.o cJSON.o
+OBJS = extract.o utils.o cJSON.o
 CC = gcc
 CFLAGS = -O3 -Wall -pedantic -Wformat=2 -Wstrict-aliasing=2
 CPPFLAGS = -I./
