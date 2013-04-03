@@ -280,7 +280,8 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
     if(microHandler) {
         /* fire microdata handler */
         if(microHandler -> startPropValue) {/* @itemprop */
-            if(microHandler -> propStart) {
+            microHandler -> isPropValue = CSEM_TRUE;
+            if(microHandler -> propStart && micro.propName) {
                 CSEM_Bool isUrlPropElement = CSEM_Parser_IsUrlPropElement((const char *)name, NULL);
                 micro.freeProp = microHandler -> propStart(parser -> userdata, micro.propName, isUrlPropElement);
             }
@@ -292,9 +293,11 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
                         microHandler -> propValue(parser -> userdata, "", 0);
                     }
                 }
+                microHandler -> isPropValue = CSEM_FALSE;
             }
         }
         if(micro.isStartScope) {/* @itemscope */
+            microHandler -> isPropValue = CSEM_FALSE;
             if(microHandler -> itemStart) {
                 if(micro.itemid) {
                     CSEM_URL_Parse(micro.itemid, &(micro.itemidURL));
@@ -382,7 +385,8 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
         }
         /* fire RDFa handler */
         if(rdfaHandler -> startPropValue) {/* @property */
-            if(rdfaHandler -> propStart) {
+            rdfaHandler -> isPropValue = CSEM_TRUE;
+            if(rdfaHandler -> propStart, rdfa.propName) {
                 CSEM_Bool isUrlPropElement = CSEM_Parser_IsUrlPropElement((const char *)name, NULL);
                 rdfa.freeProp = rdfaHandler -> propStart(parser -> userdata, rdfa.propName, isUrlPropElement);
             }
@@ -394,9 +398,11 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
                         rdfaHandler -> propValue(parser -> userdata, "", 0);
                     }
                 }
+                rdfaHandler -> isPropValue = CSEM_FALSE;
             }
         }
         if(rdfa.isStartScope) {/* @typeof | @resource */
+            rdfaHandler -> isPropValue = CSEM_FALSE;
             if(rdfaHandler -> itemStart) {
                 if(rdfa.resource) {
                     CSEM_URL_Parse(rdfa.resource, &(rdfa.resourceURL));
@@ -527,14 +533,14 @@ static void sax_characters(void *ctx, const xmlChar *ch, int len) {
 #endif
 
     if(microHandler) {
-        if(microHandler -> startPropValue) {
+        if(microHandler -> isPropValue) {
             if(microHandler -> propValue) {
                 microHandler -> propValue(parser -> userdata, (const char *)ch, len);
             }
         }
     }
     if(rdfaHandler) {
-        if(rdfaHandler -> startPropValue) {
+        if(rdfaHandler -> isPropValue) {
             if(rdfaHandler -> propValue) {
                 rdfaHandler -> propValue(parser -> userdata, (const char *)ch, len);
             }
@@ -577,7 +583,7 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
             if(microHandler -> propEnd) {
                 microHandler -> propEnd(parser -> userdata);
             }
-            microHandler -> startPropValue = CSEM_FALSE;
+            microHandler -> isPropValue = CSEM_FALSE;
 
             if(CSEM_Stack_Size(microHandler -> propDepth) > 1) {
                 void *depth = CSEM_Stack_Pop(microHandler -> propDepth);
@@ -631,7 +637,7 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
             if(rdfaHandler -> propEnd) {
                 rdfaHandler -> propEnd(parser -> userdata);
             }
-            rdfaHandler -> startPropValue = CSEM_FALSE;
+            rdfaHandler -> isPropValue = CSEM_FALSE;
 
             if(CSEM_Stack_Size(rdfaHandler -> propDepth) > 1) {
                 void *depth = CSEM_Stack_Pop(rdfaHandler -> propDepth);

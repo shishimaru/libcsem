@@ -1,6 +1,7 @@
 void test_microdata_tree_values();
 void test_microdata_tree_no_microdata();
 void test_microdata_tree_recursive_itemprop();
+void test_microdata_tree_recursive_propvalue();
 void test_microdata_tree_basic_resolve();
 void test_microdata_tree_resolve_recursive_items();
 void test_microdata_tree_chunked();

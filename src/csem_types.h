@@ -43,6 +43,7 @@ struct CSEM_Micro_Handlers {
     CSEM_Stack *idDepth;
     /* prop */
     CSEM_Bool startPropValue;
+    CSEM_Bool isPropValue;
     CSEM_Stack *propDepth;
 };
 
@@ -63,6 +64,7 @@ struct CSEM_RDFa_Handlers {
     CSEM_Stack *prefixDepth;
     /* prop */
     CSEM_Bool startPropValue;
+    CSEM_Bool isPropValue;
     CSEM_Stack *propDepth;
 };
 

@@ -118,7 +118,8 @@ static CU_TestInfo testinfo_microdata[] = {
         { "test stream parser : basic", test_microdata_stream_basic},
         { "test stream parser : Section5.4 values", test_microdata_stream_values},
         { "test tree parser   : recursive itemprop", test_microdata_tree_recursive_itemprop},
-        { "test tree parser   : values", test_microdata_tree_values},
+        { "test tree parser   : values", test_microdata_tree_values},//*/
+        { "test tree parser   : recursive propvalue", test_microdata_tree_recursive_propvalue},
         { "test tree parser   : no microdata", test_microdata_tree_no_microdata},
         { "test tree parser   : simplify", test_microdata_tree_basic_resolve},
         { "test tree parser   : simplify recursive items", test_microdata_tree_resolve_recursive_items},
@@ -140,6 +141,7 @@ static CU_TestInfo testinfo_RDFa[] = {
         { "test stream parser : basic", test_rdfa_stream_basic},
         { "test stream parser : vocab", test_rdfa_stream_vocab},
         { "test tree parser   : sample basic", test_rdfa_tree_basic},
+        { "test tree parser   : recursive propvalue", test_rdfa_tree_recursive_propvalue},
         { "test tree parser   : sample person", test_rdfa_sample_person},
         { "test tree parser   : sample ssn", test_rdfa_sample_ssn},
         { "test tree parser   : sample event", test_rdfa_sample_event},
@@ -149,12 +151,12 @@ static CU_TestInfo testinfo_RDFa[] = {
 static CU_SuiteInfo suites[] = {
         { "utils",  NULL, NULL, testinfo_utils},
         { "list", NULL, NULL, testinfo_list},
-        { "stack", NULL, NULL, testinfo_stack},//*/
+        { "stack", NULL, NULL, testinfo_stack},
         { "url", NULL, NULL, testinfo_url},
-        { "ns manager", NULL, NULL, testinfo_ns_manager},
+        { "ns manager", NULL, NULL, testinfo_ns_manager},//*/
 
         { "microdata", NULL, NULL, testinfo_microdata},
-        { "RDFa Lite", NULL, NULL, testinfo_RDFa},//*/
+        { "RDFa Lite", NULL, NULL, testinfo_RDFa},
 
         CU_SUITE_INFO_NULL,
 };
