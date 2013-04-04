@@ -39,9 +39,11 @@
  - No memory leak with valgrind
  - Nice code coverage (more than 80%)
 
+* Related prototypes [4]
+
 * License
 
- - W3C Software Notice and License[4]
+ - W3C Software Notice and License[5]
 
 * Author
 
@@ -50,4 +52,5 @@
 [1] http://www.w3.org/TR/2012/REC-rdfa-lite-20120607/
 [2] http://www.w3.org/TR/2012/WD-microdata-20121025/
 [3] https://chrome.google.com/webstore/detail/html5-annotation-viewer/omopnhbadhcofdohecpodpngdeepjjek
-[4] http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
+[4] http://www.w3.org/2013/04/semweb-html5/
+[5] http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
