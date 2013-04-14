@@ -24,7 +24,6 @@ CSEM_Error CSEM_RDFa_CreateHandler(CSEM_RDFa_Handlers **handler) {
         result -> nsManager = CSEM_NSManager_Create();
     }
 
-    result -> currentDepth = -1;
     {/* add -1 to scopeDepth */
         int value = -1;
         result -> itemDepth = CSEM_Stack_Create(8);

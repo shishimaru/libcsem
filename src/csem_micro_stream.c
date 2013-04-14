@@ -18,7 +18,6 @@ CSEM_Error CSEM_Micro_CreateHandler(CSEM_Micro_Handlers **handler) {
         error = CSEM_ERROR_MEMORY;
         goto ERROR;
     }
-    result -> currentDepth = -1;
     {/* add -1 to scopeDepth */
         int value = -1;
         result -> itemDepth = CSEM_Stack_Create(8);
@@ -29,7 +28,6 @@ CSEM_Error CSEM_Micro_CreateHandler(CSEM_Micro_Handlers **handler) {
         CSEM_Stack_Push(result -> itemDepth, initScopeDepth);
     }
     {/* add -1 to idDepth */
-        /*result -> idDepth = -1; TODO */
         int value = -1;
         result -> idDepth = CSEM_Stack_Create(8);
         if(!(initIdDepth = CSEM_Malloc(sizeof(int)))) {

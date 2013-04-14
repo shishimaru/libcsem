@@ -102,7 +102,7 @@ CSEM_Error CSEM_Item_GetNamedPropertes(const CSEM_Item *item, const char *name, 
  * @param changeParent [in]flag whether the property keeps current relationship with parent
  * @return error code
  */
-CSEM_Error CSEM_Item_AddProperty(CSEM_Item *item, CSEM_Property *property, CSEM_Bool changeParent);
+CSEM_Error CSEM_Item_AddProperty(CSEM_Item *item, CSEM_Property *property, CSEM_Bool changeParent, CSEM_Bool isReference);
 /**
  * Create a property object which has the specified property names.
  * \@itemprop of microdata or \@property of RDFa Lite.

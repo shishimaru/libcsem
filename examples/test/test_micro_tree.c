@@ -437,6 +437,390 @@ FINISH:
     CSEM_Builder_Dispose(builder);
     CSEM_Document_Dispose(doc);
 }
+void test_microdata_tree_id() {
+    CSEM_Error error = CSEM_ERROR_NONE;
+
+    int fd = -1;
+    if(!(fd = open("./data/micro-id.html", O_RDONLY))) {
+        CU_FAIL_FATAL("failed fopen");
+        goto FINISH;
+    }
+    CSEM_Builder *builder = NULL;
+    if((error = CSEM_Builder_Create(&builder))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Url *baseURL = NULL;
+    {/* set baseURL */
+        CSEM_URL_Parse("http://localhost/test/", &baseURL);
+        CSEM_Builder_SetBaseURL(builder, baseURL);
+    }
+    if((error = CSEM_Builder_Parse(builder, fd))) {
+        CU_FAIL_FATAL("failed parse");
+        goto FINISH;
+    }
+    CSEM_Document *doc = NULL;
+    if((error = CSEM_Builder_GetDocument(builder, &doc))) {
+        goto FINISH;
+    }
+    {/* check results */
+        CSEM_List *children = CSEM_Document_GetChildren(doc);
+        CU_ASSERT_EQUAL(CSEM_List_Size(children), 2);
+        {/* 1st item */
+            CSEM_Node *node = CSEM_List_Get(children, 0);
+            CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_ITEM);
+            CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
+
+            CSEM_Item *item = CSEM_Node_GetObject(node);
+            {
+                char *id = NULL;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/neil");
+                free(id);
+            }
+            {/* types */
+                CSEM_List *types = CSEM_Item_GetTypes(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://sample.org/Person");
+            }
+            {/* refs */
+                CSEM_List *refs = CSEM_Item_GetRefs(item);
+                CU_ASSERT_EQUAL(refs, NULL);
+            }
+            {/* properties */
+                CSEM_List *properties = CSEM_Item_GetProperties(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(properties), 5);
+                {/* name : Neil */
+                    CSEM_Property *property = CSEM_List_Get(properties, 0);
+                    CSEM_List *names = CSEM_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Neil");
+                        CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_STR);
+                }
+                {/* address : Boston */
+                    CSEM_Property *property = CSEM_List_Get(properties, 1);
+                    CSEM_List *names = CSEM_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "address");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Boston");
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_STR);
+                }
+                {/* band : Item */
+                    CSEM_Property *property = CSEM_List_Get(properties, 2);
+                    CSEM_List *names = CSEM_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "band");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_ITEM);
+                    CSEM_Item *sub_item = CSEM_List_Get(values, 0); {
+                        {/* types */
+                            CSEM_List *types = CSEM_Item_GetTypes(sub_item);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://sample.org/MusicGroup");
+                        }
+                        {/* refs */
+                            CSEM_List *refs = CSEM_Item_GetRefs(sub_item);
+                            CU_ASSERT_EQUAL(refs, NULL);
+                        }
+                        {/* id */
+                            CSEM_Url *id = CSEM_Item_GetId(sub_item);
+                            CU_ASSERT_EQUAL(id, NULL);
+                        }
+
+                        CSEM_List *properties_band = CSEM_Item_GetProperties(sub_item);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(properties_band), 1);
+                        {/* address : Boston */
+                            CSEM_Property *property = CSEM_List_Get(properties_band, 0);
+                            CSEM_List *names = CSEM_Property_GetNames(property);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                            CSEM_List *values = NULL, *types = NULL;
+                            CSEM_Property_GetValues(property, &values, &types);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Four \"Parts\" Water");
+                            CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_STR);
+                        }
+                    }
+                }
+                {/* tennis : Item */
+                    CSEM_Property *property = CSEM_List_Get(properties, 3);
+                    CSEM_List *names = CSEM_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "tennis");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_ITEM);
+                    CSEM_Item *sub_item = CSEM_List_Get(values, 0); {
+                        CU_ASSERT_EQUAL(CSEM_Item_GetId(sub_item), NULL);
+
+                        {/* types */
+                            CSEM_List *types = CSEM_Item_GetTypes(sub_item);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://sample.org/SportsGroup");
+                        }
+
+                        CSEM_List *refs = CSEM_Item_GetRefs(sub_item);
+                        CU_ASSERT_EQUAL(refs, NULL);
+
+                        CSEM_Url *id = CSEM_Item_GetId(sub_item);
+                        CU_ASSERT_EQUAL(id, NULL);
+
+                        CSEM_List *properties_band = CSEM_Item_GetProperties(sub_item);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(properties_band), 1);
+
+                        {/* team : Item */
+                            CSEM_Property *property = CSEM_List_Get(properties_band, 0);
+                            CSEM_List *names = CSEM_Property_GetNames(property);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "team");
+
+                            CSEM_List *values = NULL, *types = NULL;
+                            CSEM_Property_GetValues(property, &values, &types);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_ITEM);
+                            CSEM_Item *sub_item = CSEM_List_Get(values, 0); {
+                                CU_ASSERT_EQUAL(CSEM_Item_GetId(sub_item), NULL);
+                                CU_ASSERT_EQUAL(CSEM_Item_GetTypes(sub_item), NULL);
+                                CU_ASSERT_EQUAL(CSEM_Item_GetRefs(sub_item), NULL);
+                                CU_ASSERT_EQUAL(CSEM_Item_GetId(sub_item), NULL);
+
+                                CSEM_List *properties_team = CSEM_Item_GetProperties(sub_item);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(properties_team), 1);
+                                {/* name : Cambridge Tennis Team */
+                                    CSEM_Property *property = CSEM_List_Get(properties_team, 0);
+                                    CSEM_List *names = CSEM_Property_GetNames(property);
+                                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                                    CSEM_List *values = NULL, *types = NULL;
+                                    CSEM_Property_GetValues(property, &values, &types);
+                                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Cambridge Tennis Team");
+                                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_STR);
+                                }
+                            }
+                        }
+                    }
+                }
+                {/* phone : 617 */
+                    CSEM_Property *property = CSEM_List_Get(properties, 4);
+                    CSEM_List *names = CSEM_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "phone");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "617");
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_STR);
+                }
+            }
+        }
+        {/* 2nd item */
+            CSEM_Node *node = CSEM_List_Get(children, 1);
+            CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_ITEM);
+            CU_ASSERT_PTR_EQUAL(CSEM_Node_GetObject(CSEM_Node_GetParent(node)), doc);
+
+            CSEM_Item *item = CSEM_Node_GetObject(node);
+            {
+                char *id = NULL;
+                CSEM_URL_Serialize(CSEM_Item_GetId(item), &id);
+                CU_ASSERT_STRING_EQUAL(id, "http://localhost/test/bob");
+                free(id);
+            }
+            {/* types */
+                CSEM_List *types = CSEM_Item_GetTypes(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://sample.org/Person");
+            }
+            {/* refs */
+                CSEM_List *refs = CSEM_Item_GetRefs(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(refs), 1);
+                CU_ASSERT_STRING_EQUAL(CSEM_List_Get(refs, 0), "band");
+            }
+            {/* properties */
+                CSEM_List *properties = CSEM_Item_GetProperties(item);
+                CU_ASSERT_EQUAL(CSEM_List_Size(properties), 5);
+                {/* name : Bob */
+                    CSEM_Property *property = CSEM_List_Get(properties, 0);
+                    CSEM_List *names = CSEM_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Bob");
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_STR);
+                }
+                {/* address : Boston */
+                    CSEM_Property *property = CSEM_List_Get(properties, 1);
+                    CSEM_List *names = CSEM_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "address");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Boston");
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_STR);
+                }
+                {/* band : Item */
+                    CSEM_Property *property = CSEM_List_Get(properties, 2);
+                    CSEM_List *names = CSEM_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "band");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_ITEM);
+
+                    CSEM_Item *sub_item = CSEM_List_Get(values, 0); {
+                        {/* types */
+                            CSEM_List *types = CSEM_Item_GetTypes(sub_item);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://sample.org/MusicGroup");
+                        }
+                        {/* refs */
+                            CSEM_List *refs = CSEM_Item_GetRefs(sub_item);
+                            CU_ASSERT_EQUAL(refs, NULL);
+                        }
+                        {/* id */
+                            CSEM_Url *id = CSEM_Item_GetId(sub_item);
+                            CU_ASSERT_EQUAL(id, NULL);
+                        }
+
+                        CSEM_List *properties_band = CSEM_Item_GetProperties(sub_item);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(properties_band), 1);
+                        {/* address : Boston */
+                            CSEM_Property *property = CSEM_List_Get(properties_band, 0);
+                            CSEM_List *names = CSEM_Property_GetNames(property);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                            CSEM_List *values = NULL, *types = NULL;
+                            CSEM_Property_GetValues(property, &values, &types);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Four \"Parts\" Water");
+                            CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_STR);
+                        }
+                    }
+                }
+                {/* tennis : Item */
+                    CSEM_Property *property = CSEM_List_Get(properties, 3);
+                    CSEM_List *names = CSEM_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "tennis");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_ITEM);
+                    CSEM_Item *sub_item = CSEM_List_Get(values, 0); {
+                        CU_ASSERT_EQUAL(CSEM_Item_GetId(sub_item), NULL);
+
+                        {/* types */
+                            CSEM_List *types = CSEM_Item_GetTypes(sub_item);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(types, 0), "http://sample.org/SportsGroup");
+                        }
+
+                        CSEM_List *refs = CSEM_Item_GetRefs(sub_item);
+                        CU_ASSERT_EQUAL(refs, NULL);
+
+                        CSEM_Url *id = CSEM_Item_GetId(sub_item);
+                        CU_ASSERT_EQUAL(id, NULL);
+
+                        CSEM_List *properties_band = CSEM_Item_GetProperties(sub_item);
+                        CU_ASSERT_EQUAL(CSEM_List_Size(properties_band), 1);
+
+                        {/* team : Item */
+                            CSEM_Property *property = CSEM_List_Get(properties_band, 0);
+                            CSEM_List *names = CSEM_Property_GetNames(property);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                            CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "team");
+
+                            CSEM_List *values = NULL, *types = NULL;
+                            CSEM_Property_GetValues(property, &values, &types);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                            CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                            CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_ITEM);
+                            CSEM_Item *sub_item = CSEM_List_Get(values, 0); {
+                                CU_ASSERT_EQUAL(CSEM_Item_GetId(sub_item), NULL);
+                                CU_ASSERT_EQUAL(CSEM_Item_GetTypes(sub_item), NULL);
+                                CU_ASSERT_EQUAL(CSEM_Item_GetRefs(sub_item), NULL);
+                                CU_ASSERT_EQUAL(CSEM_Item_GetId(sub_item), NULL);
+
+                                CSEM_List *properties_team = CSEM_Item_GetProperties(sub_item);
+                                CU_ASSERT_EQUAL(CSEM_List_Size(properties_team), 1);
+                                {/* name : Cambridge Tennis Team */
+                                    CSEM_Property *property = CSEM_List_Get(properties_team, 0);
+                                    CSEM_List *names = CSEM_Property_GetNames(property);
+                                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "name");
+
+                                    CSEM_List *values = NULL, *types = NULL;
+                                    CSEM_Property_GetValues(property, &values, &types);
+                                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "Cambridge Tennis Team");
+                                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_STR);
+                                }
+                            }
+                        }
+                    }
+                }
+                {/* phone : 617 */
+                    CSEM_Property *property = CSEM_List_Get(properties, 4);
+                    CSEM_List *names = CSEM_Property_GetNames(property);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(names), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(names, 0), "phone");
+
+                    CSEM_List *values = NULL, *types = NULL;
+                    CSEM_Property_GetValues(property, &values, &types);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(values), 1);
+                    CU_ASSERT_EQUAL(CSEM_List_Size(types), 1);
+                    CU_ASSERT_STRING_EQUAL(CSEM_List_Get(values, 0), "617");
+                    CU_ASSERT_EQUAL(*((int *)CSEM_List_Get(types, 0)), CSEM_VALUE_TYPE_STR);
+                }
+            }
+        }
+    }
+
+FINISH:
+    CSEM_URL_Dispose(baseURL);
+    CSEM_Builder_Dispose(builder);
+    CSEM_Document_Dispose(doc);
+}
 void test_microdata_tree_no_microdata() {
     CSEM_Error error = CSEM_ERROR_NONE;
 
@@ -747,7 +1131,7 @@ void test_microdata_tree_basic_resolve() {
     }
     {/* check results */
         CSEM_List *children = CSEM_Document_GetChildren(doc);
-        CU_ASSERT_EQUAL(CSEM_List_Size(children), 3);
+        CU_ASSERT_EQUAL(CSEM_List_Size(children), 6);
         {/* 1st item */
             CSEM_Node *node = CSEM_List_Get(children, 0);
             CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_ITEM);
@@ -1188,7 +1572,7 @@ void test_microdata_tree_chunked() {
     }
     {/* check results */
         CSEM_List *children = CSEM_Document_GetChildren(doc);
-        CU_ASSERT_EQUAL(CSEM_List_Size(children), 3);
+        CU_ASSERT_EQUAL(CSEM_List_Size(children), 6);
         {/* 1st item */
             CSEM_Node *node = CSEM_List_Get(children, 0);
             CU_ASSERT_EQUAL(CSEM_Node_GetType(node), CSEM_NODE_TYPE_ITEM);

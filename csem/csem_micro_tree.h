@@ -58,7 +58,8 @@ CSEM_List *CSEM_Id_GetProperties(CSEM_Id *id);
  * @param property [in]property to be added
  * @return error code
  */
-CSEM_Error CSEM_Id_AddProperty(CSEM_Id *id, CSEM_Property *property);
+/*CSEM_Error CSEM_Id_AddProperty(CSEM_Id *id, CSEM_Property *property);*/
+CSEM_Error CSEM_Id_AddProperty(CSEM_Id *id, CSEM_Property *property, CSEM_Bool changeParent);
 /**
  * Get \@id value of the id object.
  * @param id [in]id object

@@ -30,7 +30,7 @@ static CSEM_NS_Pairs *csem_ns_pairs_create(const char *prefix, const char *uri) 
 FINISH:
     return result;
 }
-void csem_ns_pairs_dispose(CSEM_NS_Pairs *pairs, CSEM_Bool freeData) {
+static void csem_ns_pairs_dispose(CSEM_NS_Pairs *pairs, CSEM_Bool freeData) {
     if(pairs) {
         if(freeData) {
             CSEM_Free((char *)pairs -> prefix);
@@ -39,7 +39,7 @@ void csem_ns_pairs_dispose(CSEM_NS_Pairs *pairs, CSEM_Bool freeData) {
         CSEM_Free(pairs);
     }
 }
-void csem_ns_list_dispose(CSEM_NS_List *nsList, CSEM_Bool freeData) {
+static void csem_ns_list_dispose(CSEM_NS_List *nsList, CSEM_Bool freeData) {
     if(nsList) {
         int i = 0;
         FOR(i, 0, CSEM_List_Size(nsList)) {
@@ -102,7 +102,7 @@ CSEM_Error CSEM_NSManager_Push(CSEM_NSManager *manager) {
 FINISH:
     return error;
 }
-const char *csem_ns_list_getURI(CSEM_NS_List *nsList, const char *prefix) {
+static const char *csem_ns_list_getURI(CSEM_NS_List *nsList, const char *prefix) {
     const char *result = NULL;
     int i = 0;
     FOR(i, 0, CSEM_List_Size(nsList)) {
@@ -121,7 +121,7 @@ const char *csem_ns_list_getURI(CSEM_NS_List *nsList, const char *prefix) {
     }
     return result;
 }
-const char *CSEM_NSManager_lookupURI(CSEM_NSManager *manager, const char *prefix) {
+const char *CSEM_NSManager_LookupURI(CSEM_NSManager *manager, const char *prefix) {
     const char *result = NULL;
     int i = CSEM_List_Size(manager -> stack) - 1;
     CSEM_NS_List *nsList = NULL;

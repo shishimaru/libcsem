@@ -118,10 +118,11 @@ static CU_TestInfo testinfo_microdata[] = {
         { "test stream parser : basic", test_microdata_stream_basic},
         { "test stream parser : Section5.4 values", test_microdata_stream_values},
         { "test tree parser   : recursive itemprop", test_microdata_tree_recursive_itemprop},
-        { "test tree parser   : values", test_microdata_tree_values},//*/
+        { "test tree parser   : values", test_microdata_tree_values},
         { "test tree parser   : recursive propvalue", test_microdata_tree_recursive_propvalue},
         { "test tree parser   : no microdata", test_microdata_tree_no_microdata},
-        { "test tree parser   : simplify", test_microdata_tree_basic_resolve},
+        { "test tree parser   : simplify", test_microdata_tree_basic_resolve},//*/
+        { "test tree parser   : item wrapped by id element", test_microdata_tree_id},
         { "test tree parser   : simplify recursive items", test_microdata_tree_resolve_recursive_items},
         { "test tree parser   : chunked builder", test_microdata_tree_chunked},
         { "test tree parser   : schema.org/event/ex1", test_microdata_tree_schema_org_event_ex1},
@@ -129,7 +130,7 @@ static CU_TestInfo testinfo_microdata[] = {
         { "test tree parser   : schema.org/person", test_microdata_tree_schema_org_person},
         { "test tree parser   : schema.org/place/ex1", test_microdata_tree_schema_org_place_ex1},
         { "test tree parser   : schema.org/place/ex2", test_microdata_tree_schema_org_place_ex2},
-        { "test tree parser   : schema.org/place/ex4", test_microdata_tree_schema_org_place_ex4},//*/
+        { "test tree parser   : schema.org/place/ex4", test_microdata_tree_schema_org_place_ex4},
         { "test microdata API : document.getItems(NULL)", test_microdata_tree_getItems_no_types},
         { "test microdata API : document.getItems([types])", test_microdata_tree_getItems_with_types},
         { "test microdata API : item.getNamedPropertries(name)", test_microdata_tree_getNamedProperties},

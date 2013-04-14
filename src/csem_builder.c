@@ -22,6 +22,32 @@ static void handler_error(const void *userdata, CSEM_Error error) {
 #endif
     builder -> error = error;
 }
+static void csem_builder_id_startScope(CSEM_Builder *builder) {
+    CSEM_Id *idNode = NULL;
+    if((idNode = CSEM_Stack_Top(builder -> idNodeStack))) {
+        idNode -> itemDepth++;
+    }
+}
+static void csem_builder_id_endScope(CSEM_Builder *builder) {
+    CSEM_Id *idNode = NULL;
+    if((idNode = CSEM_Stack_Top(builder -> idNodeStack))) {
+        idNode -> itemDepth--;
+    }
+}
+static CSEM_Bool csem_builder_id_addProperty(CSEM_Builder *builder, CSEM_Property *property) {
+    CSEM_Error error = CSEM_ERROR_NONE;
+
+    CSEM_Id *idNode = NULL;
+    if((idNode = CSEM_Stack_Top(builder -> idNodeStack))) {
+        if(!(idNode -> itemDepth)) {
+            if((error = CSEM_Id_AddProperty(idNode, property, CSEM_FALSE))) {
+                goto FINISH;
+            }
+        }
+    }
+FINISH:
+    return error;
+}
 static CSEM_Bool microdata_startScope(const void *userdata,
         const CSEM_Url *id, const CSEM_List *types, const CSEM_List *refs) {
     CSEM_Error error = CSEM_ERROR_NONE;
@@ -48,8 +74,7 @@ static CSEM_Bool microdata_startScope(const void *userdata,
                 item, CSEM_VALUE_TYPE_ITEM);
     } else if(activeType == CSEM_NODE_TYPE_DOCUMENT) {
         CSEM_Document_AppendChild(builder -> document, item -> node);
-    } else if(activeType == CSEM_NODE_TYPE_ITEM
-            || activeType == CSEM_NODE_TYPE_ID) {/* TODO */
+    } else if(activeType == CSEM_NODE_TYPE_ITEM) {
         CSEM_Document_AppendChild(builder -> document, item -> node);
     } else {
         fprintf(stderr, "not implemented node type [%d]\n", activeType);
@@ -57,6 +82,7 @@ static CSEM_Bool microdata_startScope(const void *userdata,
     }
     /* update state */
     builder -> activeNode = item -> node;
+    csem_builder_id_startScope(builder);
 
     return CSEM_FALSE;
 ERROR:
@@ -75,6 +101,7 @@ static void microdata_endScope(const void *userdata) {
     if(builder -> activeNode -> parent) {
         builder -> activeNode = builder -> activeNode -> parent;
     }
+    csem_builder_id_endScope(builder);
 }
 static CSEM_Bool microdata_startProp(const void *userdata,
         const char *propName, CSEM_Bool hasUrlValue) {
@@ -98,11 +125,7 @@ static CSEM_Bool microdata_startProp(const void *userdata,
     }
     /* append */
     if(activeType == CSEM_NODE_TYPE_ITEM) {
-        if((error = CSEM_Item_AddProperty(activeNode -> obj.item, property, CSEM_TRUE))) {
-            goto ERROR;
-        }
-    } else if(activeType == CSEM_NODE_TYPE_ID) {
-        if((error = CSEM_Id_AddProperty(activeNode -> obj.id, property))) {
+        if((error = CSEM_Item_AddProperty(activeNode -> obj.item, property, CSEM_TRUE, CSEM_FALSE))) {
             goto ERROR;
         }
     } else if(activeType == CSEM_NODE_TYPE_PROPERTY) {
@@ -115,7 +138,7 @@ static CSEM_Bool microdata_startProp(const void *userdata,
         if((error = CSEM_Property_AddValues(tmpProperty, property, CSEM_VALUE_TYPE_PROPERTY))) {
             goto ERROR;
         }
-    } else if(activeType == CSEM_NODE_TYPE_DOCUMENT) {/* TODO */
+    } else if(activeType == CSEM_NODE_TYPE_DOCUMENT) {
         CSEM_Document *tmpDoc = activeNode -> obj.doc;
         if((error = CSEM_Document_AppendChild(tmpDoc, property -> node))) {
             goto ERROR;
@@ -129,6 +152,7 @@ static CSEM_Bool microdata_startProp(const void *userdata,
     builder -> propValueType = hasUrlValue ?
             CSEM_VALUE_TYPE_URL : CSEM_VALUE_TYPE_STR;
     builder -> activeNode = property -> node;
+    csem_builder_id_addProperty(builder, property);
 
     return CSEM_TRUE;
 ERROR:
@@ -207,12 +231,9 @@ static CSEM_Bool microdata_startId(const void *userdata, const char *idValue) {
     if((error = CSEM_Id_Create(&id, idValue))) {
         goto ERROR;
     }
-    /* append to document */
-    if((error = CSEM_Document_AppendChild(builder -> document, id -> node))) {
-        goto ERROR;
-    }
-    /* update state */
-    builder -> activeNode = id -> node;
+    /* push id */
+    CSEM_Stack_Push(builder -> idNodeStack, id);
+    CSEM_List_Add(builder -> document -> idNodeList, id);
 
     return CSEM_FALSE;
 ERROR:
@@ -226,40 +247,9 @@ static void microdata_endId(const void *userdata) {
     puts("@END_ID");
 #endif
 
-    /* update state */
-    if(builder -> activeNode -> parent) {
-        builder -> activeNode = builder -> activeNode -> parent;
-    }
+    CSEM_Stack_Pop(builder -> idNodeStack);
 }
-CSEM_Error csem_builder_getTopNodes(CSEM_Document *doc, CSEM_NODE_TYPE type, CSEM_List **nodes) {
-    CSEM_Error error = CSEM_ERROR_NONE;
-    CSEM_List *result = NULL;
-    CSEM_List *nodeList = NULL;
-    int i = 0, size = 0;
-
-    {/* init */
-        if(!(result = CSEM_List_Create(8))) {
-            error = CSEM_ERROR_MEMORY;
-            goto ERROR;
-        }
-        nodeList = CSEM_Document_GetChildren(doc);
-        size = CSEM_List_Size(nodeList);
-    }
-    /* filter */
-    for(i = 0; i < size; i++) {
-        CSEM_Node *node = CSEM_List_Get(nodeList, i);
-        if(CSEM_Node_GetType(node) == type) {
-            CSEM_List_Add(result, node);
-        }
-    }
-    /* result */
-    *nodes = result;
-    return error;
-ERROR:
-    CSEM_List_Dispose(result, CSEM_TRUE);
-    return error;
-}
-CSEM_Error csem_builder_resolveItem(CSEM_Item *item, CSEM_List *ids) {
+static CSEM_Error csem_builder_resolveItem(CSEM_Item *item, CSEM_List *ids) {
     CSEM_Error error = CSEM_ERROR_NONE;
     CSEM_List *refs = CSEM_Item_GetRefs(item);
     int i = 0;
@@ -270,8 +260,7 @@ CSEM_Error csem_builder_resolveItem(CSEM_Item *item, CSEM_List *ids) {
         int j = 0;
 
         for(j = 0; ref && ids && j < CSEM_List_Size(ids); j++) {
-            CSEM_Node *idNode = CSEM_List_Get(ids, j);
-            CSEM_Id *id = CSEM_Node_GetObject(idNode);
+            CSEM_Id *id = CSEM_List_Get(ids, j);
             char *idValue = CSEM_Id_GetId(id);
 
             if(idValue && !strcmp(ref, idValue)) {
@@ -281,7 +270,7 @@ CSEM_Error csem_builder_resolveItem(CSEM_Item *item, CSEM_List *ids) {
 
                 for(k = 0; k < propSize; k++) {
                     if((error = CSEM_Item_AddProperty(item,
-                            CSEM_List_Get(props, k), CSEM_FALSE))) {
+                            CSEM_List_Get(props, k), CSEM_FALSE, CSEM_TRUE))) {
                         goto FINISH;
                     }
                 }
@@ -316,10 +305,9 @@ static CSEM_Error csem_builder_resolveDocument(CSEM_Document *doc) {
 
     {/* init */
         nodeList = CSEM_Document_GetChildren(doc);
-        if((error = csem_builder_getTopNodes(doc, CSEM_NODE_TYPE_ID, &ids))) {
-            goto FINISH;
-        }
+        ids = doc -> idNodeList;
     }
+    /* resolve items */
     for(i = 0; nodeList && i < CSEM_List_Size(nodeList); i++) {
         CSEM_Node *node = CSEM_List_Get(nodeList, i);
         if(CSEM_Node_GetType(node) == CSEM_NODE_TYPE_ITEM) {
@@ -330,7 +318,6 @@ static CSEM_Error csem_builder_resolveDocument(CSEM_Document *doc) {
         }
     }
 FINISH:
-    CSEM_List_Dispose(ids, CSEM_FALSE);
     return error;
 }
 CSEM_Error CSEM_Builder_Parse(CSEM_Builder *builder, int fd) {
@@ -437,6 +424,11 @@ CSEM_Error CSEM_Builder_Create(CSEM_Builder **builder) {
         }
         CSEM_Parser_SetHandler(result -> parser, result -> handler);
         CSEM_Parser_SetUserdata(result -> parser, result);
+
+        /* init id node stack */
+        if(!(result -> idNodeStack = CSEM_Stack_Create(8))) {
+            goto ERROR;
+        }
     }
 
     /* result */
@@ -453,6 +445,7 @@ void CSEM_Builder_Dispose(CSEM_Builder *builder) {
     if(builder) {
         CSEM_Handler_Dispose(builder -> handler, CSEM_TRUE);
         CSEM_Parser_Dispose(builder -> parser);
+        CSEM_Stack_Dispose(builder -> idNodeStack, CSEM_FALSE);
         CSEM_Free(builder);
     }
 }

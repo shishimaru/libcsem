@@ -24,7 +24,7 @@ CSEM_NSManager *CSEM_NSManager_Create();
 void CSEM_NSManager_Dispose(CSEM_NSManager *manager, CSEM_Bool free);
 CSEM_Error CSEM_NSManager_Add(CSEM_NSManager *manager, const char *prefix, const char *uri);
 CSEM_Error CSEM_NSManager_Push(CSEM_NSManager *manager);
-const char *CSEM_NSManager_lookupURI(CSEM_NSManager *manager, const char *prefix);
+const char *CSEM_NSManager_LookupURI(CSEM_NSManager *manager, const char *prefix);
 void CSEM_NSManager_Pop(CSEM_NSManager *manager, CSEM_Bool free);
 
 CSEM_NS_C_END

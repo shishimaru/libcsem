@@ -36,7 +36,7 @@ struct CSEM_Micro_Handlers {
     CSEM_Micro_IdStart   idStart;
     CSEM_Micro_IdEnd     idEnd;
 
-    int currentDepth;
+    /*int currentDepth;*/
     /* item */
     CSEM_Stack *itemDepth;
     /* id */
@@ -55,7 +55,7 @@ struct CSEM_RDFa_Handlers {
     CSEM_RDFa_PropEnd   propEnd;
 
     CSEM_NSManager *nsManager;
-    int currentDepth;
+    /*int currentDepth;*/
     /* item */
     CSEM_Stack *itemDepth;
     /* vocab */
@@ -72,6 +72,7 @@ struct CSEM_Handler {
     CSEM_Micro_Handlers *microdata;
     CSEM_RDFa_Handlers  *rdfa;
     CSEM_Parser_ErrorHandler error;
+    int currentDepth;
 };
 
 struct CSEM_Parser {
@@ -99,6 +100,7 @@ struct CSEM_Node {
 struct CSEM_Document {
     CSEM_Node *node;
     CSEM_List *children;
+    CSEM_List *idNodeList;
 };
 struct CSEM_Item {
     CSEM_Node *node;
@@ -106,11 +108,15 @@ struct CSEM_Item {
     CSEM_List *types;
     CSEM_List *refs;
     CSEM_List *props;
+    /* indicating whether the property is reference or not */
+    CSEM_List *propsRefList;
 };
 struct CSEM_Id {
     CSEM_Node *node;
     char *id;
     CSEM_List *props;
+    /* state */
+    int itemDepth;
 };
 
 struct CSEM_Property {
@@ -127,6 +133,7 @@ struct CSEM_Builder {
     /* state manager in document building */
     CSEM_Document *document;
     CSEM_Node *activeNode;
+    CSEM_Stack *idNodeStack;
     CSEM_Error error;
     /* prop value */
     char *buf;

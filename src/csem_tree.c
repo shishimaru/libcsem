@@ -70,6 +70,10 @@ CSEM_Error CSEM_Document_Create(CSEM_Document **document) {
         error = CSEM_ERROR_MEMORY;
         goto ERROR;
     }
+    if(!(result -> idNodeList = CSEM_List_Create(8))) {
+        error = CSEM_ERROR_MEMORY;
+        goto ERROR;
+    }
 
     /* result */
     *document = result;
@@ -81,17 +85,25 @@ ERROR:
 }
 void CSEM_Document_Dispose(CSEM_Document *document) {
     if(document) {
-        int i = 0;
-        int size = CSEM_List_Size(document -> children);
-        for(i = 0; i < size; i++) {
-            CSEM_Node *child = CSEM_List_Get(document -> children, i);
-            if(child -> type == CSEM_NODE_TYPE_ITEM) {
-                CSEM_Item_Dispose(child -> obj.item);
-            } else if(child -> type == CSEM_NODE_TYPE_ID) {
-                CSEM_Id_Dispose(child -> obj.id);
-            } else if(child -> type == CSEM_NODE_TYPE_PROPERTY) {
-                CSEM_Property_Dispose(child -> obj.property);
+        {
+            int i = 0;
+            int size = CSEM_List_Size(document -> children);
+            for(i = 0; i < size; i++) {
+                CSEM_Node *child = CSEM_List_Get(document -> children, i);
+                if(child -> type == CSEM_NODE_TYPE_ITEM) {
+                    CSEM_Item_Dispose(child -> obj.item);
+                } else if(child -> type == CSEM_NODE_TYPE_PROPERTY) {
+                    CSEM_Property_Dispose(child -> obj.property);
+                }
             }
+        }{
+            int i = 0;
+            int size= CSEM_List_Size(document -> idNodeList);
+            for(i = 0; i < size; i++) {
+                CSEM_Id *id = CSEM_List_Get(document -> idNodeList, i);
+                CSEM_Id_Dispose(id);
+            }
+            CSEM_List_Dispose(document -> idNodeList, CSEM_FALSE);
         }
         CSEM_List_Dispose(document -> children, CSEM_FALSE);
         CSEM_Node_Dispose(document -> node);

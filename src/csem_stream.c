@@ -115,7 +115,7 @@ static CSEM_Error rdfa_curie_resolve(CSEM_NSManager *nsManager, CSEM_List *value
         }
         if(CSEM_List_Size(prefix_term) == 1) {/* in case of only term */
             char *term = CSEM_List_Get(prefix_term, 0);
-            const char *vocab = CSEM_NSManager_lookupURI(nsManager, NULL);
+            const char *vocab = CSEM_NSManager_LookupURI(nsManager, NULL);
             if(vocab) {
                 size_t newValueLen = strlen(vocab) + strlen(term) + 2;
                 char *newValue = NULL;
@@ -131,7 +131,7 @@ static CSEM_Error rdfa_curie_resolve(CSEM_NSManager *nsManager, CSEM_List *value
         } else {/* in case of prefix : term */
             char *prefix = CSEM_List_Get(prefix_term, 0);
             char *term = CSEM_List_Get(prefix_term, 1);
-            const char *uri = CSEM_NSManager_lookupURI(nsManager, prefix);
+            const char *uri = CSEM_NSManager_LookupURI(nsManager, prefix);
             if(uri) {
                 size_t newValueLen = strlen(uri) + strlen(term) + 2;
                 char *newValue = NULL;
@@ -168,13 +168,12 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
     init_rdfa_startElement(&rdfa);
 
     /* init state */
+    (handler -> currentDepth)++;
     if(microHandler) {
-        (microHandler -> currentDepth)++;
         microHandler -> startPropValue = CSEM_FALSE;
         micro.propAttName = CSEM_Parser_GetAttNameForPropValue((const char *)name, NULL);
     }
     if(rdfaHandler) {
-        (rdfaHandler -> currentDepth)++;
         rdfaHandler -> startPropValue = CSEM_FALSE;
         rdfa.propAttName = CSEM_Parser_GetAttNameForPropValue((const char *)name, NULL);
     }
@@ -324,7 +323,7 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
                     error = CSEM_ERROR_MEMORY;
                     goto ERROR;
                 }
-                memcpy(bufDepth, &(microHandler -> currentDepth), sizeof(int));
+                memcpy(bufDepth, &(handler -> currentDepth), sizeof(int));
                 CSEM_Stack_Push(microHandler -> propDepth, bufDepth);
             }
             if(micro.propAttName) {
@@ -338,7 +337,7 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
                     error = CSEM_ERROR_MEMORY;
                     goto ERROR;
                 }
-                memcpy(bufDepth, &(microHandler -> currentDepth), sizeof(int));
+                memcpy(bufDepth, &(handler -> currentDepth), sizeof(int));
                 CSEM_Stack_Push(microHandler -> itemDepth, bufDepth);
             }
             microHandler -> startPropValue = CSEM_FALSE;/* for @itmescope && @itemprop */
@@ -350,7 +349,7 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
                     error = CSEM_ERROR_MEMORY;
                     goto ERROR;
                 }
-                memcpy(bufDepth, &(microHandler -> currentDepth), sizeof(int));
+                memcpy(bufDepth, &(handler -> currentDepth), sizeof(int));
                 CSEM_Stack_Push(microHandler -> idDepth, bufDepth);
             }
         }
@@ -424,7 +423,7 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
                     error = CSEM_ERROR_MEMORY;
                     goto ERROR;
                 }
-                memcpy(bufDepth, &(rdfaHandler -> currentDepth), sizeof(int));
+                memcpy(bufDepth, &(handler -> currentDepth), sizeof(int));
                 CSEM_Stack_Push(rdfaHandler -> propDepth, bufDepth);
             }
             if(rdfa.propAttName) {
@@ -438,7 +437,7 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
                     error = CSEM_ERROR_MEMORY;
                     goto ERROR;
                 }
-                memcpy(bufDepth, &(rdfaHandler -> currentDepth), sizeof(int));
+                memcpy(bufDepth, &(handler -> currentDepth), sizeof(int));
                 CSEM_Stack_Push(rdfaHandler -> itemDepth, bufDepth);
             }
             /* for @property && (@typeof || @resource) */
@@ -451,7 +450,7 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
                     error = CSEM_ERROR_MEMORY;
                     goto ERROR;
                 }
-                memcpy(bufDepth, &(rdfaHandler -> currentDepth), sizeof(int));
+                memcpy(bufDepth, &(handler -> currentDepth), sizeof(int));
                 CSEM_Stack_Push(rdfaHandler -> vocabDepth, bufDepth);
             }
         }
@@ -462,7 +461,7 @@ static void sax_startElement(void *ctx, const xmlChar *name, const xmlChar **att
                     error = CSEM_ERROR_MEMORY;
                     goto ERROR;
                 }
-                memcpy(bufDepth, &(rdfaHandler -> currentDepth), sizeof(int));
+                memcpy(bufDepth, &(handler -> currentDepth), sizeof(int));
                 CSEM_Stack_Push(rdfaHandler -> prefixDepth, bufDepth);
             }
         }
@@ -561,7 +560,7 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
         show_list_int(microHandler -> itemDepth);
 #endif
 
-        if(*tmpScopeDepth == microHandler -> currentDepth) {
+        if(*tmpScopeDepth == handler -> currentDepth) {
             if(microHandler -> itemEnd) {
                 microHandler -> itemEnd(parser -> userdata);
             }
@@ -570,7 +569,7 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
                 CSEM_Free(depth);
             }
         }
-        if(*tmpIdDepth == microHandler -> currentDepth) {
+        if(*tmpIdDepth == handler -> currentDepth) {
             if(microHandler -> idEnd) {
                 microHandler -> idEnd(parser -> userdata);
             }
@@ -579,7 +578,7 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
                 CSEM_Free(depth);
             }
         }
-        if(*tmpPropDepth == microHandler -> currentDepth) {
+        if(*tmpPropDepth == handler -> currentDepth) {
             if(microHandler -> propEnd) {
                 microHandler -> propEnd(parser -> userdata);
             }
@@ -591,12 +590,9 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
             }
         }
 
-        {/* update state */
 #ifdef CSEM_DEBUG_PARSER
             printf("</%s>%d\n", name, microHandler -> currentDepth);
 #endif
-            microHandler -> currentDepth--;
-        }
     }
     if(rdfaHandler) {
         int *tmpScopeDepth = CSEM_Stack_Top(rdfaHandler -> itemDepth);
@@ -608,7 +604,7 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
         show_list_int(rdfaHandler -> itemDepth);
 #endif
 
-        if(*tmpScopeDepth == rdfaHandler -> currentDepth) {
+        if(*tmpScopeDepth == handler -> currentDepth) {
             if(rdfaHandler -> itemEnd) {
                 rdfaHandler -> itemEnd(parser -> userdata);
             }
@@ -617,23 +613,21 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
                 CSEM_Free(depth);
             }
         }
-        if(*tmpVocabDepth == rdfaHandler -> currentDepth) {
-            /* TODO */
+        if(*tmpVocabDepth == handler -> currentDepth) {
             CSEM_NSManager_Pop(rdfaHandler -> nsManager, CSEM_TRUE);
             if(CSEM_Stack_Size(rdfaHandler -> vocabDepth) > 1) {
                 void *depth = CSEM_Stack_Pop(rdfaHandler -> vocabDepth);
                 CSEM_Free(depth);
             }
         }
-        if(*tmpPrefixDepth == rdfaHandler -> currentDepth) {
-            /* TODO : update prefix manager */
+        if(*tmpPrefixDepth == handler -> currentDepth) {
             CSEM_NSManager_Pop(rdfaHandler -> nsManager, CSEM_TRUE);
             if(CSEM_Stack_Size(rdfaHandler -> prefixDepth) > 1) {
                 void *depth = CSEM_Stack_Pop(rdfaHandler -> prefixDepth);
                 CSEM_Free(depth);
             }
         }
-        if(*tmpPropDepth == rdfaHandler -> currentDepth) {
+        if(*tmpPropDepth == handler -> currentDepth) {
             if(rdfaHandler -> propEnd) {
                 rdfaHandler -> propEnd(parser -> userdata);
             }
@@ -644,14 +638,12 @@ static void sax_endElement(void *ctx, const xmlChar *name) {
                 CSEM_Free(depth);
             }
         }
-
-        {/* update state */
 #ifdef CSEM_DEBUG_PARSER
             printf("</%s>%d\n", name, rdfaHandler -> currentDepth);
 #endif
-            rdfaHandler -> currentDepth--;
-        }
     }
+    /* update state */
+    (handler -> currentDepth)--;
 }
 static void sax_fatalError(void *ctx, const char *msg, ...) {
 
@@ -763,6 +755,7 @@ CSEM_Error CSEM_Handler_Create(CSEM_Handler **handler) {
         error = CSEM_ERROR_MEMORY;
         goto FINISH;
     }
+    result -> currentDepth = -1;
     /* result */
     *handler = result;
 FINISH:

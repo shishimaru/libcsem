@@ -1,0 +1,20 @@
+<body>
+  <div id="neil" itemscope itemtype="http://sample.org/Person" itemid="neil">
+    <p>My name is <span itemprop="name">Neil</span>.</p>
+    <p id="band">My band is called
+      <span itemprop="address">Boston</span>
+      <span itemprop="band" itemscope itemtype="http://sample.org/MusicGroup">
+	<span itemprop="name">Four &quot;Parts&quot; Water</span>.
+      </span>
+      <span itemscope itemprop="tennis" itemtype="http://sample.org/SportsGroup">
+	<span itemscope itemprop="team">
+	  <div itemprop="name">Cambridge Tennis Team</div>.
+	</span>
+      </span>
+      <span itemprop="phone">617</span>
+    </p>
+  </div>
+  <div id="bob" itemscope itemtype="http://sample.org/Person" itemid="bob" itemref="band">
+    <p>My name is <span itemprop="name">Bob</span></p>
+  </div>
+</body>
